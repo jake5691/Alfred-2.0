@@ -1,5 +1,5 @@
 from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, slash_command, SelectOption 
+from nextcord import Interaction, SlashOption, slash_command, SelectOption
 from nextcord.ui import View, Select
 from ..classes.Structure import Structure
 from replit import db
@@ -59,17 +59,10 @@ class StructureSelect(Select):
 
 class Map(commands.Cog):
   """Handle Eden map data"""
-
   def __init__(self, bot: commands.Bot):
     self.bot = bot
-    try:
-      allStructs = db["allStructures"]
-    except:
-      print("Error loading Database")
-    self.allStructures = pd.DataFrame(columns=['sector','typ','lvl','coordinates'])
-    for s in allStructs:
-      st = Structure().db2str(s)
-      self.allStructures.loc[len(self.allStructures.index)] = st.str2list()
+    dataCog = bot.get_cog('Data')
+    self.structures = dataCog.structures
 
   @slash_command(name="selectstructure",
                       description="Press send to start selecting a structure",

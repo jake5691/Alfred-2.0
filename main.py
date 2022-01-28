@@ -1,13 +1,14 @@
 import os
 import nextcord
-import re
 from replit import db
 from keep_alive import keep_alive
 from nextcord.utils import get
 from nextcord.ext import commands
 import logging
-import pandas as pd
-from modules.classes.Structure import Structure
+#import pandas as pd
+#from modules.classes.Structure import Structure
+from functions import staticValues as sv
+from functions import setupFunc as sf
 
 logging.basicConfig(level=logging.INFO)
 
@@ -15,194 +16,19 @@ intents = nextcord.Intents.default()
 intents.members = True
 intents.reactions = True
 client = commands.Bot(intents=intents, command_prefix="??")
-gIDS = [895003315883085865]
-roles = {
-    "RBC": 899673831633981503,
-    "Leadership": 902605996713721888,
-    "Developers": 898655389397168140,
-    "Guild Leader": 910980797211746336
-}
 
-emojiAlph = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰','🇱','🇲','🇳']
-
-def loadCogs():
-  #Initialize bot
-  if os.path.exists(os.path.join("modules","setup","setup-cog.py")):
-    client.load_extension(f"modules.setup.setup-cog")
-  #Loading all cogs
-  for  folder in os.listdir("modules"):
-    if os.path.exists(os.path.join("modules",folder,"cog.py")):
-      client.load_extension(f"modules.{folder}.cog")
-
-def loadTargets():
-  tList = []
-  #Load current target list
-  if len(db.prefix("targetList")) > 0:
-    tList = db["targetList"]
-  else:
-    db["targetList"] = tList
-  return tList
-
-def addTarget(msg):
-  msgL = msg.split(',')
-  if len(msgL) >= 5:
-    tList = loadTargets()
-    
-    #Format target to match DB
-    tNum = 0
-    if len(tList) > 0:
-      tNum = tList[-1][0]
-    tNum += 1
-    thisTarget = [tNum]
-    for f in msgL:
-      thisTarget.append(f.strip())
-    while len(thisTarget) < 7:
-      thisTarget.append('')
-
-    #Add target to DB
-    tList.append(thisTarget)
-    db["targetList"] = tList
-
-    return True, tList
-  return False, ''
-
-def getAllTargets():
-  tList = loadTargets()
-  if len(tList) == 0:
-    return '```List empty```'
-  targets = '```'
-  for t in tList:
-    #Number
-    tStr = str(t[0])
-    while len(tStr) < 2:
-      tStr = ' ' + tStr
-    tStr += ': '
-    #Name & Cords
-    tStr += t[1] + ' (' + t[2] + ') '
-    #Time
-    tStr += '@' + t[3]
-    #Flag
-    tStr += ' - Flag: ' + t[4]
-    #Team
-    tStr += ' - ' + t[5]
-    #Notes
-    if t[6] != '':
-      tStr += ' - ' + t[6]
-    targets += tStr + '\n'
-  targets += '```'
-  return targets
-
-def getAllTargetsWithMention():
-  tList = loadTargets()
-  if len(tList) == 0:
-    return 'No targets for today.'
-  targets = ''
-  flags = []
-  teams = []
-  for t in tList:
-    #Name & Cords
-    tStr = ' (' + t[2] + ') ' + t[1]
-    #Time
-    tStr += ' @' + t[3]
-    #Flag
-    tStr += ' - Flag: ' + t[4]
-    flags.append(t[4])
-    #Team
-    tStr += ' - ' + t[5]
-    #Notes
-    if t[6] != '':
-      tStr += ' - ' + t[6]
-    targets += tStr + '\n'
-  targets += ''
-  return targets, flags, teams
-
-def removeTarget(msg):
-  id = re.findall('[0-9]+', msg)
-  if len(id) != 1:
-    return False
-  id = int(id[0])
-  tList = loadTargets()
-  if id <= len(tList) and id > 0:
-    tList.pop(id-1)
-    for i in range(len(tList)):
-      tList[i][0] = i+1
-    return True
-  return False
-
-def switchTarget(msg):
-  id = re.findall('[0-9]+', msg)
-  if len(id) != 2:
-    return False
-  id1 = int(id[0])-1
-  id2 = int(id[1])-1
-  tList = loadTargets()
-  if id1+1 <= len(tList) and id1+1 > 0 and id2+1 <= len(tList) and id2+1 > 0:
-    tList[id1], tList[id2] = tList[id2], tList[id1]
-    for i in range(len(tList)):
-      tList[i][0] = i+1
-    return True
-  return False
-
-def time2str(time):
-  timeStr = str(time)
-  while len(timeStr) < 2:
-    timeStr = '0' + timeStr
-  return timeStr + ':00'
 
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}'.format(client))
-  loadCogs()
-  ###Load eden structure information from csv
-  #e_str = pd.read_csv(os.path.join("modules","data","eden_buildings_ALL_3.csv"),sep=";")
-  #db["allStructures"] =[]
-  #e = []
-  #for _,r in e_str.iterrows():
-  #  st = Structure(sector=r['SECTOR'],typ=r['TYPE'],lvl=r['LVL'],x=int(r['X']),y=int(r['Y']))
-  #  e.append(st.str2db())
-  #db["allStructures"] = e
-  
-#print(os.getenv("REPLIT_DB_URL"))
+  sf.loadCogs(client)
+  #sf.importStructureCSV()
 
 @client.event
 async def on_message(message):
   msg = message.content.lower()
   if message.author == client.user or message.author.bot:
     return
-  #Show Teams
-  if message.channel.name == 'strategy':
-    if msg.startswith('show teams'):
-      allMembers = message.guild.members
-      wTeam = get(message.guild.roles, name='Team Whiskey')
-      tTeam = get(message.guild.roles, name='Team Tango')
-      fTeam = get(message.guild.roles, name='Team Foxtrot')
-      gTeam = get(message.guild.roles, name='Guild member')
-      rTeam = get(message.guild.roles, name='RBC')
-      wMembers = []
-      wStr = '**Team Whiskey:**'
-      tMembers = []
-      tStr = '**Team Tango:**'
-      fMembers = []
-      fStr = '**Team Foxtrot:**'
-      rest = []
-      rStr = '**Unnasigned:**'
-      for m in allMembers:
-        if wTeam in m.roles:
-          wMembers.append(m)
-          wStr += '\n' + m.display_name
-        elif tTeam in m.roles:
-          tMembers.append(m)
-          tStr += '\n' + m.display_name
-        elif fTeam in m.roles:
-          fMembers.append(m)
-          fStr += '\n' + m.display_name
-        elif m.bot == False and (gTeam in m.roles or rTeam in m.roles):
-          rest.append(m)
-          rStr += '\n' + m.display_name
-      await message.channel.send(wStr)
-      await message.channel.send(tStr)
-      await message.channel.send(fStr)
-      await message.channel.send(rStr)
     
   #Target Planner
   if message.channel.name == 'target-planning':
@@ -215,142 +41,6 @@ async def on_message(message):
         oldMsg = await message.channel.fetch_message(omID)
         await oldMsg.delete()
       db["msgHelpMessage"] = sentMsg.id
-      await message.delete()
-      return
-
-    #Add Target
-    elif msg.startswith('add'):
-      msg = msg.replace('add','').strip()
-      addedTarget, tList = addTarget(msg)
-      if addedTarget:
-        sentMsg = await message.channel.send("You added the target.")
-        
-        rEmbed = nextcord.Embed(
-          color = nextcord.Colour.red()
-        )
-        rEmbed.add_field(name='**Target list**',value=getAllTargets(),inline=False)
-        sentMsgTL = await message.channel.send(embed=rEmbed)
-        if len(db.prefix("msgTargetList")) > 0:
-          omID = db["msgTargetList"]
-          oldMsgTL = await message.channel.fetch_message(omID)
-          await oldMsgTL.delete()
-        db["msgTargetList"] = sentMsgTL.id
-      else:
-        sentMsg = await message.channel.send("No target was added, your request was not correct:\n " + msg)
-      if len(db.prefix("msgAddTarget")) > 0:
-        omID = db["msgAddTarget"]
-        oldMsg = await message.channel.fetch_message(omID)
-        await oldMsg.delete()
-      db["msgAddTarget"] = sentMsg.id
-      await message.delete()
-      return
-    
-    #Reorder Targets
-    elif msg.startswith('switch'):
-      if switchTarget(msg):
-        sentMsg = await message.channel.send("You switched two target.")
-        
-        rEmbed = nextcord.Embed(
-          color = nextcord.Colour.red()
-        )
-        rEmbed.add_field(name='**Target list**',value=getAllTargets(),inline=False)
-        sentMsgTL = await message.channel.send(embed=rEmbed)
-        if len(db.prefix("msgTargetList")) > 0:
-          omID = db["msgTargetList"]
-          oldMsgTL = await message.channel.fetch_message(omID)
-          await oldMsgTL.delete()
-        db["msgTargetList"] = sentMsgTL.id
-      else:
-        sentMsg = await message.channel.send("Sorry couldn't process your request: " + msg)
-      if len(db.prefix("msgAddTarget")) > 0:
-        omID = db["msgAddTarget"]
-        oldMsg = await message.channel.fetch_message(omID)
-        await oldMsg.delete()
-      db["msgAddTarget"] = sentMsg.id
-      await message.delete()
-      return
-
-    #Remove Target
-    elif msg.startswith('remove'):
-      if removeTarget(msg):
-        sentMsg = await message.channel.send("You removed a target.")
-        
-        rEmbed = nextcord.Embed(
-          color = nextcord.Colour.red()
-        )
-        rEmbed.add_field(name='**Target list**',value=getAllTargets(),inline=False)
-        sentMsgTL = await message.channel.send(embed=rEmbed)
-        if len(db.prefix("msgTargetList")) > 0:
-          omID = db["msgTargetList"]
-          oldMsgTL = await message.channel.fetch_message(omID)
-          await oldMsgTL.delete()
-        db["msgTargetList"] = sentMsgTL.id
-      else:
-        sentMsg = await message.channel.send("Sorry couldn't process your request: " + msg)
-      if len(db.prefix("msgAddTarget")) > 0:
-        omID = db["msgAddTarget"]
-        oldMsg = await message.channel.fetch_message(omID)
-        await oldMsg.delete()
-      db["msgAddTarget"] = sentMsg.id
-      await message.delete()
-      return
-    
-    #Publish Targets
-    elif "publish" in msg.lower():
-      annChannel = get(message.author.guild.channels, name='announcements')
-      targets, flags, teams = getAllTargetsWithMention()
-      for f in flags:
-        flag = []
-        for player in client.guilds[0].members:
-          if player.bot:
-            continue
-          if f.lower() in player.display_name.lower():
-            flag.append(player)
-        if len(flag) == 1:
-          targets = targets.replace(f,'<@' + str(flag[-1].id) + '>')
-      for t in teams:
-        team = []
-        for team in client.guids[0].roles:
-          print(t.lower() + ' ?=? ' + team.name.lower())
-          if t.lower() in team.name.lower():
-            team.append(t)
-        if len(team) == 1:
-          targets = targets.replace(f,'<@' + str(team[-1].id) + '>')
-      rEmbed = nextcord.Embed(
-        color = nextcord.Colour.red()
-      )
-      rEmbed.add_field(name='**Target list**',value=targets,inline=False)
-      sentMsgTL = await annChannel.send(embed=rEmbed)
-      if len(db.prefix("msgPubTargetList")) > 0:
-        omID = db["msgPubTargetList"]
-        oldMsgTL = await annChannel.fetch_message(omID)
-        await oldMsgTL.delete()
-      db["msgPubTargetList"] = sentMsgTL.id
-      await message.delete()
-
-    #Clean DB
-    elif "clean" in msg.lower():
-      roles = message.author.roles
-      allowed = False
-      for r in roles:
-        if 'Host' == r.name:
-          allowed = True
-      if allowed == False:
-        await message.delete()
-        return
-      
-      msgDB = db.prefix("msg")
-      for dbEntry in msgDB:
-        del db[dbEntry]
-      await message.delete()
-    #Error
-    else:
-      sentMsg = await message.channel.send("Sorry couldn't process your Request: " + msg)
-      if len(db.prefix("msgErrorMessage")) > 0:
-        omID = db["msgErrorMessage"]
-        oldMsg = await message.channel.fetch_message(omID)
-        await oldMsg.delete()
-      db["msgErrorMessage"] = sentMsg.id
       await message.delete()
       return
 
@@ -461,11 +151,11 @@ async def on_message(message):
       options = []
       optionsTxt = []
       for i in range(12):
-        options.append(emojiAlph[i])
+        options.append(sv.emojiAlph[i])
         optionsTxt.append(time2str(i*2) + ' - ' + time2str(i*2+2))
         text += options[-1]+' ' + optionsTxt[-1] + "\n"
         db["avlPoll"+options[-1]] = []
-      options.append(emojiAlph[12])
+      options.append(sv.emojiAlph[12])
       db["avlPoll"+options[-1]] = []
       optionsTxt.append('Always')
       text += options[-1] + ' ' + optionsTxt[-1] + '```'
@@ -515,7 +205,7 @@ async def on_raw_reaction_add(payload):
   if len(db.prefix("avlMsgSurvey")) > 0:
       avSurvID = db["avlMsgSurvey"]
   if payload.message_id == avSurvID:
-    for e in emojiAlph:
+    for e in sv.emojiAlph:
       if e == payload.emoji.name:
         curL = []
         if len(db.prefix("avlPoll"+e)) > 0:
@@ -537,7 +227,7 @@ async def on_raw_reaction_remove(payload):
   if len(db.prefix("avlMsgSurvey")) > 0:
       avSurvID = db["avlMsgSurvey"]
   if payload.message_id == avSurvID:
-    for e in emojiAlph:
+    for e in sv.emojiAlph:
       if e == payload.emoji.name:
         curL = []
         if len(db.prefix("avlPoll"+e)) > 0:

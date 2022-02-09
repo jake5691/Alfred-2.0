@@ -11,6 +11,7 @@ replit = "^3.2.4"
 nextcord = "^2.0.0-alpha.6"
 pandas = "^1.4.0"
 jsons = "^1.6.1"
+aiohttp = "^3.8.1"
 
 [tool.poetry.dev-dependencies]
 

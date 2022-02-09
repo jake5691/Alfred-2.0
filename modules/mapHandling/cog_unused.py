@@ -1,7 +1,7 @@
 from nextcord.ext import commands
 from nextcord import Interaction, SlashOption, slash_command, SelectOption
 from nextcord.ui import View, Select
-from ..classes.Structure import Structure
+from classes.Structure import Structure
 from replit import db
 import pandas as pd
 

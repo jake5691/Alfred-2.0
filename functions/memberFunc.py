@@ -1,0 +1,127 @@
+import nextcord
+from functions.generalFunc import Ranking2Embeds
+
+
+def getRankingEmbeds(memberList,typ,above=1,progressSince=None):
+  ranking = []
+  typPhrase = "Skill lvl"
+  color = nextcord.Color.blue()
+  for m in memberList:
+    #Skill
+    if typ == 'skill' and m.currentSkillLvl >= above:
+      #Get all skill data greater/equal to given value
+      r = [m.rName(), int(m.currentSkillLvl),m.lastSkillUpdate]
+      if progressSince != None:
+        #Add historic skill value if historic compare date is given
+        success, skill, dat = m.historicSkill(progressSince)
+        if skill == 0:
+          skill = m.currentSkillLvl
+        r.append(skill)
+        r.append(dat)
+        r.append(success)
+      ranking.append(r)
+    #Loyalty
+    elif typ == 'loyalty' and m.currentLoyalty >= above:
+      #Get all loyalty data greater/equal to given value
+      r = [m.rName(), int(m.currentLoyalty),m.lastLoyaltyUpdate]
+      if progressSince != None:
+        #Add historic loyalty value if historic compare date is given
+        success, loy, dat = m.historicLoyalty(progressSince)
+        if loy == 0:
+          loy = m.currentLoyalty
+        r.append(loy)
+        r.append(dat)
+        r.append(success)
+      ranking.append(r)
+  #Sort Ranking
+  ranking = sorted(ranking, key=lambda x: (1/x[1],x[2]), reverse=False)
+  #Generate Ranking table
+  if progressSince == None:
+    table = generate_table(ranking)
+  else:
+    table = generate_table(ranking,True)
+  
+  #Standard values for skill/loyalty embeds
+  if typ == 'skill':
+    typPhrase = "Skill lvl"
+    color = nextcord.Color.blue()
+  elif typ == 'loyalty':
+    typPhrase = "Loyalty"
+    color = nextcord.Color.red()
+  
+  #Header for different requests
+  if above == 1 and progressSince == None:
+    title = str(len(ranking)) + " of " + str(len(memberList)) + " players " + typPhrase + "."
+    description = ''
+    header = '**Rank     Player                                  ' + typPhrase + '**'
+  elif above == 1 and progressSince != None:
+    title = 'Members ' + typPhrase + ' compared to ' + progressSince.strftime("%d.%b %Y")
+    description = '* marked ' + typPhrase + ' are the oldest availabe data as no data was available for the requested date.'
+    header = '**Player                                     ' + typPhrase + '**'
+  elif above > 1 and progressSince == None:
+    title ="There are " + str(len(ranking)) + " players above " + str(above) + " " + typPhrase + "."
+    description = ''
+    header = '**Rank     Player                                  ' + typPhrase + '**'
+  elif above > 1 and progressSince != None:
+    title ='Members that now have ' + typPhrase + ' higher than ' + str(above) + ' compared to ' + progressSince.strftime("%d.%b %Y") 
+    description = '* marked ' + typPhrase + ' are the oldest availabe data as no data was available for the requested date.'
+    header = '**Rank     Player                                  ' + typPhrase + '**'
+
+  embeds = Ranking2Embeds(table,title,description,header,color)
+  return embeds
+
+def generate_table(ranking,compare=False):
+  charLimits = [256,1024]
+  i = 1
+  results = []
+  rMess = '```'
+  rank = 0
+  cRank = 0
+  cLvl = 0
+  for r in ranking:
+    #generate rank no.
+    rank += 1
+    if cLvl != r[1]:
+      cRank = rank
+      cLvl = r[1]
+    if compare:
+      #no rank no. when comparing to old data
+      ran = ''
+    else:
+      ran = str(cRank)
+      while len(ran) < 3:
+        ran = ' ' + ran
+      ran += '. '
+
+    #Player name (shorten and fill up with white space)
+    line = r[0]
+    while len(line) > 15:
+      line = line[:-1]
+    while len(line) < 16:
+      line += ' '
+
+    #Lengthen rank to 4 digits
+    num = str(cLvl)
+    while len(num) < 4:
+      num = ' ' + num
+    if compare:
+      tnum = str(r[3])
+      if not(r[5]):
+        tnum = '*' + tnum
+      while len(tnum) < 5:
+        tnum = ' ' + tnum
+      diff = r[1] - r[3]
+      if diff >= 0:
+        diff = '+' + str(diff)
+      num = tnum + ' ➡ ' + num + ' ' + str(diff)
+    
+    #split message if current line is exceeding charLimit
+    if len(rMess + ran + line +  num + '\n') + 5 >= charLimits[i]:
+      rMess += '```'
+      results.append(rMess)
+      rMess = '```'
+      i = 0 if i == 1 else 1
+    rMess = rMess + ran + line +  num + '\n'
+  rMess += '```'
+  results.append(rMess)
+  return results

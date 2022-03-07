@@ -31,7 +31,7 @@ emojiAlph = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','�
 
 #random Reply
 keywords = ['🖕','pad','cris','👅','✌️','pickle','bel','flag','😜','😅','jj']
-reply = ["🖕","👅","🤌","✌️","🖕","👅","🥰","🥒","🐰","Hail Pickle!","Please keep your banner account info up to date on this server.","Hey you! I know you got some ideas for improvements of this server, enter it in the feedback channel!","Offseason Party, NOW!!","Read your f*cking mail!","Are you sure you read all your latest mail? No? Go fix that feeling!"]
+reply = ["🖕","👅","🤌","✌️","🖕","👅","🥰","🥒","🐰","Hail Pickle!","Please keep your banner account info up to date on this server.","Hey you! I know you got some ideas for improvements of this server, enter it in the feedback channel!","Wait for flag!","Read your f*cking mail!","Are you sure you read all your latest mail? No? Go fix that feeling!","We got this!","I needed that tile for my pad, please release!!","<:exp_rabbit:909858709298110464>"]
 
 #emojis
 class emoji:

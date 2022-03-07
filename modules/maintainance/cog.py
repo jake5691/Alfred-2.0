@@ -16,10 +16,10 @@ class Maintainance(commands.Cog):
   async def welcome_message(self,member):
     if member.bot:
       return
-    newbie = get(member.guild.roles, id=sv.role.Newbie)
+    newbie = get(member.guild.roles, id=sv.roles.Newbie)
     await member.add_roles(newbie)
     welChannel = get(member.guild.channels, id=sv.channel.welcome)
-    genChannel = get(member.guild.channels, id=sv.channel.guest)
+    genChannel = get(member.guild.channels, id=sv.channel.guests)
     lasChannel = get(member.guild.channels, id=sv.channel.loyalty_And_skill_lvl)
     avlChannel = get(member.guild.channels, id=sv.channel.availability)
     await genChannel.send(f"Welcome {member.display_name} to our Server, role assignment pending, please be patient.")
@@ -42,7 +42,7 @@ class Maintainance(commands.Cog):
       for r in sv.reac:
         if payload.emoji.name == r:
           if r == '⏰':
-            role = get(payload.member.guild.roles, id=sv.role.RemindMe)
+            role = get(payload.member.guild.roles, id=sv.roles.RemindMe)
           else:
             role = get(payload.member.guild.roles, name=r)
           await payload.member.add_roles(role)
@@ -64,11 +64,21 @@ class Maintainance(commands.Cog):
       for r in sv.reac:
         if payload.emoji.name == r:
           if r == '⏰':
-            role = get(guild.roles, id=sv.role.RemindMe)
+            role = get(guild.roles, id=sv.roles.RemindMe)
           else:
             role = get(guild.roles, name=r)
           await member.remove_roles(role)
           return
+
+  @commands.Cog.listener('on_member_update')
+  async def change_name(self,old,new):
+    """Recognize Players name changes and update them"""
+    if old.display_name == new.display_name:
+      return
+    member = self.dataCog.getMemberByID(old.id)
+    member.name = new.display_name
+    member.save()
+
 
   @commands.Cog.listener('on_member_update')
   async def add_delete_MemberInstance(self,old,new):

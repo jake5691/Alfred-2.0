@@ -18,7 +18,7 @@ class Target(Structure):
   
   def nameStr(self) -> str:
     name = f"{self.typ} {self.lvl} - X:{self.x} Y:{self.y} @{self.hour:02d}:{self.minute:02d}"
-    if self.flag != None:
+    if isinstance(self.flag,MemberClass):
       name += f" ({self.flag.name})"
     else:
       name += " (no flag)"
@@ -26,7 +26,7 @@ class Target(Structure):
   
   def targetStr(self) -> str:
     res = f"{self.typ} {self.lvl} - X:{self.x} Y:{self.y} @{self.hour:02d}:{self.minute:02d}"
-    if self.flag != None:
+    if isinstance(self.flag,MemberClass):
       res += f" Flag: {self.flag.name}"
     else:
       res += " no flag"
@@ -37,7 +37,7 @@ class Target(Structure):
   def embedFieldValue(self):
     field = f"**{self.typ} {self.lvl} - X:{self.x} Y:{self.y} @{self.hour:02d}:{self.minute:02d}**"
     value = ""
-    if self.flag != None:
+    if isinstance(self.flag,MemberClass):
       flagID = self.flag.ownerID
       if flagID == 0:
         flagID = self.flag.id
@@ -49,17 +49,19 @@ class Target(Structure):
     return field, value
   
   def tar2db(self, flags: [MemberClass]) -> str:
-    if self.flag != None:
+    if isinstance(self.flag,MemberClass):
       self.flag = self.flag.id
     res = jsons.dumps(self)
-    self.flagFromID(flags)
+    if self.flagFromID(flags) == False:
+      self.flag = None
     return res
   
-  def flagFromID(self,flags: [MemberClass]):
+  def flagFromID(self,flags: [MemberClass]) -> bool:
     for f in flags:
       if f.id == self.flag:
         self.flag = f
-        break
+        return True
+    return False
   
   def needsReminder(self):
     #Check if target still needs a reminder or was alread reminded
@@ -67,7 +69,7 @@ class Target(Structure):
       return (False,"No reminder")
 
     #Check if it is currently a building day (Tuesday=1, Thursday=3, Sunday=6)
-    now = datetime.now() + timedelta(hours = -1, minutes=55)
+    now = datetime.now() + timedelta(hours = -1, minutes=-55)
     if not(now.weekday() in [1,3,6]):
       return (False,"Off day")
 
@@ -77,6 +79,7 @@ class Target(Structure):
     if nowtime > targetTime:
       self.reminded = True
       return (True, "Come online we are about to attack " + self.nameStr() + "\n")
+    return (False, "Not time to attack yet")
       
   
   

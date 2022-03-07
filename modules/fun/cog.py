@@ -9,13 +9,15 @@ from random import random, choice
 class Fun(commands.Cog):
   """Fun features"""
 
-  def __init__(self, client: commands.Bot):
-    self.client = client
+  def __init__(self, bot: commands.Bot):
+    self.bot = bot
 
   @commands.Cog.listener('on_message')
   async def serve_coffee(self,message):
     """Serve coffee in specific channels"""
-    coffee_channels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general]
+    if message.author == self.bot.user:
+      return
+    coffee_channels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general, sv.channel.guild_leadership]
     if not(any(c == message.channel.id for c in coffee_channels)):
       return
     embeds = message.embeds # return list of embeds
@@ -38,6 +40,8 @@ class Fun(commands.Cog):
   @commands.Cog.listener('on_message')
   async def random_reply(self,message):
     """Random replies in specific channels"""
+    if message.author == self.bot.user:
+      return
     coffee_channels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general]
     if not(any(c == message.channel.id for c in coffee_channels)):
       return
@@ -51,5 +55,5 @@ class Fun(commands.Cog):
 
 
 
-def setup(client: commands.Bot):
-  client.add_cog(Fun(client))
+def setup(bot: commands.Bot):
+  bot.add_cog(Fun(bot))

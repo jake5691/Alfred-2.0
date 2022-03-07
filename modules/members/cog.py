@@ -106,13 +106,13 @@ class Members(commands.Cog):
         #Update Ranking
         embeds=mf.getRankingEmbeds(self.dataCog.members,'skill')
         try:
-          oldMes = await interaction.channel.fetch_message(db[sv.db.loyaltyRanking])
+          oldMes = await interaction.channel.fetch_message(db[sv.db.skillRanking])
           await oldMes.edit(embeds=embeds)
         except:
           print("couldn't get old message")
         
           loyMes = await interaction.channel.send(embeds=embeds)
-          db[sv.db.loyaltyRanking] = loyMes.id
+          db[sv.db.skillRanking] = loyMes.id
       #Post Personal Reply
       await interaction.channel.send(reply, delete_after = 30)
     #await interaction.response.send_message(f"You updated the input for {user.display_name}", ephemeral = True)

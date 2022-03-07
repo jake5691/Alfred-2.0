@@ -12,7 +12,7 @@ class DeleteButton(Button):
   async def callback(self,interaction:Interaction):
     #Delete all targets
     tf.deleteAllTargets()
-    self.view.targets = []
+    self.view.dataCog.targets = []
     await interaction.response.edit_message(content="You successfully **deleted all targets** - ready to add new once for the next attacks.",view=None)
 
 class CancelButton(Button):
@@ -27,9 +27,9 @@ class CancelButton(Button):
 
 class TargetDeleteView(View):
   """The view to hold the Buttons"""
-  def __init__(self, targets):
+  def __init__(self, dataCog):
     super().__init__()
-    self.targets = targets
+    self.dataCog = dataCog
     self.add_item(CancelButton())
     self.add_item(DeleteButton())
     

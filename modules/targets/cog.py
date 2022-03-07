@@ -198,7 +198,7 @@ class Targets(commands.Cog):
     if targets == []:
       await interaction.response.send_message(content="There are no targets set, so nothing to delete...", ephemeral = True)
       return
-    view = TargetDeleteView(self.dataCog.targets)
+    view = TargetDeleteView(self.dataCog)
     await interaction.response.send_message(content=content,view=view, ephemeral = True)
   
   @slash_command(name="structureinfo",
@@ -260,6 +260,9 @@ class Targets(commands.Cog):
         return
 
     embed = parent.embeds[0]
+    #check that the message is not the wordle game
+    if embed.title == "Wordle Clone":
+      return
     try:
       avgdestruction = int(message.content.strip())
     except:

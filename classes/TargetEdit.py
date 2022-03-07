@@ -102,7 +102,7 @@ class SelectTarget(Select):
     options = []
     i =  0
     for t in targets:
-      name = f"{t.name} (X: {t.x}, Y: {t.y})"
+      name = f"{t.name} (X: {t.x}, Y: {t.y}) @{t.hour:02d}:{t.minute:02d}"
       options.append(SelectOption(label=name,value=i))
       i += 1
     self.options = options

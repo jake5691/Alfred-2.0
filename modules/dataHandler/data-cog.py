@@ -74,9 +74,10 @@ class Data(commands.Cog):
           if mi.banner:
             continue
           mem = next((x for x in g.members if x.id == mi.id), None)
-          roles = [r.id for r in mem.roles]
-          if mem == None or not(any(r in roles for r in relevantRoles)):
-            self.deleteMemberByID(mem.id)
+          if mem != None:
+            roles = [r.id for r in mem.roles]
+            if not(any(r in roles for r in relevantRoles)):
+              self.deleteMemberByID(mem.id)
         #Create
         for m in g.members:
           roles = [r.id for r in m.roles]

@@ -88,13 +88,18 @@ class MemberClass:
 
   
   def updateSkill(self,newSkill:int=0):
+    """update the skill/spec lvl"""
     if self.currentSkillLvl == newSkill:
       return False, 'The skill lvl of ' + self.name + ' is already at ' + str(newSkill) + ', keep updating your info whenever you reach a new skill lvl.'
     oldSkill = self.currentSkillLvl
     self.currentSkillLvl = int(newSkill)
     self.lastSkillUpdate = datetime.now() + timedelta(hours = -2)
     self.lastSkillUpdate = pytz.utc.localize(self.lastSkillUpdate)
-    self.skillData = self.skillData.append({'skill':newSkill,'date':self.lastSkillUpdate},ignore_index=True)
+    addedData = pd.DataFrame(columns=['skill','date'])
+    addedData.loc[0] = [newSkill,self.lastSkillUpdate]
+    self.skillData = pd.concat(objs= [self.skillData, addedData])
+    self.skillData.reset_index(drop=True, inplace=True)
+    #self.skillData = self.skillData.append({'skill':newSkill,'date':self.lastSkillUpdate},ignore_index=True)
     #Reply content aware
     reply = 'The skill lvl of ' + self.name + ' is updated from ' + str(oldSkill) + ' to ' + str(newSkill) + '. '
     if newSkill - oldSkill > 1 and oldSkill > 0:
@@ -104,13 +109,21 @@ class MemberClass:
     return True, reply
   
   def updateLoyalty(self,newLoyalty:int=0):
+    """update the loyalty"""
+    if str(newLoyalty)[-1] != "1":
+      #make sure the last digit is a 1
+      newLoyalty = int(str(newLoyalty)[:-1] + "1")
     if self.currentLoyalty == newLoyalty:
       return False, 'The Loyalty of ' + self.name + ' is already at ' + str(newLoyalty) + ', keep updating your info whenever you increase your Loyalty.'
     oldLoyalty = self.currentLoyalty
     self.currentLoyalty = int(newLoyalty)
     self.lastLoyaltyUpdate = datetime.now()+ timedelta(hours = -2)
     self.lastLoyaltyUpdate = pytz.utc.localize(self.lastLoyaltyUpdate)
-    self.loyaltyData = self.loyaltyData.append({'loyalty':newLoyalty,'date':self.lastLoyaltyUpdate},ignore_index=True)
+    addedData = pd.DataFrame(columns=['loyalty','date'])
+    addedData.loc[0] = [newLoyalty,self.lastLoyaltyUpdate]
+    self.loyaltyData = pd.concat(objs= [self.loyaltyData, addedData])
+    self.loyaltyData.reset_index(drop=True, inplace=True)
+    #self.loyaltyData = self.loyaltyData.append({'loyalty':newLoyalty,'date':self.lastLoyaltyUpdate},ignore_index=True)
     #Reply content aware
     reply = 'The Loyalty of ' + self.name + ' is updated from ' + str(oldLoyalty) + ' to ' + str(newLoyalty) + '.'
     if newLoyalty - oldLoyalty > 100 and newLoyalty - oldLoyalty < 1400 and oldLoyalty > 0:

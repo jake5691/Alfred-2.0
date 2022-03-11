@@ -9,8 +9,6 @@
 #functions/staticValues.py - here static values like database keys, Role-IDs, Channel-IDs... are stored so that changes on them can be done with jsut changing a single value and not having to go to all the different places where those values are accessed
 #keep-alive.py - this file is to create a wegserver which can be pinged by "https://uptimerobot.com/" so the bot remains online even when this replit page is not currently opened by a user
 
-
-
 ### loving the comments!!!!!!  Just like a proper coder...
 ### Glad you like it, documentation is a pain in the ass though, so forgive me if I miss to comment everything but you are welcome to do what I missed ;) - Jake
 import os
@@ -28,9 +26,12 @@ intents.reactions = True
 client = commands.Bot(intents=intents, command_prefix="??")
 
 sf.importStructureCSV()
+
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+
 
 sf.loadCogs(client)
 

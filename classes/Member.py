@@ -125,7 +125,7 @@ class MemberClass:
     self.loyaltyData.reset_index(drop=True, inplace=True)
     #self.loyaltyData = self.loyaltyData.append({'loyalty':newLoyalty,'date':self.lastLoyaltyUpdate},ignore_index=True)
     #Reply content aware
-    reply = 'The Loyalty of ' + self.name + ' is updated from ' + str(oldLoyalty) + ' to ' + str(newLoyalty) + '.'
+    reply = 'The Loyalty of ' + self.name + ' is updated from ' + str(oldLoyalty) + ' to ' + str(newLoyalty) + '. '
     if newLoyalty - oldLoyalty > 100 and newLoyalty - oldLoyalty < 1400 and oldLoyalty > 0:
       reply += "Please put in every loyalty increase, don't be lazy!"
     elif newLoyalty - oldLoyalty <= -1200:

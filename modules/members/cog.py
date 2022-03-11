@@ -174,14 +174,14 @@ class Members(commands.Cog):
       return # do nothing if no correct numbers are inserted
     #Get correct member instance
     if bannerInput:
-      infoMsg = await message.channel.send(f"Working on your input {message.author.display_name} for the account: {bannerName}")
+      #infoMsg = await message.channel.send(f"Working on your input {message.author.display_name} for the account: {bannerName}")
       #find banner Instance
       member = self.dataCog.getMemberByID(bannerName)
       if member == None:
         print('Error with ' + bannerName)
         return
     else:
-      infoMsg = await message.channel.send(f"Working on your input {message.author.display_name}")
+      #infoMsg = await message.channel.send(f"Working on your input {message.author.display_name}")
       #Find or create member
       member = self.dataCog.getMemberByID(message.author.id)
       if member == None:
@@ -192,7 +192,6 @@ class Members(commands.Cog):
     for s in skLoo:
       if s<= sv.skillCap:
         #Update Skill lvl and post updated list
-        print(member.skillData)
         updated, mes = member.updateSkill(newSkill=int(s))
         if updated:
           member.save()
@@ -230,7 +229,7 @@ class Members(commands.Cog):
             db[sv.db.loyaltyRanking] = loyMes.id
         #Post Personal Reply
         await message.channel.send(mes, delete_after = 30)
-    await infoMsg.delete()
+    #await infoMsg.delete()
 
   
   @commands.Cog.listener('on_message')

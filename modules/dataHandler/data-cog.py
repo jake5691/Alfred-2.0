@@ -33,10 +33,10 @@ class Data(commands.Cog):
     for k in db.keys():
       if not('member' in k):
         continue
-      f = open(f"DataExport/{k}.txt","w+")
-      f.write(str(db[k]))
-      f.close()
-      print(k)
+      #f = open(f"DataExport/{k}.txt","w+")
+      #f.write(str(db[k]))
+      #f.close()
+      #print(k)
     
 
   

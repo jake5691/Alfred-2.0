@@ -1,0 +1,1 @@
+{"banner": true, "bannerActive": true, "currentLoyalty": 0, "currentSkillLvl": 0, "id": "tinywizz", "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "tinywizz", "ownerID": 774908894664327209, "ownerName": "W;zz", "skillData": ""}

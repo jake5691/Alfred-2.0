@@ -28,6 +28,15 @@ class Data(commands.Cog):
     self.seasons:[Season] = sfu.loadSeasons()
     targets:[Target] = tf.loadTargets(self.getFlags())
     self.targets = sorted(targets, key=attrgetter('hour', 'minute'))
+
+    #Export  database
+    for k in db.keys():
+      if not('member' in k):
+        continue
+      f = open(f"DataExport/{k}.txt","w+")
+      f.write(str(db[k]))
+      f.close()
+      print(k)
     
 
   

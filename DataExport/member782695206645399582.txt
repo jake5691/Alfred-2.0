@@ -1,0 +1,1 @@
+{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 782695206645399582, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "M.Jensen", "ownerID": 0, "ownerName": "", "skillData": ""}

@@ -1,0 +1,1 @@
+{"_memberStat__separator": ",.-+;", "banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 591232564597882880, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "Wei\u00dfer Wanderer", "ownerID": 0, "ownerName": "", "skillData": ""}

@@ -1,7 +1,7 @@
 ##What is what
 #main.py - starts the bot and in "sf.loadCogs(client)" all modules of the bot get loaded.
 #modules can be found in the "modules" folder, there for every module a folder with its name exists which contains a "cog.py" file. This is the file that gets loaded. (only the exact spelling so if anything is added to the name it is not getting loaded)
-#modules/mapHandler/data-cog.py - this cog is loaded initially and should contain all the data which is shared between different cogs (modules), e.g. Structures, Targets, Members...  ***** JAKE do you mean dataHandler?****
+#modules/mapHandler/dataHandler.py - this cog is loaded initially and should contain all the data which is shared between different cogs (modules), e.g. Structures, Targets, Members... 
 #The data of this can be accessed from anywhere by getting the cog instance "dataCog = client.get_cog('Data')"
 #cog.py - a module of the bot that should contain all relevant code for this specific module
 #classes - this folder contains custom classes, which are created to handle data, Dropdown Menus and Buttons.

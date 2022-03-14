@@ -1,0 +1,1 @@
+{"_memberStat__separator": ",.-+;", "banner": true, "bannerActive": true, "currentLoyalty": 0, "currentSkillLvl": 0, "id": "Kobe", "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "Kobe", "ownerID": 765626686984814602, "ownerName": "Lakerfan", "skillData": ""}

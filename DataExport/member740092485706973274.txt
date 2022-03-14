@@ -1,0 +1,1 @@
+{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 740092485706973274, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "EL Pinch\u00e9 Iv\u00e1n", "ownerID": 0, "ownerName": "", "skillData": ""}

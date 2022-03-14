@@ -1,0 +1,1 @@
+{"_memberStat__separator": ",.-+;", "banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 69, "id": 778381488621092875, "lastLoyaltyUpdate": null, "lastSkillUpdate": "2021-11-16T19:38:00+00:00", "loyaltyData": "", "name": "CalderasChingon", "ownerID": 0, "ownerName": "", "skillData": "skill,date\n69,2021-11-16 19:38:00\n"}

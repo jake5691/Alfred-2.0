@@ -1,0 +1,1 @@
+{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 318378494390304770, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "D2B", "ownerID": 0, "ownerName": "", "skillData": ""}

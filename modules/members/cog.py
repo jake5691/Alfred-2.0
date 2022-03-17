@@ -6,6 +6,7 @@ from functions import memberFunc as mf
 #from nextcord.utils import get
 import re
 from replit import db
+from nextcord.utils import get
 
 
 class Members(commands.Cog):
@@ -127,6 +128,106 @@ class Members(commands.Cog):
         print(f"{m.name} was deleted.")
         self.dataCog.deleteMemberByID(m.id)
         return
+
+  
+  @commands.Cog.listener('on_ready')
+  async def on_ready(self):
+    """Read missed messages"""
+    guild = None
+    for g in self.client.guilds:
+      if g.id == sv.gIDS[0]:
+        guild = g
+        break
+    loySkillChannel = get(guild.channels, id=sv.channel.loyalty_And_skill_lvl)
+    if loySkillChannel == None:
+      return
+    async for message in loySkillChannel.history(limit=200,oldest_first=True):
+      if message.author.bot:
+        #Skip if message is from a bot
+        continue
+      print(f"{message.author.display_name}: {message.content}")
+      msg = message.content.lower()
+      #Check if input is for a banner account
+      bannerInput = False
+      bannerNames = self.dataCog.getBannerNames()
+      if any(name.lower() in msg for name in bannerNames):
+        bannerName = ''
+        for b in bannerNames:
+          if b.lower() in msg:
+            bannerName = b
+            bannerInput = True
+            msg = msg.replace(b.lower(),'').strip()
+            skLo = re.findall('[0-9]+', msg)
+            break
+      else:
+        skLo = re.findall('[0-9]+', msg)
+      skLoo = []
+      for s in skLo:
+        s = int(s)
+        if (s < sv.skillCap and s > 0) or (s >= sv.loyalty_min and s <= sv.loyalty_max):
+          skLoo.append(s)
+      if len(skLoo) == 0:
+        await message.delete()
+        return # do nothing if no correct numbers are inserted
+      #Get correct member instance
+      if bannerInput:
+        #find banner Instance
+        member = self.dataCog.getMemberByID(bannerName)
+        if member == None:
+          print('Error with ' + bannerName)
+          await message.delete()
+          return
+      else:
+        #Find or create member
+        member = self.dataCog.getMemberByID(message.author.id)
+        if member == None:
+          member = MemberClass(message.author)
+          self.dataCog.members.append(member)
+          print(f'Member {member.name} created.')
+  
+      for s in skLoo:
+        if s<= sv.skillCap:
+          #Update Skill lvl and post updated list
+          updated, mes = member.updateSkill(newSkill=int(s))
+          if updated:
+            member.save()
+            #Update Ranking
+            embeds=mf.getRankingEmbeds(self.dataCog.members,'skill')
+            try:
+              oldMes = await message.channel.fetch_message(db[sv.db.skillRanking])
+              await oldMes.edit(embeds=embeds)
+            except:
+              print("couldn't get old message")
+            
+              skillMes = await message.channel.send(embeds=embeds)
+              db[sv.db.skillRanking] = skillMes.id
+          #Post Personal Reply
+          await message.channel.send(mes, delete_after = 30)
+  
+        elif s >= sv.loyalty_min and s <= sv.loyalty_max:
+          #Offseason Message
+          #await infoMsg.delete()
+          #await message.channel.send("We do not have an active Reign of Chaos season so there is no way you need to update your loyalty right now.",delete_after = 30)
+          #return
+          #Update Loyalty and post updated list
+          updated, mes = member.updateLoyalty(newLoyalty=int(s))
+          if updated:
+            member.save()
+            #Update Ranking
+            embeds=mf.getRankingEmbeds(self.dataCog.members,'loyalty')
+            try:
+              oldMes = await message.channel.fetch_message(db[sv.db.loyaltyRanking])
+              await oldMes.edit(embeds=embeds)
+            except:
+              print("couldn't get old message")
+            
+              loyMes = await message.channel.send(embeds=embeds)
+              db[sv.db.loyaltyRanking] = loyMes.id
+          #Post Personal Reply
+          await message.channel.send(mes, delete_after = 30)
+      await message.delete()
+
+
   
   @commands.Cog.listener('on_message')
   async def delete_messages(self,message):

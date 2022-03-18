@@ -177,14 +177,14 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "nextcord"
-version = "2.0.0a6"
+version = "2.0.0a9"
 description = "A Python wrapper for the Discord API forked from discord.py"
 category = "main"
 optional = false
 python-versions = ">=3.8.0"
 
 [package.dependencies]
-aiohttp = ">=3.6.0,<4.0.0"
+aiohttp = ">=3.8.0,<4.0.0"
 
 [package.extras]
 docs = ["sphinx (==4.0.2)", "sphinxcontrib_trio (==1.1.2)", "sphinxcontrib-websupport"]
@@ -338,7 +338,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "1290e5fbae04b1f9ac6d3f98350a4ad9b903b5b96148f69808f710885a8e4a83"
+content-hash = "0f786f47b383a5d905fa36f58f1cd503704a69e0b4485d88e02c09c93ad73a52"
 
 [metadata.files]
 aiohttp = [
@@ -656,7 +656,7 @@ multidict = [
     {file = "multidict-6.0.2.tar.gz", hash = "sha256:5ff3bd75f38e4c43f1f470f2df7a4d430b821c4ce22be384e1459cb57d6bb013"},
 ]
 nextcord = [
-    {file = "nextcord-2.0.0a6.tar.gz", hash = "sha256:58f9b8cc721e2bab19c3d63fd58bfff36a5cdc59f3b2febf9c645b1237e3263e"},
+    {file = "nextcord-2.0.0a9.tar.gz", hash = "sha256:d31431007c340082eeb717fd6aa94b665efbec529d2418af5ee1ecddb5299e80"},
 ]
 numpy = [
     {file = "numpy-1.22.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3d62d6b0870b53799204515145935608cdeb4cebb95a26800b6750e48884cc5b"},

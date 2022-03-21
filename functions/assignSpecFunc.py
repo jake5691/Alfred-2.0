@@ -1,8 +1,8 @@
 #maximise usefulness score given the contraint of user spec points
 #allocate usefulness points to specific nodes based on user priorities
 
-from blue import *
-from green import *
+from functions.blueSpecFunc import *
+from functions.greenSpecFunc import *
 import pandas as pd
 import itertools
 import datetime 

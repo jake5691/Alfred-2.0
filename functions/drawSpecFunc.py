@@ -43,6 +43,27 @@ radiusDict_bl = {
   13:int((1-0.5/11)*y_center),
 }
 
+radiusDict_red = {
+  1:int((1-10/11)*y_center),
+  2:int((1-9.5/11)*y_center),
+  3:int((1-9.2/11)*y_center),
+  4:int((1-8.7/11)*y_center),
+  5:int((1-8.2/11)*y_center),
+  6:int((1-7.4/11)*y_center),
+  
+  7:int((1-6.6/11)*y_center),
+  8:int((1-6.1/11)*y_center),
+  9:int((1-5.8/11)*y_center),
+  10:int((1-5.3/11)*y_center),
+  11:int((1-4.8/11)*y_center),
+  12:int((1-4/11)*y_center),
+  
+  13:int((1-3.2/11)*y_center),
+  14:int((1-2.7/11)*y_center),
+  15:int((1-1.9/11)*y_center),
+  16:int((1-1.2/11)*y_center),
+  17:int((1-0.5/11)*y_center)
+}
 
 # Load font from URI
 truetype_url = 'https://github.com/googlefonts/roboto/blob/main/src/hinted/Roboto-Black.ttf?raw=true'

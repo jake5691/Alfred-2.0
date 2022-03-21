@@ -1,5 +1,5 @@
-from functions.drawSpecFunc import Spec, getPoint_bl, x_center, y_center
-
+from functions.drawSpecFunc import  getPoint_bl, x_center, y_center
+from classes.function import 
 bl = (70,175,225)
 bl_l = (165,200,220)
 

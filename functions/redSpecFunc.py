@@ -1,5 +1,7 @@
 ##added here to make sure we don't lose it
 #need to update to get to work
+from classes.Spec import Spec
+from functions.drawSpecFunc import  getPoint_red, x_center, y_center
 
 def redSpec():
   print('Red Spec')

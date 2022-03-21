@@ -8,11 +8,10 @@ class Settings(commands.Cog):
     self.catName = "Alfred"
     self.chanName = "Overview"
 
-  @commands.Cog.listener('on_message')
-  async def on_message(self,message):
-    if message.content != "settings":
-      return
-    print(message.content)
+  @commands.command()
+  async def settings(self):
+    print("Settings")
+  
       
     
   #@commands.Cog.listener('on_guild_join')

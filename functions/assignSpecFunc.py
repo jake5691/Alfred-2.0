@@ -3,6 +3,7 @@
 
 from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
+from functions.drawSpecFunc import *
 import pandas as pd
 import itertools
 import datetime 
@@ -297,8 +298,8 @@ def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(list1, list2)
-  draw(groups_bl,bl,bl_l,"blueSpec.png")
-  draw(groups_gr,gr,gr_l,"greenSpec.png")
+  draw(groups_bl,bl,bl_l,"blueSpec.png", firstSpecs_bl)
+  draw(groups_gr,gr,gr_l,"greenSpec.png", firstSpecs_gr)
 
   #set all nodes back to zero
   for group in groups_bl:

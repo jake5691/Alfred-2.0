@@ -183,7 +183,7 @@ blueSpec_gr = {
   }
 
 #First Spec from Center
-firstSpecs = [
+firstSpecs_bl = [
     
     BuildDur1, HealSp1, Process1, DemoUp1
   ]

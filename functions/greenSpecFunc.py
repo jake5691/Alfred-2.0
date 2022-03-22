@@ -192,7 +192,7 @@ greenSpec_gr = {
 
 
 #First Spec from Center
-firstSpecs = [
+firstSpecs_gr = [
     
     BattleHoRi1, ContruHoLe1, CombatExUp1
   ]

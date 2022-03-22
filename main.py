@@ -25,6 +25,8 @@ client = commands.Bot(intents=intents, command_prefix="?A")
 sf.importStructureCSV()
 
 
+
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))

@@ -24,9 +24,8 @@ class Members(commands.Cog):
       return
     oldRoles = [r.id for r in old.roles]
     newRoles = [r.id for r in new.roles]
-    relevantRoles = [sv.roles.RBC, sv.roles.GuildMember, sv.roles.Newbie]
     #Added/removed a relevant role -> create/delete Member instance
-    if not(any(r in oldRoles for r in relevantRoles)) and any(r in newRoles for r in relevantRoles):
+    if not(any(r in oldRoles for r in sv.relRoles)) and any(r in newRoles for r in sv.relRoles):
       #Check if already a member existis
       for m in self.dataCog.members:
         if m.id == new.id:
@@ -37,7 +36,7 @@ class Members(commands.Cog):
       newMember.save()
       self.dataCog.members.append(newMember)
       print(f"Added: {newMember.name}")
-    elif any(r in oldRoles for r in relevantRoles) and not(any(r in newRoles for r in relevantRoles)):
+    elif any(r in oldRoles for r in sv.relRoles) and not(any(r in newRoles for r in sv.relRoles)):
       #remove member if there exists one
       for m in self.dataCog.members:
         if m.id == new.id:

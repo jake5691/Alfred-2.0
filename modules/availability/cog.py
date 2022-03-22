@@ -12,9 +12,8 @@ from classes.availEval import AvailEvalView
 class Availability(commands.Cog):
   """Availability survey handling"""
 
-  def __init__(self, client: commands.Bot):
-    self.client = client
-    #self.client.add_listener(my_message,'on_message')
+  def __init__(self, bot: commands.Bot):
+    self.bot = bot
   
   @slash_command(name="startavailabilitysurvey",
                       description="Start a survey to see every players available times.",
@@ -127,5 +126,5 @@ class Availability(commands.Cog):
 
 
 
-def setup(client: commands.Bot):
-  client.add_cog(Availability(client))
+def setup(bot: commands.Bot):
+  bot.add_cog(Availability(bot))

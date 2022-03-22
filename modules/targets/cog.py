@@ -48,7 +48,7 @@ class Targets(commands.Cog):
     """Add Target from the structure list and assign time and flag"""
     #Check if user has Permission
     userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
+    if not(sv.roles.Leadership in userRoles) and not(sv.roles.GuildLeader in userRoles):
       await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
       return
     #check if command is send in correct channel

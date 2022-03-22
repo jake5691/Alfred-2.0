@@ -239,7 +239,7 @@ class Banners(commands.Cog):
       isflag: bool = SlashOption(
         description="Is specced as flag?",
         required=True)):
-    """Add comment to a target"""
+    """Change a member to be set as flag"""
     #Check if user has Permission
     userRoles = [i.id for i in interaction.user.roles]
     if not(sv.roles.RBC in userRoles) and not(sv.roles.GuildMember in userRoles):

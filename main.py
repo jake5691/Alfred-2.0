@@ -21,10 +21,9 @@ logging.basicConfig(level=logging.WARNING)
 intents = nextcord.Intents.default()
 intents.members = True
 intents.reactions = True
-client = commands.Bot(intents=intents, command_prefix="??")
+client = commands.Bot(intents=intents, command_prefix="?A")
 
-sf.importStructureCSV()
-
+#sf.importStructureCSV()
 
 @client.event
 async def on_ready():
@@ -36,19 +35,6 @@ sf.loadCogs(client)
 
 @client.listen('on_message')
 async def on_message(message):
-    #msg = message.content.lower()
-    if message.author == client.user or message.author.bot:
-        return
-
-
-##Export Database
-#for k in db.keys():
-#  if not('member' in k) and not("msg" in k) and not("bannerListMessage" in k):
-#    print(k)
-#    continue
-#  f = open(f"DataExport/{k}.txt","w+")
-#  f.write(str(db[k]))
-#  f.close()
-  #print(k)
+  pass
 
 client.run(os.environ['TOKEN'])

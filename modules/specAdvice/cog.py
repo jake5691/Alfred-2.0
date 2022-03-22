@@ -14,19 +14,22 @@ from deep_translator import (GoogleTranslator)
 #intents.members = True
 #client = nextcord.Client(intents=intents)
 
-
+from nextcord.ext import commands
 from functions.drawSpecFunc import *
 from functions.blueSpecFunc import *
-from funtions.greenSpecFunc import *
+from functions.greenSpecFunc import *
 from functions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
 
-@client.event
-async def on_ready():
-    print('we have logged in as {0.user}'.format(client))
 
+class specAdv(commands.Cog):
+  """Fun features"""
 
-@client.event
-async def on_message(message):
+  def __init__(self, bot: commands.Bot):
+    self.bot = bot
+
+  @commands.Cog.listener('on_message')
+
+  async def on_message(message):
     msg = message.content
 
     if message.author == client.user or message.author.bot:
@@ -159,9 +162,8 @@ async def on_message(message):
           await message.channel.send(notes)
           await message.channel.send(file=discord.File('blueSpec.png'))
           await message.channel.send(file=discord.File('greenSpec.png'))
-#list1 = ('UpgradeBuild', 'FWMat', 'Land')
-#list2 = ('ExtraTile', 'TileHonour', 'TwoExtQs')
-#userSpecPoints = 120
-client.run(os.getenv('TOKEN'))
 
+
+def setup(bot: commands.Bot):
+  bot.add_cog(specAdv(bot))
 

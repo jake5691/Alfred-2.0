@@ -30,7 +30,7 @@ class specAdv(commands.Cog):
   @commands.Cog.listener('on_message')
 
   async def giveAdvice(self,message):
-    msg = message.content
+    msg = message.content.lower()
     print(msg)
     if message.author == self.bot.user or message.author.bot:
         return
@@ -49,66 +49,63 @@ class specAdv(commands.Cog):
 
     #only run in spec advice channel
     if message.channel.name == 'skill-point-advice':
-
-        #set aliases of advice
-        advice_list = ['advice', 'advise']
-        msg = msg.lower()
-        if not msg.startswith("help"):
-            if not msg.startswith(tuple(advice_list)):
-                msg = GoogleTranslator(source='auto',
-                                       target='en').translate(text=msg)
-
-        target_lang = 'en'
-        #await message.channel.send(roles)
-        roles = message.author.roles
-        #assign language from roles
-        for r in roles:
-            if '🇩🇪' == r.name:
-                target_lang = 'german'
-            elif '🇪🇸' == r.name:
-                target_lang = 'spanish'
-            elif '🇫🇷' == r.name:
-                target_lang = 'french'
-            elif '🇮🇩' == r.name:
-                target_lang = 'indonesian'
-            elif '🇰🇷' == r.name:
-                target_lang = 'korean'
-            elif '🇳🇱' == r.name:
-                target_lang = 'dutch'
-            elif '🇷🇴' == r.name:
-                target_lang = 'romanian'
-            elif '🇹🇷' == r.name:
-                target_lang = 'turkish'
-            elif '🇹w' == r.name:
-                target_lang = 'zh-CN'
-
-        if "wife" in msg:
-            await message.channel.send(
-                "Getting advice about your wife from a bot will only end in tears.  Your tears."
-            )
-            return
-
+      target_lang = 'en'
+      #await message.channel.send(roles)
+      roles = message.author.roles
+      #assign language from roles
+      for r in roles:
+        if '🇩🇪' == r.name:
+          target_lang = 'german'
+        elif '🇪🇸' == r.name:
+          target_lang = 'spanish'
+        elif '🇫🇷' == r.name:
+          target_lang = 'french'
+        elif '🇮🇩' == r.name:
+          target_lang = 'indonesian'
+        elif '🇰🇷' == r.name:
+          target_lang = 'korean'
+        elif '🇳🇱' == r.name:
+          target_lang = 'dutch'
+        elif '🇷🇴' == r.name:
+          target_lang = 'romanian'
+        elif '🇹🇷' == r.name:
+          target_lang = 'turkish'
+        elif '🇹w' == r.name:
+          target_lang = 'zh-CN'
+      #set aliases of advice
+      advice_list = ['advice', 'advise']
         # set error message
-        errormessage = "Please try again or type HELP for instructions"
-        errormsgtrans = GoogleTranslator(
-            source='auto', target=target_lang).translate(text=errormessage)
-        errormsg = message.channel.send(errormsgtrans)
+      errormessage = "Please try again or type HELP for instructions"
+      errormsgtrans = GoogleTranslator(source='auto', target=target_lang).translate(text=errormessage)
+      errormsg = message.channel.send(errormsgtrans)  
+      if not msg.startswith("help"):
+        print("place 1")
+        if not msg.startswith(tuple(advice_list)):
+          msg = GoogleTranslator(source='auto', target='en').translate(text=msg)
+          print("place 2")
+          await errormsg
 
-        #send help message for anything that isn't Advice
-        if msg.startswith("help"):
-            helpmsg = "This channel provides advice on where to use your specialisation points.\nPlease send your information starting with ADVICE followed by answers to the following questions:\n1. Have you reached your target loyalty?(Y/N)\n2. What is your specialisation level? \n3.Have you already switched to iron/wood tiles? (Y/N)\n4. Are your Frontline Workshops maxxed? (Y/N)\nYour answers should be separated by a space\nFor example: Advice N 73 N N "
-            if target_lang != 'en':
-                helpmsgtrans = GoogleTranslator(
-                    source='auto', target=target_lang).translate(text=helpmsg)
-                helpEmbed = Embed(description=helpmsg)
-                helpEmbed.add_field(name="Translation",
-                                    value=helpmsgtrans,
-                                    inline=False)
-            else:
-                helpEmbed = Embed(description=helpmsg)
-            await message.channel.send(embed=helpEmbed)
+      
 
-        elif msg.startswith(tuple(advice_list)):
+      if "wife" in msg:
+        await message.channel.send("Getting advice about your wife from a bot will only end in tears.  Your tears."
+            )
+        return
+
+      
+
+      #send help message for anything that isn't Advice
+      if msg.startswith("help"):
+        helpmsg = "This channel provides advice on where to use your specialisation points.\nPlease send your information starting with ADVICE followed by answers to the following questions:\n1. Have you reached your target loyalty?(Y/N)\n2. What is your specialisation level? \n3.Have you already switched to iron/wood tiles? (Y/N)\n4. Are your Frontline Workshops maxxed? (Y/N)\nYour answers should be separated by a space\nFor example: Advice N 73 N N "
+        if target_lang != 'en':
+          helpmsgtrans = GoogleTranslator(source='auto', target=target_lang).translate(text=helpmsg)
+          helpEmbed = Embed(description=helpmsg)
+          helpEmbed.add_field(name="Translation", value=helpmsgtrans, inline=False)
+        else:
+          helpEmbed = Embed(description=helpmsg)
+        await message.channel.send(embed=helpEmbed)
+
+      elif msg.startswith(tuple(advice_list)):
           if len(msg) > 7:
               if msg.split(' ')[1] in ["y", "n"]:
                   loy = msg.split(' ')[1]

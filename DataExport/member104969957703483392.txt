@@ -1,1 +1,0 @@
-{"banner": false, "bannerActive": false, "currentLoyalty": 6400, "currentSkillLvl": 0, "id": 104969957703483392, "lastLoyaltyUpdate": "2022-03-03T03:34:11.774990Z", "lastSkillUpdate": null, "loyaltyData": "loyalty,date\n6400,2022-03-03 03:34:11.774990+00:00\n", "name": "blind3r", "ownerID": 0, "ownerName": "", "skillData": ""}

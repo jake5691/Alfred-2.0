@@ -31,13 +31,13 @@ class specAdv(commands.Cog):
 
   async def giveAdvice(self,message):
     msg = message.content
-
+    print(msg)
     if message.author == self.bot.user or message.author.bot:
         return
 
     if len(msg) == 0:
         return
-
+    
     roles = message.author.roles
     #print(roles)
     #set variable defaults
@@ -60,7 +60,7 @@ class specAdv(commands.Cog):
 
         target_lang = 'en'
         #await message.channel.send(roles)
-        #roles = message.author.roles
+        roles = message.author.roles
         #assign language from roles
         for r in roles:
             if '🇩🇪' == r.name:
@@ -160,6 +160,13 @@ class specAdv(commands.Cog):
             list2 = ('UpgradeBuild', 'TwoExtQs', 'Land')
           specAdvice(list1, list2,userSpecPoints, groups_bl, groups_gr)
           await message.channel.send(notes)
+          if target_lang != 'en':
+            notes_trans = GoogleTranslator(
+            source='auto', target=target_lang).translate(text=notes)
+            await message.channel.send(notes_trans)
+        
+          
+  
           await message.channel.send(file=File('blueSpec.png'))
           await message.channel.send(file=File('greenSpec.png'))
 

@@ -1,1 +1,0 @@
-{"banner": false, "bannerActive": false, "currentLoyalty": 6001, "currentSkillLvl": 0, "id": 722062237673717802, "lastLoyaltyUpdate": "2022-02-20T20:00:43.855719Z", "lastSkillUpdate": null, "loyaltyData": "loyalty,date\n6001,2022-02-20 20:00:43.855719+00:00\n", "name": "akkadiano manchestero", "ownerID": 0, "ownerName": "", "skillData": ""}

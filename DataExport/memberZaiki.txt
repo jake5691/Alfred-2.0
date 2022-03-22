@@ -1,1 +1,0 @@
-{"_memberStat__separator": ",.-+;", "banner": true, "bannerActive": true, "currentLoyalty": 0, "currentSkillLvl": 90, "id": "Zaiki", "lastLoyaltyUpdate": null, "lastSkillUpdate": "2022-01-04T12:04:34+00:00", "loyaltyData": "", "name": "Zaiki", "ownerID": 244506565191794688, "ownerName": "Cris Minime", "skillData": "skill,date\n90,2022-01-04 12:04:34\n"}

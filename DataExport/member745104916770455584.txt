@@ -1,1 +1,0 @@
-{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 745104916770455584, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "IronbladeBabe", "ownerID": 0, "ownerName": "", "skillData": ""}

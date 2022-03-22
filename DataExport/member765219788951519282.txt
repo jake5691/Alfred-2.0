@@ -1,1 +1,0 @@
-{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 765219788951519282, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "Rick & Morty", "ownerID": 0, "ownerName": "", "skillData": ""}

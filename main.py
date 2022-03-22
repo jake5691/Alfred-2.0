@@ -22,10 +22,7 @@ intents.members = True
 intents.reactions = True
 client = commands.Bot(intents=intents, command_prefix="?A")
 
-sf.importStructureCSV()
-
-
-
+#sf.importStructureCSV()
 
 @client.event
 async def on_ready():
@@ -37,18 +34,6 @@ sf.loadCogs(client)
 
 @client.listen('on_message')
 async def on_message(message):
-  #msg = message.content.lower()
-  #print("Roles:")
-  #for role in message.guild.roles:
-  #  print(f"{role.name} {role.id}")
-  #print("\nCategories:")
-  #for category in message.guild.categories:
-  #  print(f"{category.name} {category.id}")
-  #print("\nChannels:")
-  #for channel in message.guild.channels:
-  #  print(f"{channel.name} {channel.id}")
-  #if message.author == client.user or message.author.bot:
-  #    return
   pass
 
 

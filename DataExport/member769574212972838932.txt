@@ -1,1 +1,0 @@
-{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 769574212972838932, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "Ken321", "ownerID": 0, "ownerName": "", "skillData": ""}

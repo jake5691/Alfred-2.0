@@ -1,1 +1,0 @@
-{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 740912289103872052, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "////AMG", "ownerID": 0, "ownerName": "", "skillData": ""}

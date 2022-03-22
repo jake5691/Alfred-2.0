@@ -1,1 +1,0 @@
-{"banner": true, "bannerActive": true, "currentLoyalty": 0, "currentSkillLvl": 0, "id": "Andrew_H", "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "Andrew_H", "ownerID": 778246499824828446, "ownerName": "[69B]RichHuang", "skillData": ""}

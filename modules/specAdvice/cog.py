@@ -15,7 +15,7 @@ from deep_translator import (GoogleTranslator)
 #client = nextcord.Client(intents=intents)
 
 from nextcord.ext import commands
-from functions.drawSpecFunc import *
+from functions.drawSpecFunc import draw
 from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
 from functions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
@@ -29,10 +29,10 @@ class specAdv(commands.Cog):
 
   @commands.Cog.listener('on_message')
 
-  async def on_message(message):
+  async def giveAdvice(self,message):
     msg = message.content
 
-    if message.author == client.user or message.author.bot:
+    if message.author == self.bot.user or message.author.bot:
         return
 
     if len(msg) == 0:

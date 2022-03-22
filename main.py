@@ -7,13 +7,14 @@
 #classes - this folder contains custom classes, which are created to handle data, Dropdown Menus and Buttons.
 #functions  - this folder contains function files which should be split so each file has only functions of a specific module/part of the bot, this is so they remain independent of each other and modules can be added/removed without effecting each other in a bad way
 #functions/staticValues.py - here static values like database keys, Role-IDs, Channel-IDs... are stored so that changes on them can be done with jsut changing a single value and not having to go to all the different places where those values are accessed
-#keep-alive.py - this file is to create a wegserver which can be pinged by "https://uptimerobot.com/" so the bot remains online even when this replit page is not currently opened by a user
+
 
 import os
 import nextcord
 from nextcord.ext import commands
 import logging
 from functions import setupFunc as sf
+from replit import db
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -35,18 +36,19 @@ sf.loadCogs(client)
 
 @client.listen('on_message')
 async def on_message(message):
-  #msg = message.content.lower()
-  print("Roles:")
-  for role in message.guild.roles:
-    print(f"{role.name} {role.id}")
-  print("\nCategories:")
-  for category in message.guild.categories:
-    print(f"{category.name} {category.id}")
-  print("\nChannels:")
-  for channel in message.guild.channels:
-    print(f"{channel.name} {channel.id}")
-  if message.author == client.user or message.author.bot:
-      return
+    #msg = message.content.lower()
+    if message.author == client.user or message.author.bot:
+        return
 
+
+##Export Database
+#for k in db.keys():
+#  if not('member' in k) and not("msg" in k) and not("bannerListMessage" in k):
+#    print(k)
+#    continue
+#  f = open(f"DataExport/{k}.txt","w+")
+#  f.write(str(db[k]))
+#  f.close()
+  #print(k)
 
 client.run(os.environ['TOKEN'])

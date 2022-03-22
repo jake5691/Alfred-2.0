@@ -27,7 +27,6 @@ class Targets(commands.Cog):
     for target in self.dataCog.targets:
       needRemind, remindStr = target.needsReminder()
       if needRemind:
-        print(f"{needRemind} -> {remindStr}")
         guild = next((x for x in self.bot.guilds if x.id == sv.gIDS[0]), None)
         if guild == None:
           return
@@ -79,7 +78,6 @@ class Targets(commands.Cog):
     targets = self.dataCog.targets
     targets = sorted(targets, key=attrgetter('hour', 'minute'))
     for t in targets:
-      print(t.typ)
       tList += t.targetStr() + "\n"
     if targets == []:
       tList = "No targets in list."

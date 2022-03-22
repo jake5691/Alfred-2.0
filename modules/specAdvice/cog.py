@@ -13,7 +13,7 @@ from deep_translator import (GoogleTranslator)
 #intents = nextcord.Intents.default()
 #intents.members = True
 #client = nextcord.Client(intents=intents)
-
+from nextcord import File, Embed
 from nextcord.ext import commands
 from functions.drawSpecFunc import draw
 from functions.blueSpecFunc import *
@@ -100,12 +100,12 @@ class specAdv(commands.Cog):
             if target_lang != 'en':
                 helpmsgtrans = GoogleTranslator(
                     source='auto', target=target_lang).translate(text=helpmsg)
-                helpEmbed = discord.Embed(description=helpmsg)
+                helpEmbed = Embed(description=helpmsg)
                 helpEmbed.add_field(name="Translation",
                                     value=helpmsgtrans,
                                     inline=False)
             else:
-                helpEmbed = discord.Embed(description=helpmsg)
+                helpEmbed = Embed(description=helpmsg)
             await message.channel.send(embed=helpEmbed)
 
         elif msg.startswith(tuple(advice_list)):
@@ -160,8 +160,8 @@ class specAdv(commands.Cog):
             list2 = ('UpgradeBuild', 'TwoExtQs', 'Land')
           specAdvice(list1, list2,userSpecPoints, groups_bl, groups_gr)
           await message.channel.send(notes)
-          await message.channel.send(file=discord.File('blueSpec.png'))
-          await message.channel.send(file=discord.File('greenSpec.png'))
+          await message.channel.send(file=File('blueSpec.png'))
+          await message.channel.send(file=File('greenSpec.png'))
 
 
 def setup(bot: commands.Bot):

@@ -127,8 +127,8 @@ def draw(groups, col1, col2, filename, firstSpecs):
   white = (255,255,255)
 
   with Image.new("RGB",(x,y),color = (255,255,255)) as im:
-      draw = ImageDraw.Draw(im)
-      #Draw the connections
+    draw = ImageDraw.Draw(im)
+    #Draw the connections
     for fiSpec in firstSpecs:
       draw.line(
             [(x_center, y_center), fiSpec.center],

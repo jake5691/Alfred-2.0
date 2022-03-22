@@ -4,7 +4,7 @@
 #import nextcord
 #import os
 #import pandas as pd
-os.system("pip install deep_translator")
+#os.system("pip install deep_translator")
 #import random
 #from keep_alive import keep_alive
 from deep_translator import (GoogleTranslator)

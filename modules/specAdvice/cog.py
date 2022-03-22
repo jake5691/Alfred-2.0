@@ -15,61 +15,18 @@ from deep_translator import (GoogleTranslator)
 #client = nextcord.Client(intents=intents)
 from nextcord import File, Embed
 from nextcord.ext import commands
-from nextcord import Interaction, slash_command, SlashOption
 from functions.drawSpecFunc import draw
 from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
 from functions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
-from functions import staticValues as sv
-from classes.SpecGet import SpecAddView
+
 
 class specAdv(commands.Cog):
-  """Advice on specialisation points"""
+  """Fun features"""
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
-    
-  @slash_command(
-      name="getspecgeneric", 
-      description="Get advice about how to place your specialisation ponts.", 
-      guild_ids=sv.gIDS)
-  async def getspecgeneric(self, interaction: Interaction,
-      points: int = SlashOption(
-          name="points",
-          description="How many specialisation points do you have? Enter a number between 1 and 170.",
-          required=True),
-      fwmax:bool=SlashOption(
-          name="fwmax",
-          description="Are your Frontline Workshops maxxed?",
-          required=False )
-):
-    """ ???."""
 
-    #check if command is send in correct channel
-    if not(sv.channel.skill_point_advice == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
-    #Function
-    userSpecPoints = points
-    await interaction.response.send_message(fwmax,ephemeral=True)
-
-  
-  @slash_command(name="getspecinteractive",
-                  description="Press get advice on your specialistion points based on your priortiies.",
-                  guild_ids=sv.gIDS)
-  async def getspecinteractive(self,
-      interaction: Interaction):
-    """Get specialisation point advice based on your priorities"""
-    #Check if user has Permission
-
-    #check if command is send in correct channel
-    if not(sv.channel.skill_point_advice == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
-    #Function  
-    view = SpecAddView()
-    await interaction.response.send_message(content="Please select a sector:",view=view,ephemeral = True)
-  
   @commands.Cog.listener('on_message')
 
   async def giveAdvice(self,message):

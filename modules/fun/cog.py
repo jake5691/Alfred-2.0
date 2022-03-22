@@ -24,7 +24,10 @@ class Fun(commands.Cog):
     eContent = ''
     for embed in embeds:
       emDict = embed.to_dict()
-      eContent += emDict['description']
+      try:
+        eContent += emDict['description']
+      except:
+        pass
       for e in embed.fields:
         eContent += e.name + e.value
     #Coffee reply picture

@@ -201,14 +201,12 @@ def getDefinition(word_id):
   for language_code in language_codes:
     url = f"https://od-api.oxforddictionaries.com/api/v2/entries/{language_code}/{word_id.lower()}?fields=definitions&strictMatch=false"
     r = requests.get(url, headers = {"app_id": os.environ['OxfordAppID'], "app_key": os.environ['OxfordAppKey']})
-    print("code {}\n".format(r.status_code))
     if r.status_code == 200:
       results = r.json()["results"][0]
       lexicalEntries = results["lexicalEntries"][0]
       entries = lexicalEntries["entries"][0]
       senses = entries["senses"][0]
       definition = senses["definitions"][0]
-      print(definition)
       return definition
       
   return None

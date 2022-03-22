@@ -9,9 +9,17 @@ class Settings(commands.Cog):
     self.catName = "Alfred"
     self.chanName = "Overview"
 
+  def isDev(ctx):
+    userRoles = [i.id for i in ctx.author.roles]
+    if not(sv.roles.Developers in userRoles):
+      print(f"{ctx.author.display_name} is not allowed to use this.")
+      return False
+    return True
+  
   @commands.command()
+  @commands.check(isDev)
   async def settings(self, ctx):
-    """Display of all Alfred variables"""
+    """Displaying of all Alfred variables"""
     #Random Reply
     aChannels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general]
     channels = ""

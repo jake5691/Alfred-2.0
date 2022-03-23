@@ -211,7 +211,7 @@ ArchSiegeDefResLeGroup, ArchSiegeDefMightLeGroup, CavSiegeDefResisLeGroup, CavSi
 ]
 
 #additiona groups for assigning spec points
-Banner = [ArchReignMightUp1, ArchReignMightUp2, ArchReignMightUp3, ChaosExpertise, ArchReignMightUp4, ArchReignMightUp5, ArchReignMightUp6, ChaosMaster, ArchReignMightUp7, ArchReignMightUp8, ArchReignMightUp9, PioneerBanner, RaiderBanner]
+Banner = [CavReignMightUp1, CavReignMightUp2, CavReignMightUp3, ChaosExpertise, CavReignMightUp4, CavReignMightUp5, CavReignMightUp6, ChaosMaster, CavReignMightUp7, CavReignMightUp8, CavReignMightUp9, PioneerBanner, RaiderBanner]
 
 
 redSpec_gr = {

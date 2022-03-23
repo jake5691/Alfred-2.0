@@ -117,15 +117,12 @@ class specAdv(commands.Cog):
       )):
     """Get spec advice based on some simple inputs"""
     print("start")
-    try:
-      await interaction.response.defer()
-    except:
-      print("can't defer")
-    #check if command is send in correct channel
-    #await interaction.response.defer()
+    await interaction.response.send_message("Working...this could take a minute so please have a cup of coffee while you wait.\n.\n")
     if not(sv.channel.skill_point_advice == interaction.channel.id):
       await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
       return
+    
+      
     
     channel = interaction.channel
     #Function
@@ -171,21 +168,20 @@ class specAdv(commands.Cog):
 
       #run spec advice
     print("pre specadvice")
-    specAdvice(banner,list1, list2, spec, groups_bl, groups_gr)
+    try:
+      specAdvice(banner,list1, list2, spec, groups_bl, groups_gr)
       
     #send advice
-    await channel.send(content =notes)
-    if target_lang != 'en':
-      notes_trans = GoogleTranslator(source='auto', target=target_lang).translate(text=notes)
-      await channel.send(content =notes_trans) 
-    await channel.send(file=File('blueSpec.png'))
-    await channel.send(file=File('greenSpec.png'))
-    await channel.send(file=File('redSpec.png'))
-    try:
-      #await interaction.followup.send("Complete",ephemeral = True)
-      interaction.respond()
+      await channel.send(content =notes)
+      if target_lang != 'en':
+        notes_trans = GoogleTranslator(source='auto', target=target_lang).translate(text=notes)
+        await channel.send(content =notes_trans) 
+      await channel.send(file=File('blueSpec.png'))
+      await channel.send(file=File('greenSpec.png'))
+      await channel.send(file=File('redSpec.png'))
     except:
-      pass
+      await channel.send(content = "Oops, something went wrong")
+    
    
       
       

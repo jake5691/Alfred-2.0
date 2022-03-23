@@ -66,10 +66,16 @@ def extra_tile(priorities_list):
 def getNodes(priorities_list_full):
   nodes_list = []
   node_priority =[]
+  print("getNodes")
   print(priorities_list_full)
+  #print(redSpec_gr)
   if priorities_list_full == 'Banner':
+    print("banner matched")
     l = redSpec_gr['Banner'][0]
-    print(l)
+  
+    for node in l:
+      nodes_list.append(node)
+      node_priority.append('Banner')
   else:
     for p in priorities_list_full:
     
@@ -90,6 +96,7 @@ def getNodes(priorities_list_full):
   maxLevel = []
   
   for node in nodes_list:
+    print(node)
     score.append(node.usefulScore)
     title.append(node.title)
     maxLevel.append(node.maxLvl)
@@ -234,10 +241,12 @@ def assignPoints(nodeset,userSpecPoints):
         while userSpecPoints > 0 and node.currentLvl < node.maxLvl: 
           node.currentLvl += 1
           userSpecPoints -= 1
+          print(node.currentLvl)
     except:
       while userSpecPoints > 0 and x.currentLvl < x.maxLvl: 
           x.currentLvl += 1
           userSpecPoints -= 1
+    
       
 
 
@@ -266,10 +275,13 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
   if banner == True:
     if userSpecPoints >= 47:
       list0 = ("Banner")
-      Nodes = getNodes(list0)[0]
+      df = getNodes(list0)[1]
+      print(df)
+      Nodes = list(df['Node'])
       print(Nodes)
       assignPoints(Nodes, userSpecPoints)
       for n in Nodes:
+        print(n)
         print(n.currentLvl)
       userSpecPoints -= 47
   if userSpecPoints == 0:

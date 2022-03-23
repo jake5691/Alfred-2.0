@@ -113,22 +113,36 @@ EMOJI_CODES = {
 }
 
 
-def keyboard(puzzle_id=int,green:str="",yellow:str="",dark:str=""):
+def keyboard(puzzle_id=int, language=str, green:str="", yellow:str="", dark:str=""):
   """
   Generate a keyboard image with colored letters according to the previous guesses
   """
   #Image size
   x = 1024
   y = 512
-  #keysize
-  x_size = round(x/12)
-  y_size = round(y/4)
-  x_gap = round(2*x_size/11)
-  y_gap = round(1*y_size/4)
   #letters
   row1 = ["Q","W","E","R","T","Y","U","I","O","P"]
   row2 = ["A","S","D","F","G","H","J","K","L"]
   row3 = ["Z","X","C","V","B","N","M"]
+  #adapt keyboard if language requires
+  if language == "de":
+    #letters
+    row1 = ["Q","W","E","R","T","Z","U","I","O","P","Ü"]
+    row2 = ["A","S","D","F","G","H","J","K","L","Ö","Ä"]
+    row3 = ["ß","Y","X","C","V","B","N","M"]
+
+  #keysize
+  maxRow = max(len(row1),len(row2),len(row3))
+  x_size = round(x/(maxRow+2))
+  y_size = round(y/4)
+  x_gap = round(2*x_size/(maxRow+1))
+  y_gap = round(1*y_size/4)
+  row1Gap = 0
+  row2Gap = 10 + round(x_size/2)
+  row3Gap = 10 + x_size + x_gap
+  if language == "de":
+    row2Gap = 0
+    row3Gap = 10 + x_size + x_gap
   #cornerRadius
   radius = 15
   #font
@@ -143,11 +157,11 @@ def keyboard(puzzle_id=int,green:str="",yellow:str="",dark:str=""):
     draw = ImageDraw.Draw(im)
 
     #Row1
-    x0 = x_gap
+    x0 = row1Gap + x_gap
     y0 = y_gap
     x1 = x0 + x_size
     y1 = y0 + y_size
-    for i in range(10):
+    for i in range(len(row1)):
       col = li
       if row1[i].lower() in green.lower():
         col = gr
@@ -163,9 +177,9 @@ def keyboard(puzzle_id=int,green:str="",yellow:str="",dark:str=""):
     #Row2
     y0 = y1 + y_gap
     y1 = y0 + y_size
-    x0 = 10 + round(x_size/2)
+    x0 = row2Gap + x_gap
     x1 = x0 + x_size
-    for i in range(9):
+    for i in range(len(row2)):
       col = li
       if row2[i].lower() in green.lower():
         col = gr
@@ -181,9 +195,9 @@ def keyboard(puzzle_id=int,green:str="",yellow:str="",dark:str=""):
     #Row3
     y0 = y1 + y_gap
     y1 = y0 + y_size
-    x0 = 10 + round(x_size/2) + x_size + x_gap
+    x0 = row3Gap + round(x_size/2)
     x1 = x0 + x_size
-    for i in range(7):
+    for i in range(len(row3)):
       col = li
       if row3[i].lower() in green.lower():
         col = gr
@@ -300,7 +314,7 @@ def generate_puzzle_embed(user: nextcord.User, language: str, puzzle_id: int) ->
         "To play, use the command /playwordle\n"
         "To guess, reply to this message with a word."
     )
-    image = keyboard(puzzle_id,"","","")
+    image = keyboard(puzzle_id, language, "", "", "")
     return embed, image
 
 
@@ -344,7 +358,7 @@ def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
       "To play, use the command /playwordle\n"
       "To guess, reply to this message with a word."
     )
-    image = keyboard(puzzle_id,"".join(green),"".join(yellow),"".join(dark))
+    image = keyboard(puzzle_id, language, "".join(green), "".join(yellow), "".join(dark))
     # check for game over
     num_empty_slots = embed.description.count(empty_slot)
     if guess == answer:

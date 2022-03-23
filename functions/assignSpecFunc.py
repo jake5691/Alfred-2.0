@@ -66,13 +66,8 @@ def extra_tile(priorities_list):
 def getNodes(priorities_list_full):
   nodes_list = []
   node_priority =[]
-  print("getNodes")
-  print(priorities_list_full)
-  #print(redSpec_gr)
   if priorities_list_full == 'Banner':
-    print("banner matched")
     l = redSpec_gr['Banner'][0]
-  
     for node in l:
       nodes_list.append(node)
       node_priority.append('Banner')
@@ -80,10 +75,10 @@ def getNodes(priorities_list_full):
     for p in priorities_list_full:
     
       if p in blueSpec_gr:
+        print(p)
         l = blueSpec_gr[p][0]
       elif p in greenSpec_gr:
         l= greenSpec_gr[p][0]
-
       else:
         print ("l not assigned")
     for node in l:
@@ -96,22 +91,24 @@ def getNodes(priorities_list_full):
   maxLevel = []
   
   for node in nodes_list:
-    print(node)
     score.append(node.usefulScore)
     title.append(node.title)
     maxLevel.append(node.maxLvl)
     
   data = {'Node':nodes_list, 'Score':score, 'Title':title,'maxLvl':maxLevel, 'Priority':node_priority}
   df = pd.DataFrame(data)
+  print(df)
   return(nodes_list, df)
 
 ### this is where you might want to tweak things to get better advice.  
 def useful_assign(priorities_list):
+  print("useful assign")
   priorities_list_full = priorities_list
   nodes_list2 = getNodes(priorities_list_full)[1]
   #if LoyaltySpeedGroup is in the priorities, it should have a higher weighting than other priorities
   for index, row in nodes_list2.iterrows():
     if row['Priority'] in ('LoyaltySpeedGroup'):
+      print("lsg")
       if row['Node'].activatable == True:
         nodes_list2.at[index, 'Score'] = 50
       else:
@@ -241,7 +238,7 @@ def assignPoints(nodeset,userSpecPoints):
         while userSpecPoints > 0 and node.currentLvl < node.maxLvl: 
           node.currentLvl += 1
           userSpecPoints -= 1
-          print(node.currentLvl)
+          
     except:
       while userSpecPoints > 0 and x.currentLvl < x.maxLvl: 
           x.currentLvl += 1
@@ -273,16 +270,12 @@ def most_use(priorities_list_full, userSpecPoints):
 
 def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
   if banner == True:
+    print("banner start")
     if userSpecPoints >= 47:
       list0 = ("Banner")
       df = getNodes(list0)[1]
-      print(df)
       Nodes = list(df['Node'])
-      print(Nodes)
       assignPoints(Nodes, userSpecPoints)
-      for n in Nodes:
-        print(n)
-        print(n.currentLvl)
       userSpecPoints -= 47
   if userSpecPoints == 0:
     finished = True
@@ -337,12 +330,15 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
       #Loop specs in group
     for s in group:
       s.currentLvl  = 0
+      s.usefulScore = 0
   for group in groups_gr:
       #Loop specs in group
     for s in group:
       s.currentLvl  = 0
+      s.usefulScore = 0
   for group in groups_red:
       #Loop specs in group
     for s in group:
       s.currentLvl  = 0
+      s.usefulScore = 0
         

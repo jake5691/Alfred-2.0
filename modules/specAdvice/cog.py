@@ -118,13 +118,14 @@ class specAdv(commands.Cog):
     """Get spec advice based on some simple inputs"""
     print("start")
     await interaction.response.send_message("Working...this could take a minute so please have a cup of coffee while you wait.\n.\n")
+    channel = interaction.channel
     if not(sv.channel.skill_point_advice == interaction.channel.id):
       await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
       return
+    else:
+      respOptions = f"You selected: banner:{banner}, loyalty maxxed: {loy}, Full on iron/wood tiles: {fulliw}, Frontline Workshops maxxed: {fwmax}, spec points {spec}.\n."
+      await channel.send(respOptions)
     
-      
-    
-    channel = interaction.channel
     #Function
     target_lang = 'en'
     for r in interaction.user.roles:
@@ -148,12 +149,12 @@ class specAdv(commands.Cog):
         target_lang = 'zh-CN'
 
     if loy == False:
-      print('loy')
+    
       notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n \n"
       list1 = ('LoyaltySpeedGroup', 'CBCMat', 'OneExtQ')
       list2 = ('ExtraTile', 'TileHonour', 'UpgradeBuild')
     elif fulliw == False:
-      print("filliw")
+     
       notes = "Your focus is getting high level wood and iron tiles. You may wish to keep a few CBC material tiles if you wish to increase loyalty. You can always take more iron/wood and upgrade later using land development.\n\nIf you think you will fill up on iron/wood before next specialisation reset, ask in alliance chat for advice.\n\n"
       list1 = ('LoyaltySpeedGroup', 'FWMat', 'OneExtQ')
       list2 = ('ExtraTile', 'TileHonour', 'TwoExtQs')
@@ -167,7 +168,7 @@ class specAdv(commands.Cog):
       list2 = ('UpgradeBuild', 'TwoExtQs', 'Land')
 
       #run spec advice
-    print("pre specadvice")
+    
     try:
       specAdvice(banner,list1, list2, spec, groups_bl, groups_gr)
       

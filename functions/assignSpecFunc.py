@@ -3,6 +3,7 @@
 
 from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
+from functions.redSpecFunc import *
 from functions.drawSpecFunc import *
 import pandas as pd
 import itertools
@@ -72,6 +73,8 @@ def getNodes(priorities_list_full):
       l = blueSpec_gr[p][0]
     elif p in greenSpec_gr:
       l= greenSpec_gr[p][0]
+    elif p in redSped_gr:
+      l = redSpec_gr[p][0]
     else:
       print ("l not assigned")
     for node in l:
@@ -300,6 +303,7 @@ def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr):
   print(list1, list2)
   draw(groups_bl,bl,bl_l,"blueSpec.png", firstSpecs_bl)
   draw(groups_gr,gr,gr_l,"greenSpec.png", firstSpecs_gr)
+  draw(groups_red,red,red_l,"redSpec.png", firstSpecs_red)
 
   #set all nodes back to zero
   for group in groups_bl:

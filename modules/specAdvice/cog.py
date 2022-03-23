@@ -53,7 +53,7 @@ class specAdv(commands.Cog):
         elif '🇹w' == r.name:
           target_lang = 'zh-CN'
       if message.content.lower().startswith('help'):
-        sendText = "\n\nThis channel provides advice on where to use your specialisation points.\nPlease send your information starting with ADVICE followed by answers to the following questions:\n1. Have you reached your target loyalty?(Y/N)\n2. What is your specialisation level? \n3.Have you already switched to iron/wood tiles? (Y/N)\n4. Are your Frontline Workshops maxxed? (Y/N)\nYour answers should be separated by a space\nFor example: 'Advice N 73 N N'\n\n"
+        sendText = "\n\nThis channel provides advice on where to use your specialisation points.\nPlease type '/specadviceeasy' and provide input requested."
         if target_lang != 'en':
           sendTextTrans = GoogleTranslator(source='auto', target=target_lang).translate(text=sendText)  
         try:
@@ -94,6 +94,12 @@ class specAdv(commands.Cog):
         max_value = 170,
         required=True
       ),
+    banner:bool=SlashOption(
+        name="banner",
+        description="Are you a banner castle? (True/False)",
+        required=True#,
+        #default = False
+      ),                       
     loy:bool=SlashOption(
         name="loy",
         description="Have you reached your target loyalty? (True/False)",
@@ -174,6 +180,7 @@ class specAdv(commands.Cog):
       await channel.send(content =notes_trans) 
     await channel.send(file=File('blueSpec.png'))
     await channel.send(file=File('greenSpec.png'))
+    await channel.send(file=File('redSpec.png'))
     try:
       await interaction.followup.send("Complete",ephemeral = True)
     except:

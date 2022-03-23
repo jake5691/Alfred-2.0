@@ -120,6 +120,30 @@ def getPoint_gr(angle:int,radius:int=6,offset_x:int=0):
   y = getY_gr(angle,radius,offset_x)
   return (x,y)
 
+def getX_red(angle:int,radius:int=6,offset_x:int=0):
+  """Get X coordinate (rotated correctly)"""
+  radiusDict = radiusDict_red
+  r = radiusDict[radius]
+  angle = angle * np.deg2rad(15) - np.arctan(offset_x/r)
+  radius = np.sqrt(r*r+offset_x*offset_x)
+  x = np.sin(angle) * radius + x_center
+  return x
+  
+def getY_red(angle:int,radius:int=6,offset_x:int=0):
+  """Get Y coordinate (rotated correctly)"""
+  radiusDict = radiusDict_red
+  r = radiusDict[radius]
+  angle = angle * np.deg2rad(15) - np.arctan(offset_x/r)
+  radius = np.sqrt(r*r+offset_x*offset_x)
+  y = np.cos(angle) * radius + y_center
+  return y
+
+def getPoint_red(angle:int,radius:int=6,offset_x:int=0):
+  """Get point (x,y)"""
+  x = getX_red(angle,radius,offset_x)
+  y = getY_red(angle,radius,offset_x)
+  return (x,y)
+
 
 
 def draw(groups, col1, col2, filename, firstSpecs):
@@ -200,6 +224,15 @@ def draw(groups, col1, col2, filename, firstSpecs):
           fill=fill_color,
           width=2
         )
+      elif filename == "redSpec.png":
+        draw.ellipse(
+          [s.topLeft,
+           s.bottomRight],
+          outline = col1,
+          fill=fill_color,
+          width=2
+        )
+        
         
       text = str(s.currentLvl) if s.currentLvl < s.maxLvl else str(s.maxLvl)
       if text == "0" and not(s.activatable):

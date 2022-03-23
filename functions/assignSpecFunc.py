@@ -67,16 +67,19 @@ def getNodes(priorities_list_full):
   nodes_list = []
   node_priority =[]
   print(priorities_list_full)
-  for p in priorities_list_full:
+  if priorities_list_full == 'Banner':
+    l = redSpec_gr['Banner'][0]
+    print(l)
+  else:
+    for p in priorities_list_full:
+    
+      if p in blueSpec_gr:
+        l = blueSpec_gr[p][0]
+      elif p in greenSpec_gr:
+        l= greenSpec_gr[p][0]
 
-    if p in blueSpec_gr:
-      l = blueSpec_gr[p][0]
-    elif p in greenSpec_gr:
-      l= greenSpec_gr[p][0]
-    elif p in redSped_gr:
-      l = redSpec_gr[p][0]
-    else:
-      print ("l not assigned")
+      else:
+        print ("l not assigned")
     for node in l:
       #if node not in nodes_list:
       nodes_list.append(node)
@@ -259,9 +262,21 @@ def most_use(priorities_list_full, userSpecPoints):
   return(userSpecPointsNew)
  
 
-def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr):
-  priorities_list = list1
-  finished = False
+def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
+  if banner == True:
+    if userSpecPoints >= 47:
+      list0 = ("Banner")
+      Nodes = getNodes(list0)[0]
+      print(Nodes)
+      assignPoints(Nodes, userSpecPoints)
+      for n in Nodes:
+        print(n.currentLvl)
+      userSpecPoints -= 47
+  if userSpecPoints == 0:
+    finished = True
+  else:
+    priorities_list = list1
+    finished = False
   while finished == False:
     priorities = []
     for i in priorities_list:
@@ -311,6 +326,10 @@ def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr):
     for s in group:
       s.currentLvl  = 0
   for group in groups_gr:
+      #Loop specs in group
+    for s in group:
+      s.currentLvl  = 0
+  for group in groups_red:
       #Loop specs in group
     for s in group:
       s.currentLvl  = 0

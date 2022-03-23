@@ -215,7 +215,9 @@ Banner = [ArchReignMightUp1, ArchReignMightUp2, ArchReignMightUp3, ChaosExpertis
 
 
 redSpec_gr = {
-"Banner":(Banner, 47)
+  "Banner":(Banner, 47),
+  "Something":(Banner, 47)
+  
 }
 
 

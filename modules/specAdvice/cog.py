@@ -149,7 +149,7 @@ class specAdv(commands.Cog):
         target_lang = 'turkish'
       elif '🇹w' == r.name:
         target_lang = 'zh-CN'
-      
+
     if loy == False:
       print('loy')
       notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n \n"
@@ -171,7 +171,7 @@ class specAdv(commands.Cog):
 
       #run spec advice
     print("pre specadvice")
-    specAdvice(list1, list2, spec, groups_bl, groups_gr)
+    specAdvice(banner,list1, list2, spec, groups_bl, groups_gr)
       
     #send advice
     await channel.send(content =notes)
@@ -182,9 +182,11 @@ class specAdv(commands.Cog):
     await channel.send(file=File('greenSpec.png'))
     await channel.send(file=File('redSpec.png'))
     try:
-      await interaction.followup.send("Complete",ephemeral = True)
+      #await interaction.followup.send("Complete",ephemeral = True)
+      interaction.respond()
     except:
-      print("complete")
+      pass
+   
       
       
       

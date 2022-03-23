@@ -1,25 +1,16 @@
 #blue and green specifies the  Specs and positions, and then creates the groups for that colour. It also includes some additional variables specific to that spec
 #assign uses the priority list and spec points and assigns these to the Spec
 #draw creates the drawing 
-#import nextcord
-#import os
-#import pandas as pd
-#os.system("pip install deep_translator")
-#import random
-#from keep_alive import keep_alive
-from deep_translator import (GoogleTranslator)
-#from replit import db
 
-#intents = nextcord.Intents.default()
-#intents.members = True
-#client = nextcord.Client(intents=intents)
+from deep_translator import (GoogleTranslator)
 from nextcord import File, Embed
 from nextcord.ext import commands
 from functions.drawSpecFunc import draw
 from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
 from functions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
-
+from functions import staticValues as sv
+from replit import db
 
 class specAdv(commands.Cog):
   """Fun features"""
@@ -28,31 +19,15 @@ class specAdv(commands.Cog):
     self.bot = bot
 
   @commands.Cog.listener('on_message')
-
   async def giveAdvice(self,message):
-    msg = message.content.lower()
-    print(msg)
-    if message.author == self.bot.user or message.author.bot:
-        return
-
-    if len(msg) == 0:
-        return
-    
-    roles = message.author.roles
-    #print(roles)
-    #set variable defaults
-    specadv = "error"
-    loy = "n"
-    spec = 0
-    FullIW = "n"
-    FW = "n"
-
-    #only run in spec advice channel
-    if message.channel.name == 'skill-point-advice':
+    if message.author.bot:
+      return
+    if message.channel.id == sv.channel.skill_point_advice:
+      msg = message.content.lower()
+      
+      #get language role if any
       target_lang = 'en'
-      #await message.channel.send(roles)
       roles = message.author.roles
-      #assign language from roles
       for r in roles:
         if '🇩🇪' == r.name:
           target_lang = 'german'
@@ -72,6 +47,56 @@ class specAdv(commands.Cog):
           target_lang = 'turkish'
         elif '🇹w' == r.name:
           target_lang = 'zh-CN'
+      if message.content.lower().startswith('help'):
+        sendText = "\n\nThis channel provides advice on where to use your specialisation points.\nPlease send your information starting with ADVICE followed by answers to the following questions:\n1. Have you reached your target loyalty?(Y/N)\n2. What is your specialisation level? \n3.Have you already switched to iron/wood tiles? (Y/N)\n4. Are your Frontline Workshops maxxed? (Y/N)\nYour answers should be separated by a space\nFor example: 'Advice N 73 N N'"
+        if target_lang != 'en':
+          sendTextTrans = GoogleTranslator(source='auto', target=target_lang).translate(text=sendText)  
+        try:
+          helpMesID = db[sv.db.specHelp]
+          oldMes = await message.channel.fetch_message(helpMesID)
+          await oldMes.delete()
+        except:
+          print("couldn't delete old help message")
+        try: 
+          helpMesTransId = db[sv.db.specHelpTrans]
+          oldMesTrans = await message.channel.fetch_message(helpMesTransId)
+          await oldMesTrans.delete()
+        except:
+          print("couldn't delele old translated help message")
+        helpMes = await message.channel.send(content=sendText)
+        db[sv.db.specHelp] = helpMes.id
+        if target_lang != 'en':
+          helpMesTrans = await message.channel.send(content=sendTextTrans)
+          db[sv.db.specHelpTrans] = helpMesTrans.id
+        await message.delete()
+      #else:
+        #Delete Messages that are sent in this channel after a 60s delay
+        #await asyncio.sleep(60)
+        #try:
+         # await message.delete()
+        #except:
+         # print('Message could not be deleted')
+  
+    #msg = message.content.lower()
+    #print(msg)
+    #if message.author == self.bot.user or message.author.bot:
+       # return
+
+    if len(msg) == 0:
+        return
+    
+    roles = message.author.roles
+    #print(roles)
+    #set variable defaults
+    specadv = "error"
+    loy = "n"
+    spec = 0
+    FullIW = "n"
+    FW = "n"
+
+    #only run in spec advice channel
+    if message.channel.name == 'skill-point-advice':
+
       #set aliases of advice
       advice_list = ['advice', 'advise']
         # set error message
@@ -92,20 +117,8 @@ class specAdv(commands.Cog):
             )
         return
 
-      
 
-      #send help message for anything that isn't Advice
-      if msg.startswith("help"):
-        helpmsg = "This channel provides advice on where to use your specialisation points.\nPlease send your information starting with ADVICE followed by answers to the following questions:\n1. Have you reached your target loyalty?(Y/N)\n2. What is your specialisation level? \n3.Have you already switched to iron/wood tiles? (Y/N)\n4. Are your Frontline Workshops maxxed? (Y/N)\nYour answers should be separated by a space\nFor example: Advice N 73 N N "
-        if target_lang != 'en':
-          helpmsgtrans = GoogleTranslator(source='auto', target=target_lang).translate(text=helpmsg)
-          helpEmbed = Embed(description=helpmsg)
-          helpEmbed.add_field(name="Translation", value=helpmsgtrans, inline=False)
-        else:
-          helpEmbed = Embed(description=helpmsg)
-        await message.channel.send(embed=helpEmbed)
-
-      elif msg.startswith(tuple(advice_list)):
+      if msg.startswith(tuple(advice_list)):
           if len(msg) > 7:
               if msg.split(' ')[1] in ["y", "n"]:
                   loy = msg.split(' ')[1]

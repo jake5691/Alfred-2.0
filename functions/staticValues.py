@@ -53,6 +53,8 @@ class db:
   loyaltyRanking = "msgLoyaltyRanking"
   skLoHelp = "skLoHelp"
   seasonInfo = "seasonInfo"
+  specHelp = "specHelp"
+  specHelpTrans = "specHelpTrans"
 
 #Skill/Loyalty limits
 skillCap = 170

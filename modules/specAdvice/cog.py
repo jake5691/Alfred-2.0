@@ -109,11 +109,18 @@ class specAdv(commands.Cog):
         description="Are you full on iron and wood tiles?(True/False)",
         required=True
       )):
-    """Create a new banner"""
+    """Get spec advice based on some simple inputs"""
+    print("start")
+    try:
+      await interaction.response.defer()
+    except:
+      print("can't defer")
     #check if command is send in correct channel
+    #await interaction.response.defer()
     if not(sv.channel.skill_point_advice == interaction.channel.id):
       await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
       return
+    
     channel = interaction.channel
     #Function
     target_lang = 'en'
@@ -138,10 +145,12 @@ class specAdv(commands.Cog):
         target_lang = 'zh-CN'
       
     if loy == False:
+      print('loy')
       notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n \n"
       list1 = ('LoyaltySpeedGroup', 'CBCMat', 'OneExtQ')
       list2 = ('ExtraTile', 'TileHonour', 'UpgradeBuild')
     elif fulliw == False:
+      print("filliw")
       notes = "Your focus is getting high level wood and iron tiles. You may wish to keep a few CBC material tiles if you wish to increase loyalty. You can always take more iron/wood and upgrade later using land development.\n\nIf you think you will fill up on iron/wood before next specialisation reset, ask in alliance chat for advice.\n\n"
       list1 = ('LoyaltySpeedGroup', 'FWMat', 'OneExtQ')
       list2 = ('ExtraTile', 'TileHonour', 'TwoExtQs')
@@ -150,19 +159,29 @@ class specAdv(commands.Cog):
       list1 = ('UpgradeBuild', 'FWMat', 'OneExtQ')
       list2 = ('ExtraTile', 'TileHonour', 'TwoExtQs', 'Land')
     else:
-      notes = "Your focus is on maximising honour from tiles. You will sometimes switch to green left and extra queues to upgrade Assault and Guardian Fortresses.\n\nIn the last week, you may need to put extra points on processing queues to ensure that you process all of your materials.  Depending on resets you may also prioritise having 49 points on green left (building honour).  Land development and extra tiles might not be necessary.\n\n"
+      notes = "Your focus is on maximising honour from tiles. You will sometimes switch to green left and extra queues to upgrade Assault and Guardian Fortresses.\n\nIn the last week, you may need to put extra points on processing queues to ensure that you process all of your materials.  Depending on resets you may also prioritise having 49 points on green left (building honour).  Land development and extra tiles might not be necessary.\n.\n"
       list1 = ('TileHonour', 'FWMat', 'ExtraTile')
       list2 = ('UpgradeBuild', 'TwoExtQs', 'Land')
 
       #run spec advice
-      specAdvice(list1, list2, spec, groups_bl, groups_gr)
-      #send advice
-      await channel.send(content =notes)
-      if target_lang != 'en':
-        notes_trans = GoogleTranslator(source='auto', target=target_lang).translate(text=notes)
+    print("pre specadvice")
+    specAdvice(list1, list2, spec, groups_bl, groups_gr)
+      
+    #send advice
+    await channel.send(content =notes)
+    if target_lang != 'en':
+      notes_trans = GoogleTranslator(source='auto', target=target_lang).translate(text=notes)
       await channel.send(content =notes_trans) 
-      await channel.send(file=File('blueSpec.png'))
-      await channel.send(file=File('greenSpec.png'))
+    await channel.send(file=File('blueSpec.png'))
+    await channel.send(file=File('greenSpec.png'))
+    try:
+      await interaction.followup.send("Complete",ephemeral = True)
+    except:
+      print("complete")
+      
+      
+      
+
 
 
 def setup(bot: commands.Bot):

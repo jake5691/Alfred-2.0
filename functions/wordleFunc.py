@@ -5,8 +5,13 @@ import requests
 import json
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 
-popular_words = open("data/dict-popular.txt").read().splitlines()
-all_words = set(word.strip() for word in open("data/dict-sowpods.txt"))
+languages = ["en", "de"]
+def popular_words(language: str): 
+  return open(f"data/dict-popular-{language}.txt").read().splitlines()
+
+def all_words(language: str):
+  return set(word.strip().lower() for word in open(f"data/dict-valid-{language}.txt"))
+
 
 EMOJI_CODES = {
     "green": {
@@ -178,7 +183,10 @@ def keyboard(puzzle_id=int,green:str="",yellow:str="",dark:str=""):
       draw.text([(x0+x1)/2,(y0+y1)/2],text=row3[i],anchor="mm",font=font)
       x0 = x1+x_gap
       x1 = x0+x_size
-    im.save(f"keyboards/keyboard_{puzzle_id}.png")
+    dir = "keyboards"
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    im.save(f"{dir}/keyboard_{puzzle_id}.png")
   img = nextcord.File(f"keyboards/keyboard_{puzzle_id}.png")
   return img
 
@@ -263,7 +271,7 @@ def generate_blanks() -> str:
     return "\N{WHITE MEDIUM SQUARE}" * 5
 
 
-def generate_puzzle_embed(user: nextcord.User, puzzle_id: int) -> nextcord.Embed:
+def generate_puzzle_embed(user: nextcord.User, language: str, puzzle_id: int) -> nextcord.Embed:
     """
     Generate an embed for a new puzzle given the puzzle id and user
     Args:
@@ -276,7 +284,7 @@ def generate_puzzle_embed(user: nextcord.User, puzzle_id: int) -> nextcord.Embed
     embed.description = "\n".join([generate_blanks()] * 6)
     embed.set_author(name=user.name, icon_url=user.display_avatar.url)
     embed.set_footer(
-        text=f"ID: {puzzle_id} ︱en︱︱︱︱\n" 
+        text=f"ID: {puzzle_id} ︱{language}︱︱︱︱\n" 
         "To play, use the command /playwordle\n"
         "To guess, reply to this message with a word."
     )
@@ -295,10 +303,11 @@ def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
         nextcord.Embed: The updated embed
     """
     puzzle_id = int(embed.footer.text.split()[1])
+    language = embed.footer.text.split("︱")[1].strip()
     green = list(embed.footer.text.split("︱")[2].strip())
     yellow = list(embed.footer.text.split("︱")[3].strip())
     dark = list(embed.footer.text.split("︱")[4].strip())
-    answer = popular_words[puzzle_id]
+    answer = popular_words(language)[puzzle_id].lower()
     colored_word, g, y, d = generate_colored_word(guess, answer)
     for l in g:
       if l in green:
@@ -319,7 +328,7 @@ def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
     embed.description = embed.description.replace(empty_slot, colored_word, 1)
     # set footer
     embed.set_footer(
-      text=f"ID: {puzzle_id} ︱en︱{''.join(green)}︱{''.join(yellow)}︱{''.join(dark)}︱\n" 
+      text=f"ID: {puzzle_id} ︱{language}︱{''.join(green)}︱{''.join(yellow)}︱{''.join(dark)}︱\n" 
       "To play, use the command /playwordle\n"
       "To guess, reply to this message with a word."
     )
@@ -354,7 +363,7 @@ def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
     return embed, image
 
 
-def is_valid_word(word: str) -> bool:
+def is_valid_word(word: str, language: str) -> bool:
     """
     Validates a word
     Args:
@@ -362,16 +371,16 @@ def is_valid_word(word: str) -> bool:
     Returns:
         bool: Whether the word is valid
     """
-    return word in all_words
+    return word in all_words(language)
 
 
-def random_puzzle_id() -> int:
+def random_puzzle_id(language: str) -> int:
     """
     Generates a random puzzle ID
     Returns:
         int: A random puzzle ID
     """
-    return random.randint(0, len(popular_words) - 1)
+    return random.randint(0, len(popular_words(language)) - 1)
 
 
 def is_game_over(embed: nextcord.Embed) -> bool:

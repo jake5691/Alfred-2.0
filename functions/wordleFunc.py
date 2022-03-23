@@ -6,11 +6,15 @@ import json
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 
 languages = ["en", "de"]
-def popular_words(language: str): 
-  return open(f"data/dict-popular-{language}.txt").read().splitlines()
+
+
+def popular_words(language: str):
+    return open(f"data/dict-popular-{language}.txt").read().splitlines()
+
 
 def all_words(language: str):
-  return set(word.strip().lower() for word in open(f"data/dict-valid-{language}.txt"))
+    return set(word.strip().lower()
+               for word in open(f"data/dict-valid-{language}.txt"))
 
 
 EMOJI_CODES = {
@@ -113,139 +117,183 @@ EMOJI_CODES = {
 }
 
 
-def keyboard(puzzle_id=int, language=str, green:str="", yellow:str="", dark:str=""):
-  """
+def keyboard(puzzle_id=int,
+             language=str,
+             green: str = "",
+             yellow: str = "",
+             dark: str = ""):
+    """
   Generate a keyboard image with colored letters according to the previous guesses
   """
-  #Image size
-  x = 1024
-  y = 512
-  #letters
-  row1 = ["Q","W","E","R","T","Y","U","I","O","P"]
-  row2 = ["A","S","D","F","G","H","J","K","L"]
-  row3 = ["Z","X","C","V","B","N","M"]
-  #adapt keyboard if language requires
-  if language == "de":
+    #Image size
+    x = 1024
+    y = 512
     #letters
-    row1 = ["Q","W","E","R","T","Z","U","I","O","P","Ü"]
-    row2 = ["A","S","D","F","G","H","J","K","L","Ö","Ä"]
-    row3 = ["ß","Y","X","C","V","B","N","M"]
+    row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
+    row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"]
+    row3 = ["Z", "X", "C", "V", "B", "N", "M"]
+    #adapt keyboard if language requires
+    if language == "de":
+        #letters
+        row1 = ["Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P", "Ü"]
+        row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ö", "Ä"]
+        row3 = ["ß", "Y", "X", "C", "V", "B", "N", "M"]
 
-  #keysize
-  maxRow = max(len(row1),len(row2),len(row3))
-  x_size = round(x/(maxRow+2))
-  y_size = round(y/4)
-  x_gap = round(2*x_size/(maxRow+1))
-  y_gap = round(1*y_size/4)
-  row1Gap = 0
-  row2Gap = 10 + round(x_size/2)
-  row3Gap = 10 + x_size + x_gap
-  if language == "de":
-    row2Gap = 0
+    #keysize
+    maxRow = max(len(row1), len(row2), len(row3))
+    x_size = round(x / (maxRow + 2))
+    y_size = round(y / 4)
+    x_gap = round(2 * x_size / (maxRow + 1))
+    y_gap = round(1 * y_size / 4)
+    row1Gap = 0
+    row2Gap = 10 + round(x_size / 2)
     row3Gap = 10 + x_size + x_gap
-  #cornerRadius
-  radius = 15
-  #font
-  font = ImageFont.truetype("data/arial/arial.ttf", 35)
-  #colors
-  gr = (59,188,45)
-  ye = (238,201,15)
-  da = (102,110,116)
-  li = (200,200,200)
+    if language == "de":
+        row2Gap = 0
+        row3Gap = 10 + x_size + x_gap
+    #cornerRadius
+    radius = 15
+    #font
+    font = ImageFont.truetype("data/arial/arial.ttf", 35)
+    #colors
+    gr = (59, 188, 45)
+    ye = (238, 201, 15)
+    da = (102, 110, 116)
+    li = (200, 200, 200)
 
-  with Image.new("RGB",(x,y)) as im:
-    draw = ImageDraw.Draw(im)
+    with Image.new("RGB", (x, y)) as im:
+        draw = ImageDraw.Draw(im)
 
-    #Row1
-    x0 = row1Gap + x_gap
-    y0 = y_gap
-    x1 = x0 + x_size
-    y1 = y0 + y_size
-    for i in range(len(row1)):
-      col = li
-      if row1[i].lower() in green.lower():
-        col = gr
-      elif row1[i].lower() in yellow.lower():
-        col = ye
-      elif row1[i].lower() in dark.lower():
-        col = da
-      draw.rounded_rectangle([x0, y0, x1, y1],radius=radius,fill=col)
-      draw.text([(x0+x1)/2,(y0+y1)/2],text=row1[i],anchor="mm",font=font)
-      x0 = x1+x_gap
-      x1 = x0+x_size
-    
-    #Row2
-    y0 = y1 + y_gap
-    y1 = y0 + y_size
-    x0 = row2Gap + x_gap
-    x1 = x0 + x_size
-    for i in range(len(row2)):
-      col = li
-      if row2[i].lower() in green.lower():
-        col = gr
-      elif row2[i].lower() in yellow.lower():
-        col = ye
-      elif row2[i].lower() in dark.lower():
-        col = da
-      draw.rounded_rectangle([x0, y0, x1, y1],radius=radius,fill=col)
-      draw.text([(x0+x1)/2,(y0+y1)/2],text=row2[i],anchor="mm",font=font)
-      x0 = x1+x_gap
-      x1 = x0+x_size
+        #Row1
+        x0 = row1Gap + x_gap
+        y0 = y_gap
+        x1 = x0 + x_size
+        y1 = y0 + y_size
+        for i in range(len(row1)):
+            col = li
+            if row1[i].lower() in green.lower():
+                col = gr
+            elif row1[i].lower() in yellow.lower():
+                col = ye
+            elif row1[i].lower() in dark.lower():
+                col = da
+            draw.rounded_rectangle([x0, y0, x1, y1], radius=radius, fill=col)
+            draw.text([(x0 + x1) / 2, (y0 + y1) / 2],
+                      text=row1[i],
+                      anchor="mm",
+                      font=font)
+            x0 = x1 + x_gap
+            x1 = x0 + x_size
 
-    #Row3
-    y0 = y1 + y_gap
-    y1 = y0 + y_size
-    x0 = row3Gap + round(x_size/2)
-    x1 = x0 + x_size
-    for i in range(len(row3)):
-      col = li
-      if row3[i].lower() in green.lower():
-        col = gr
-      elif row3[i].lower() in yellow.lower():
-        col = ye
-      elif row3[i].lower() in dark.lower():
-        col = da
-      draw.rounded_rectangle([x0, y0, x1, y1],radius=radius,fill=col)
-      draw.text([(x0+x1)/2,(y0+y1)/2],text=row3[i],anchor="mm",font=font)
-      x0 = x1+x_gap
-      x1 = x0+x_size
-    dir = "keyboards"
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    im.save(f"{dir}/keyboard_{puzzle_id}.png")
-  img = nextcord.File(f"keyboards/keyboard_{puzzle_id}.png")
-  return img
+        #Row2
+        y0 = y1 + y_gap
+        y1 = y0 + y_size
+        x0 = row2Gap + x_gap
+        x1 = x0 + x_size
+        for i in range(len(row2)):
+            col = li
+            if row2[i].lower() in green.lower():
+                col = gr
+            elif row2[i].lower() in yellow.lower():
+                col = ye
+            elif row2[i].lower() in dark.lower():
+                col = da
+            draw.rounded_rectangle([x0, y0, x1, y1], radius=radius, fill=col)
+            draw.text([(x0 + x1) / 2, (y0 + y1) / 2],
+                      text=row2[i],
+                      anchor="mm",
+                      font=font)
+            x0 = x1 + x_gap
+            x1 = x0 + x_size
 
-def getDefinition(word_id):
-  """get definition of the solution word"""
-  #get the base word
-  language = "en"
-  url= 'https://od-api.oxforddictionaries.com:443/api/v2/lemmas/' + language + '/' + word_id.lower()
-  r = requests.get(url, headers = {"app_id": os.environ['OxfordAppID'], "app_key": os.environ['OxfordAppKey']})
-  if r.status_code == 200:
-    results = r.json()["results"][0]
-    lexicalEntries = results["lexicalEntries"][0]
-    inflectionOf = lexicalEntries["inflectionOf"][0]
-    word_id = inflectionOf["id"]
-  else:
-    return None
-  
-  #get the definition
-  language_codes = ["en-us","en-gb"]
-  for language_code in language_codes:
-    url = f"https://od-api.oxforddictionaries.com/api/v2/entries/{language_code}/{word_id.lower()}?fields=definitions&strictMatch=false"
-    r = requests.get(url, headers = {"app_id": os.environ['OxfordAppID'], "app_key": os.environ['OxfordAppKey']})
+        #Row3
+        y0 = y1 + y_gap
+        y1 = y0 + y_size
+        x0 = row3Gap + round(x_size / 2)
+        x1 = x0 + x_size
+        for i in range(len(row3)):
+            col = li
+            if row3[i].lower() in green.lower():
+                col = gr
+            elif row3[i].lower() in yellow.lower():
+                col = ye
+            elif row3[i].lower() in dark.lower():
+                col = da
+            draw.rounded_rectangle([x0, y0, x1, y1], radius=radius, fill=col)
+            draw.text([(x0 + x1) / 2, (y0 + y1) / 2],
+                      text=row3[i],
+                      anchor="mm",
+                      font=font)
+            x0 = x1 + x_gap
+            x1 = x0 + x_size
+        dir = "keyboards"
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        im.save(f"{dir}/keyboard_{puzzle_id}.png")
+    img = nextcord.File(f"keyboards/keyboard_{puzzle_id}.png")
+    return img
+
+
+def getDefinition(word_id=str, language=str):
+    """get definition of the solution word"""
+    #get the base word
+    #language = "en"
+    url = 'https://od-api.oxforddictionaries.com:443/api/v2/lemmas/' + language + '/' + word_id.lower(
+    )
+    r = requests.get(url,
+                     headers={
+                         "app_id": os.environ['OxfordAppID'],
+                         "app_key": os.environ['OxfordAppKey']
+                     })
     if r.status_code == 200:
-      results = r.json()["results"][0]
-      lexicalEntries = results["lexicalEntries"][0]
-      entries = lexicalEntries["entries"][0]
-      senses = entries["senses"][0]
-      definition = senses["definitions"][0]
-      return definition
-      
-  return None
+        results = r.json()["results"][0]
+        lexicalEntries = results["lexicalEntries"][0]
+        inflectionOf = lexicalEntries["inflectionOf"][0]
+        word_id = inflectionOf["id"]
+    else:
+        return None
 
-def generate_colored_word(guess: str, answer: str) -> (str,[str],[str],[str]):
+    #get the translation (if necessary)
+    #The translation endpoint is only available for a payed plan, so need to find another way to translate words
+    if False: #language != "en":
+        url = f"https://od-api.oxforddictionaries.com/api/v2/translations/{language}/en/{word_id}?strictMatch=true&fields=translations"
+        r = requests.get(url,
+                         headers={
+                             "Accept": "application/json",
+                             "app_id": os.environ['OxfordAppID'],
+                             "app_key": os.environ['OxfordAppKey']
+                         })
+        if r.status_code == 200:
+            results = r.json()["results"][0]
+            lexicalEntries = results["lexicalEntries"][0]
+            entries = lexicalEntries["entries"][0]
+            senses = entries["translations"][0]
+            word_id = senses["text"][0]
+        else:
+            return None
+
+    #get definition
+    language_codes = ["en-us", "en-gb"]
+    for language_code in language_codes:
+        url = f"https://od-api.oxforddictionaries.com/api/v2/entries/{language_code}/{word_id.lower()}?fields=definitions&strictMatch=false"
+        r = requests.get(url,
+                         headers={
+                             "app_id": os.environ['OxfordAppID'],
+                             "app_key": os.environ['OxfordAppKey']
+                         })
+        if r.status_code == 200:
+            results = r.json()["results"][0]
+            lexicalEntries = results["lexicalEntries"][0]
+            entries = lexicalEntries["entries"][0]
+            senses = entries["senses"][0]
+            definition = senses["definitions"][0]
+            return definition
+
+    return None
+
+
+def generate_colored_word(guess: str,
+                          answer: str) -> (str, [str], [str], [str]):
     """
     Builds a string of emoji codes where each letter is
     colored based on the key:
@@ -266,22 +314,22 @@ def generate_colored_word(guess: str, answer: str) -> (str,[str],[str],[str]):
     dark = []
     # change colors to green if same letter and same place
     for i in range(len(guess_letters)):
-      if guess_letters[i] == answer_letters[i]:
-        green.append(guess_letters[i])
-        colored_word[i] = EMOJI_CODES["green"][guess_letters[i]]
-        answer_letters[i] = None
-        guess_letters[i] = None
+        if guess_letters[i] == answer_letters[i]:
+            green.append(guess_letters[i])
+            colored_word[i] = EMOJI_CODES["green"][guess_letters[i]]
+            answer_letters[i] = None
+            guess_letters[i] = None
     # change colors to yellow if same letter and not the same place
     for i in range(len(guess_letters)):
-      if guess_letters[i] is not None and guess_letters[i] in answer_letters:
-        yellow.append(guess_letters[i])
-        colored_word[i] = EMOJI_CODES["yellow"][guess_letters[i]]
-        answer_letters[answer_letters.index(guess_letters[i])] = None
-        guess_letters[i] = None
+        if guess_letters[i] is not None and guess_letters[i] in answer_letters:
+            yellow.append(guess_letters[i])
+            colored_word[i] = EMOJI_CODES["yellow"][guess_letters[i]]
+            answer_letters[answer_letters.index(guess_letters[i])] = None
+            guess_letters[i] = None
     # get the non matching letters
     for i in range(len(guess_letters)):
-      if guess_letters[i] is not None:
-        dark.append(guess_letters[i])
+        if guess_letters[i] is not None:
+            dark.append(guess_letters[i])
     green.sort()
     yellow.sort()
     dark.sort()
@@ -297,7 +345,8 @@ def generate_blanks() -> str:
     return "\N{WHITE MEDIUM SQUARE}" * 5
 
 
-def generate_puzzle_embed(user: nextcord.User, language: str, puzzle_id: int) -> nextcord.Embed:
+def generate_puzzle_embed(user: nextcord.User, language: str,
+                          puzzle_id: int) -> nextcord.Embed:
     """
     Generate an embed for a new puzzle given the puzzle id and user
     Args:
@@ -309,11 +358,9 @@ def generate_puzzle_embed(user: nextcord.User, language: str, puzzle_id: int) ->
     embed = nextcord.Embed(title="Wordle Clone")
     embed.description = "\n".join([generate_blanks()] * 6)
     embed.set_author(name=user.name, icon_url=user.display_avatar.url)
-    embed.set_footer(
-        text=f"ID: {puzzle_id} ︱{language}︱︱︱︱\n" 
-        "To play, use the command /playwordle\n"
-        "To guess, reply to this message with a word."
-    )
+    embed.set_footer(text=f"ID: {puzzle_id} ︱{language}︱︱︱︱\n"
+                     "To play, use the command /playwordle\n"
+                     "To guess, reply to this message with a word.")
     image = keyboard(puzzle_id, language, "", "", "")
     return embed, image
 
@@ -336,56 +383,57 @@ def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
     answer = popular_words(language)[puzzle_id].lower()
     colored_word, g, y, d = generate_colored_word(guess, answer)
     for l in g:
-      if l in green:
-        continue
-      green.append(l)
-      if l in yellow:
-        yellow.remove(l)
+        if l in green:
+            continue
+        green.append(l)
+        if l in yellow:
+            yellow.remove(l)
     for l in y:
-      if l in green or l in yellow:
-        continue
-      yellow.append(l)
+        if l in green or l in yellow:
+            continue
+        yellow.append(l)
     for l in d:
-      if l in dark:
-        continue
-      dark.append(l)
+        if l in dark:
+            continue
+        dark.append(l)
     empty_slot = generate_blanks()
     # replace the first blank with the colored word
     embed.description = embed.description.replace(empty_slot, colored_word, 1)
     # set footer
     embed.set_footer(
-      text=f"ID: {puzzle_id} ︱{language}︱{''.join(green)}︱{''.join(yellow)}︱{''.join(dark)}︱\n" 
-      "To play, use the command /playwordle\n"
-      "To guess, reply to this message with a word."
-    )
-    image = keyboard(puzzle_id, language, "".join(green), "".join(yellow), "".join(dark))
+        text=
+        f"ID: {puzzle_id} ︱{language}︱{''.join(green)}︱{''.join(yellow)}︱{''.join(dark)}︱\n"
+        "To play, use the command /playwordle\n"
+        "To guess, reply to this message with a word.")
+    image = keyboard(puzzle_id, language, "".join(green), "".join(yellow),
+                     "".join(dark))
     # check for game over
     num_empty_slots = embed.description.count(empty_slot)
     if guess == answer:
-      image = None
-      if num_empty_slots == 0:
-          embed.description += "\n\nPhew!"
-      if num_empty_slots == 1:
-          embed.description += "\n\nGreat!"
-      if num_empty_slots == 2:
-          embed.description += "\n\nSplendid!"
-      if num_empty_slots == 3:
-          embed.description += "\n\nImpressive!"
-      if num_empty_slots == 4:
-          embed.description += "\n\nMagnificent!"
-      if num_empty_slots == 5:
-          embed.description += "\n\nGenius!"
-      #get definition
-      definition = getDefinition(answer)
-      if definition != None:
-        embed.description += f"\n**definition:** {definition}"
+        image = None
+        if num_empty_slots == 0:
+            embed.description += "\n\nPhew!"
+        if num_empty_slots == 1:
+            embed.description += "\n\nGreat!"
+        if num_empty_slots == 2:
+            embed.description += "\n\nSplendid!"
+        if num_empty_slots == 3:
+            embed.description += "\n\nImpressive!"
+        if num_empty_slots == 4:
+            embed.description += "\n\nMagnificent!"
+        if num_empty_slots == 5:
+            embed.description += "\n\nGenius!"
+        #get definition
+        definition = getDefinition(answer, language)
+        if definition != None:
+            embed.description += f"\n**definition:** {definition}"
     elif num_empty_slots == 0:
-      image = None
-      embed.description += f"\n\nThe answer was {answer}!"
-      #get definition
-      definition = getDefinition(answer)
-      if definition != None:
-        embed.description += f"\n**definition:** {definition}"
+        image = None
+        embed.description += f"\n\nThe answer was {answer}!"
+        #get definition
+        definition = getDefinition(answer, language)
+        if definition != None:
+            embed.description += f"\n**definition:** {definition}"
     return embed, image
 
 
@@ -418,6 +466,3 @@ def is_game_over(embed: nextcord.Embed) -> bool:
         bool: Whether the game is over
     """
     return "\n\n" in embed.description
-
-
-

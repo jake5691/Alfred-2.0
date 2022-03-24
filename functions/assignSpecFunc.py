@@ -66,6 +66,8 @@ def extra_tile(priorities_list):
 def getNodes(priorities_list_full):
   nodes_list = []
   node_priority =[]
+  print("getnodes")
+  print(priorities_list_full)
   if priorities_list_full == 'Banner':
     l = redSpec_gr['Banner'][0]
     for node in l:
@@ -73,18 +75,20 @@ def getNodes(priorities_list_full):
       node_priority.append('Banner')
   else:
     for p in priorities_list_full:
-    
       if p in blueSpec_gr:
-        print(p)
+        #print("blue gr = ", blueSpec_gr)
         l = blueSpec_gr[p][0]
+        #print("l=", l)
       elif p in greenSpec_gr:
         l= greenSpec_gr[p][0]
+
       else:
         print ("l not assigned")
-    for node in l:
+
+      for node in l:
       #if node not in nodes_list:
-      nodes_list.append(node)
-      node_priority.append(p)
+        nodes_list.append(node)
+        node_priority.append(p)
 
   score = []
   title = []
@@ -97,7 +101,7 @@ def getNodes(priorities_list_full):
     
   data = {'Node':nodes_list, 'Score':score, 'Title':title,'maxLvl':maxLevel, 'Priority':node_priority}
   df = pd.DataFrame(data)
-  print(df)
+  #print(df)
   return(nodes_list, df)
 
 ### this is where you might want to tweak things to get better advice.  

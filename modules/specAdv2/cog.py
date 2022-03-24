@@ -3,7 +3,7 @@ from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Mess
 from functions import staticValues as sv
 from operator import attrgetter
 from nextcord.utils import get
-from classes.TargetAdd import TargetAddView
+from classes.SpecView import SpecView
 
 class specAdv2(commands.Cog):
   """Handle spec advice"""
@@ -20,7 +20,7 @@ class specAdv2(commands.Cog):
   @slash_command(name="specadviceadvanced",
                       description="Press send to add a target by selecting it.",
                       guild_ids=sv.gIDS)
-  async def addTarget(self,
+  async def specadviceadvanced(self,
       interaction: Interaction):
     """spec advice"""
     #Check if user has Permission
@@ -29,8 +29,8 @@ class specAdv2(commands.Cog):
       return
     
 
-    view = TargetAddView(self.structures, self.dataCog.getFlags(),self.dataCog.targets)
-    await interaction.response.send_message(content="Please select a sector:",view=view,ephemeral = True)
+    view = SpecView()
+    await interaction.response.send_message(content="Please select a path:",view=view,ephemeral = True)
 
 def setup(bot: commands.Bot):
   bot.add_cog(specAdv2(bot))

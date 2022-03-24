@@ -15,14 +15,22 @@ class Wordle(commands.Cog):
   @slash_command(description="Play a game of Wordle Clone", guild_ids=sv.gIDS)
   async def playwordle(self,
       interaction: Interaction,
+      language: str = SlashOption(
+          description="Select the language you want to play (default = en)",required=False
+      ),
       puzzle_id: int = SlashOption(
           description="Puzzle ID, leave out for a random puzzle", required=False
       ),
   ):
+      # get language
+      language = language.lower() if language != None else "en"
+      if language not in wf.languages:
+        await interaction.response.send_message("Please select an available language to play!", ephemeral=True)
+        return
       # generate a puzzle
-      puzzle_id = puzzle_id or wf.random_puzzle_id()
+      puzzle_id = puzzle_id or wf.random_puzzle_id(language)
       # create the puzzle to display
-      embed, keyboard = wf.generate_puzzle_embed(interaction.user, puzzle_id)
+      embed, keyboard = wf.generate_puzzle_embed(interaction.user, language, puzzle_id)
       #file = File(keyboard, filename="keyboard.png")
       #with io.BytesIO() as image_binary:
       #  keyboard.save(image_binary, 'PNG')
@@ -30,6 +38,18 @@ class Wordle(commands.Cog):
       # send the puzzle as an interaction response
       await interaction.response.send_message(embed=embed)
       await interaction.followup.send(file=keyboard)
+
+  @playwordle.on_autocomplete("language")
+  async def bannerName(self,interaction: Interaction, lang: str):
+    if not lang:
+        # send the full autocomplete list
+        await interaction.response.send_autocomplete(wf.languages)
+        return
+    # send a list of nearest matches from the list of dog breeds
+    get_near_lang = [
+        langb for langb in wf.languages if langb.lower().startswith(lang.lower())
+    ]
+    await interaction.response.send_autocomplete(get_near_lang)
 
         
   @commands.Cog.listener('on_message')
@@ -105,7 +125,8 @@ class Wordle(commands.Cog):
           return
 
       # check that the word is valid
-      if not wf.is_valid_word(guess):
+      language = embed.footer.text.split("︱")[1].strip()
+      if not wf.is_valid_word(guess, language):
           await message.reply("That is not a valid word", delete_after=5)
           try:
               await message.delete(delay=5)

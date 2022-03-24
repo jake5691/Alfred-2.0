@@ -76,9 +76,11 @@ class Target(Structure):
     #Check if we are passed the target time -> remind
     targetTime = time(self.hour,self.minute)
     nowtime = now.time()
-    if nowtime > targetTime:
+    diff = (nowtime.hour * 60 + nowtime.minute) - (targetTime.hour * 60 + targetTime.minute)
+    if diff > 0: #Remind 5min prior to target attack
       self.reminded = True
-      return (True, "Come online we are about to attack " + self.nameStr() + "\n")
+      if diff < 10: #don't send the reminder if the attack is already 5min overdue...
+        return (True, "Come online we are about to attack " + self.nameStr() + "\n")
     return (False, "Not time to attack yet")
       
   

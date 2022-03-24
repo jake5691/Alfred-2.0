@@ -1,1 +1,0 @@
-{"banner": false, "bannerActive": false, "currentLoyalty": 0, "currentSkillLvl": 0, "id": 422457383931871232, "lastLoyaltyUpdate": null, "lastSkillUpdate": null, "loyaltyData": "", "name": "Menfis", "ownerID": 0, "ownerName": "", "skillData": ""}

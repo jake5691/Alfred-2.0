@@ -57,6 +57,7 @@ class db:
 skillCap = 170
 loyalty_min = 401
 loyalty_max = 9201
+relRoles = [roles.RBC, roles.GuildMember, roles.Newbie]
 
 #category IDs
 class category:

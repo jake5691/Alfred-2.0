@@ -27,7 +27,6 @@ class Targets(commands.Cog):
     for target in self.dataCog.targets:
       needRemind, remindStr = target.needsReminder()
       if needRemind:
-        print(f"{needRemind} -> {remindStr}")
         guild = next((x for x in self.bot.guilds if x.id == sv.gIDS[0]), None)
         if guild == None:
           return
@@ -48,7 +47,7 @@ class Targets(commands.Cog):
     """Add Target from the structure list and assign time and flag"""
     #Check if user has Permission
     userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
+    if not(sv.roles.Leadership in userRoles) and not(sv.roles.GuildLeader in userRoles):
       await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
       return
     #check if command is send in correct channel
@@ -79,7 +78,6 @@ class Targets(commands.Cog):
     targets = self.dataCog.targets
     targets = sorted(targets, key=attrgetter('hour', 'minute'))
     for t in targets:
-      print(t.typ)
       tList += t.targetStr() + "\n"
     if targets == []:
       tList = "No targets in list."

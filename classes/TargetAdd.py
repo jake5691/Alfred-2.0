@@ -146,7 +146,6 @@ class TargetAddView(View):
         if not(s.sector in sectors):
           sectors.append(s.sector)
       sectors = sorted(sectors)
-      print(sectors)
       if len(sectors) > 1:
         self.content = "Select a Sector."
         self.add_item(SelectSector(sectors))

@@ -30,7 +30,7 @@ class specAdv2(commands.Cog):
     
 
     view = SpecView()
-    await interaction.response.send_message(content="Please select a path:",view=view,ephemeral = True)
+    await interaction.response.send_message(content="Please select a banner:",view=view,ephemeral = True)
 
 def setup(bot: commands.Bot):
   bot.add_cog(specAdv2(bot))

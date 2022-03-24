@@ -16,9 +16,11 @@ class SelectBanner(Select):
     super().__init__(placeholder = "Are you a banner castle",row=0,min_values=1, max_values=1, options = selectOptions)
   
   async def callback(self, interaction:Interaction):
-    #self.view.path = self.values[0]
+    
+    self.banner = self.values[0]
+    print(self.banner)
     #self.view.whatNext()
-    await interaction.response.edit_message(content="ok")
+    await interaction.response.edit_message(content=f'You selected banner is {self.banner}')
 
 
 class SpecView(View):
@@ -30,6 +32,15 @@ class SpecView(View):
     #self.targets = targets
     #self.flags = flags
     #self.filteredStructures = [s for s in self.structures]
-    self.add_item(SelectBanner())
+    self.banner = 'NotSet'
+    self.whatNext()
+
+  def whatNext(self):
+    #self.clear_items()
+    if self.banner == 'NotSet':
+      self.add_item(SelectBanner())
+      print(self.banner)
+      
+      
     
   

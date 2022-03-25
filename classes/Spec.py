@@ -16,3 +16,8 @@ class Spec():
     self.bottomRight = (center[0]+self.size,center[1]+self.size)
     self.activatable = False
     self.usefulScore = 0
+
+class specInfo():
+  def __init__(self):
+    self.language = None
+    self.banner = None

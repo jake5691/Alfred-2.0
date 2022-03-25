@@ -1,65 +1,83 @@
 from nextcord import SelectOption, Interaction
 from nextcord.ui import Select, View
-from classes.Target import Target
-from classes.Structure import Structure
-from classes.Member import MemberClass
-from functions import targetFunctions as tf
+from classes.Spec import specInfo
 
-##select language first
+
+
+
+
+
 class SelectLanguage(Select):
-  """Sets whether the user is a banner castle """
-  def __init__(self):
-    selectOptions = [
-      SelectOption(label='French', description = "bonjour"),
-      SelectOption(label='German', description = "guten tag")
-    ]
-    super().__init__(placeholder = "Are you a banner castle",row=0,min_values=1, max_values=1, options = selectOptions)
+  """Dropdown for sector"""
+  def __init__(self,languages:[str]):
+    super().__init__(placeholder = "Select the language",row=0,min_values=1, max_values=1)
+    options = []
+    for l in languages:
+      options.append(SelectOption(label=l))
+    self.options = options
   
   async def callback(self, interaction:Interaction):
-    
-    self.view.target_lang = self.values[0]
-    print(self.view.target_lang)
+    self.view.specinfo.language = self.values[0]
+    print (self.view.specinfo.language)
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
-
 class SelectBanner(Select):
-  """Sets whether the user is a banner castle """
-  def __init__(self):
-    selectOptions = [
-      SelectOption(label='True', description = "is a banner castle"),
-      SelectOption(label='False', description = "is not a banner castle")
-    ]
-    super().__init__(placeholder = "Are you a banner castle",row=0,min_values=1, max_values=1, options = selectOptions)
+  """Dropdown for type"""
+  def __init__(self,banner:[str]):
+    super().__init__(placeholder = "are you a banner castle",row=0,min_values=1, max_values=1)
+    options = []
+    for b in banner:
+      options.append(SelectOption(label=b))
+    self.options = options
   
   async def callback(self, interaction:Interaction):
-    
-    self.view.banner = self.values[0]
-    print(self.view.banner)
-    #self.view.whatNext()
-    await interaction.response.edit_message(content=f'You selected banner is {self.banner}')
+    self.view.specinfo.banner = self.values[0]
+    self.view.whatNext()
+    await interaction.response.edit_message(content=self.view.content, view = self.view)
 
-
+lang_list = ('German', 'French')
+banneropt = ('y', 'n')
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self):
+  def __init__(self,lang_list:[lang_list], banneropt:[banneropt]):
     super().__init__()
-
-    self.target_lang = 'NotSet'
-    self.banner = 'NotSet'
+    self.specinfo = specInfo()
+    self.lang_list = lang_list
+    self.banneropt = banneropt
     self.content = "."
     self.whatNext()
+    
 
   def whatNext(self):
-    #self.clear_items()
-    if self.target_lang == 'NotSet':
-      self.add_item(SelectLanguage())
-      print(self.target_lang)
-    if self.banner == 'NotSet':
-      self.add_item(SelectBanner())
-      print(self.banner)
-    
+    """Function that selects the next Dropdown to present"""
+    self.clear_items()
+    if self.specinfo.language == None:
+      #Get List of sectors if only one item continue to typ
+      languages = []
+      for l in self.lang_list:
+        if not(l in languages):
+          languages.append(l)
+      languages = sorted(languages)
+      print(languages)
+      print(len(languages))
+      if len(languages) > 1:
+        self.content = "Select a Language."
+        self.add_item(SelectLanguage(lang_list))
+        return
+      self.specinfo.language = lang_list[0]
       
-      
-    
-  
+    if self.specinfo.banner == None:
+      #Get List of typs if only one item continue to lvl
+      ban = []
+      for b in self.banneropt:
+        if not(b in ban):
+          ban.append(b)
+      ban = sorted(b)
+      print(ban)
+      print(len(ban))
+      if len(b) > 1:
+        self.content = f"You selected **{self.specinfo.language}**.\nNow select a type:"
+        self.add_item(SelectBanner(ban))
+        return
+      self.specinfo.banner = ban[0]

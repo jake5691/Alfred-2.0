@@ -5,11 +5,16 @@ from operator import attrgetter
 from nextcord.utils import get
 from classes.SpecView import SpecView
 
+
+
+
 class specAdv2(commands.Cog):
   """Handle spec advice"""
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
+    self.lang_list = ('German', 'French')
+    self.banneropt = ('yes', 'no')
     #self.banner = False
     #self.selectOpt = False
     #self.target_lang = 'en'
@@ -18,7 +23,7 @@ class specAdv2(commands.Cog):
   
   
   @slash_command(name="specadviceadvanced",
-                      description="Press send to add a target by selecting it.",
+                      description="Press for spec advice.",
                       guild_ids=sv.gIDS)
   async def specadviceadvanced(self,
       interaction: Interaction):
@@ -29,8 +34,8 @@ class specAdv2(commands.Cog):
       return
     
 
-    view = SpecView()
-    await interaction.response.send_message(content="Please select a banner:",view=view,ephemeral = True)
+    view = view = SpecView(self.lang_list, self.banneropt)
+    await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)
 
 def setup(bot: commands.Bot):
   bot.add_cog(specAdv2(bot))

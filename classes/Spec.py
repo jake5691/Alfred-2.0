@@ -21,3 +21,7 @@ class specInfo():
   def __init__(self):
     self.language = None
     self.banner = None
+    self.loyalty = None
+    self.fwmax = None
+    self.fulliw = None
+    self.spec = 0

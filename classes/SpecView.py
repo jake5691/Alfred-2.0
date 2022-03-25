@@ -9,7 +9,7 @@ from deep_translator import (GoogleTranslator)
 
 
 class SelectLanguage(Select):
-  """Dropdown for sector"""
+  """Dropdown for language"""
   def __init__(self,flags:[str]):
     super().__init__(placeholder = "Select the language",row=0,min_values=1, max_values=1)
     options = []
@@ -30,13 +30,13 @@ class SelectLanguage(Select):
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
 class SelectBanner(Select):
-  """Dropdown for type"""
-  def __init__(self,banner:[str],target_lang):
-    super().__init__(placeholder = "are you a banner castle",row=0,min_values=1, max_values=1)
+  """Dropdown for banner question"""
+  def __init__(self,banner:[str]):
+    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
     for b in banner:
-      bt = GoogleTranslator(source='auto', target=target_lang).translate(text=b)
-      options.append(SelectOption(label=bt))
+      #bt = GoogleTranslator(source='auto', target=target_lang).translate(text=b)
+      options.append(SelectOption(label=b))
     self.options = options
   
   async def callback(self, interaction:Interaction):
@@ -44,21 +44,63 @@ class SelectBanner(Select):
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
-lang_list = ('German', 'French')
-banneropt = ('y', 'n')
+class SelectLoyalty(Select):
+  """Dropdown for loyalty question"""
+  def __init__(self,opt:[str]):
+    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+    options = []
+    for op in opt:
+      #opt = GoogleTranslator(source='auto', target=target_lang).translate(text=op)
+      options.append(SelectOption(label=op))
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    self.view.specinfo.loyalty = self.values[0]
+    self.view.whatNext()
+    await interaction.response.edit_message(content=self.view.content, view = self.view)
+
+class SelectFullIW(Select):
+  """Dropdown for full on iron and wood question"""
+  def __init__(self,opt:[str]):
+    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+    options = []
+    for op in opt:
+      #opt = GoogleTranslator(source='auto', target=target_lang).translate(text=op)
+      options.append(SelectOption(label=op))
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    self.view.specinfo.fulliw = self.values[0]
+    self.view.whatNext()
+    await interaction.response.edit_message(content=self.view.content, view = self.view)
+
+class SelectFWMax(Select):
+  """Dropdown for full on iron and wood question"""
+  def __init__(self,opt:[str]):
+    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+    options = []
+    for op in opt:
+      #opt = GoogleTranslator(source='auto', target=target_lang).translate(text=op)
+      options.append(SelectOption(label=op))
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    self.view.specinfo.fwmax = self.values[0]
+    self.view.whatNext()
+    await interaction.response.edit_message(content=self.view.content, view = self.view)
+
 flags =()
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,lang_list:[lang_list], banneropt:[banneropt],flags:[flags]):
+  def __init__(self,flags:[flags]):
     super().__init__()
     self.specinfo = specInfo()
     #self.lang_list = lang_list
     self.flags = flags
-    self.banneropt = banneropt
     self.content = "."
     self.whatNext()
-    
 
+    
   def whatNext(self):
     """Function that selects the next Dropdown to present"""
     self.clear_items()
@@ -70,30 +112,60 @@ class SpecView(View):
           languages.append(l)
       languages = sorted(languages)
       if len(languages) > 1:
-        self.content = "Select a Language."
+        self.content = "Language:"
         self.add_item(SelectLanguage(languages))
         return
        # [,,'🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
-      if languages[0] == '🇬🇧':
-        self.specinfo.language = 'english'
-      elif languages[0] == '🇪🇸':
-        self.specinfo.language = 'spanish'
-      else: 
-        self.specinfo.language = 'german'
-        
+      self.specinfo.language = 'english'
       
+
     if self.specinfo.banner == None:
       #Get List of typs if only one item continue to lvl
-      ban = []
-      for b in self.banneropt:
-        if not(b in ban):
-          ban.append(b)
-      ban = sorted(ban)
-
-      if len(ban) > 1:
-        text = "Are you a banner castle?"
+      
+      opt = []
+      for op in ('YES', 'NO'):
+        opt.append(op)
+      if len(opt) > 1:
+        text = 'Are you a banner castle?'
         content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
         self.content = content
-        self.add_item(SelectBanner(ban, self.specinfo.language))
+        self.add_item(SelectBanner(opt))
         return
-      self.specinfo.banner = ban[0]
+      self.specinfo.banner = opt[0]
+
+    if self.specinfo.loyalty == None:
+      opt = []
+      for op in ('YES', 'NO'):
+        opt.append(op)
+      if len(opt) > 1:
+        text = "Have you reached your target loyalty?"
+        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+        self.content = content
+        self.add_item(SelectLoyalty(opt))
+        return
+      self.specinfo.loyalty = opt[0]
+
+    if self.specinfo.fulliw == None:
+      opt = []
+      for op in ('YES', 'NO'):
+        opt.append(op)
+      if len(opt) > 1:
+        text = "Are you full on iron and wood tiles?"
+        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+        self.content = content
+        self.add_item(SelectFullIW(opt))
+        return
+      self.specinfo.fulliw = opt[0]
+
+    if self.specinfo.fwmax == None:
+      opt = []
+      for op in ('YES', 'NO'):
+        opt.append(op)
+      if len(opt) > 1:
+        text = "Are your Frontline Workshops at the maximum level?"
+        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+        self.content = content
+        self.add_item(SelectFWMax(opt))
+        return
+      self.specinfo.fwmax = opt[0]
+    

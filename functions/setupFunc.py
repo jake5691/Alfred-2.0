@@ -6,6 +6,7 @@ from classes.Structure import Structure
 from functions import staticValues as sv
 import jsons
 from classes.Member import MemberClass
+from classes.Settings import Feature, Command
 
 def loadCogs(client: commands.Bot):
   """Load the initializing Cog"""
@@ -91,3 +92,37 @@ def checkCurrent(member:MemberClass) -> MemberClass:
     member.lastSkillUpdate = member.skillData.at[idx,'date']
   return member
 
+
+def allFeatures() -> [Feature]:
+  allFeat = []
+  #Coffee
+  coffeeFeature = Feature(name="coffee", description="Fun feature to serve coffee", dbKey="featureCoffee")
+  coffeeCommand = Command(name="coffee", description="Send a random coffee picture to every message with the keyword **coffee** in it", typ="on_message")
+  coffeeFeature.commands.append(coffeeCommand)
+  allFeat.append(coffeeFeature)
+
+  #RandomReply
+  randReplyFeature = Feature(name="Random Reply", description="Give random reply to keywords", dbKey="featureRandomReply")
+  randomReplyCommand = Command(name="randomReply", description="Send a random reply to specific keywords", typ="on_message")
+  randomReplyCommand.keywords = {}
+  randomReplyCommand.replies = {}
+  randReplyFeature.commands.append(randomReplyCommand)
+  allFeat.append(randReplyFeature)
+
+
+  ##Load stored Data
+  allFeatu = []
+  for f in allFeat:
+    if f.dbKey in db.keys():
+      print(db[f.dbKey])
+    else:
+      db[f.dbKey] = jsons.dumps(f)
+    ff = jsons.loads(db[f.dbKey], Feature)
+    coms = []
+    for c in ff.commands:
+      coms.append(jsons.loads(str(c).replace("'",'"'), Command))
+    ff.commands = coms
+    allFeatu.append(ff)
+    print(ff.commands)
+  return allFeatu
+  

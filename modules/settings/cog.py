@@ -1,5 +1,6 @@
 from nextcord.ext import commands
 from functions import staticValues as sv
+from functions import setupFunc as sf
 
 class Settings(commands.Cog):
   """Settings"""
@@ -8,6 +9,19 @@ class Settings(commands.Cog):
     self.bot = bot
     self.catName = "Alfred"
     self.chanName = "Overview"
+
+  @commands.Cog.listener('on_ready')
+  async def on_ready(self):
+    """load/set default settings for all servers where Alfred is present"""
+    self.Features = sf.allFeatures()
+    for guild in self.bot.guilds:
+      #print(guild.name)
+      for f in self.Features:
+        if guild.id in f.enabled:
+          print(f"{guild.name} has {f.name} values stored")
+        else:
+          f.enabled[guild.id] = False #set feature per default to False
+          print(f"{guild.name} has {f.name} values NOT stored")
 
   def isDev(ctx):
     userRoles = [i.id for i in ctx.author.roles]

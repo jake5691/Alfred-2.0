@@ -13,6 +13,7 @@ from deep_translator import (GoogleTranslator)
 #intents = nextcord.Intents.default()
 #intents.members = True
 #client = nextcord.Client(intents=intents)
+import os
 from nextcord import File, Embed
 from nextcord.ext import commands
 from functions.drawSpecFunc import draw
@@ -31,6 +32,10 @@ class specAdv(commands.Cog):
 
   async def giveAdvice(self,message):
     msg = message.content.lower()
+    user = message.author.id
+    redFile = f"drawings/red{user}.png"
+    blueFile = f"drawings/blue{user}.png"
+    greenFile = f"drawings/green{user}.png"
     print(msg)
     if message.author == self.bot.user or message.author.bot:
         return
@@ -155,7 +160,7 @@ class specAdv(commands.Cog):
             notes = "Your focus is on maximising honour from tiles. You will sometimes switch to green left and extra queues to upgrade Assault and Guardian Fortresses.\n\nIn the last week, you may need to put extra points on processing queues to ensure that you process all of your materials.  Depending on resets you may also prioritise having 49 points on green left (building honour).  Land development and extra tiles might not be necessary.\n\n"
             list1 = ('TileHonour', 'FWMat', 'ExtraTile')
             list2 = ('UpgradeBuild', 'TwoExtQs', 'Land')
-          specAdvice(list1, list2,userSpecPoints, groups_bl, groups_gr)
+          specAdvice(list1, list2,userSpecPoints, groups_bl, groups_gr, redFile, greenFile, blueFile)
           await message.channel.send(notes)
           if target_lang != 'en':
             notes_trans = GoogleTranslator(
@@ -164,8 +169,11 @@ class specAdv(commands.Cog):
         
           
   
-          await message.channel.send(file=File('blueSpec.png'))
-          await message.channel.send(file=File('greenSpec.png'))
+          await message.channel.send(file=File(blueFile))
+          await message.channel.send(file=File(greenFile))
+          os.remove(blueFile)
+          os.remove(greenFile)
+      
 
 
 def setup(bot: commands.Bot):

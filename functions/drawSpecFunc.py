@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 import matplotlib.pyplot as plt
 
 
+
 #Image size
 x = 1024
 y = x
@@ -122,7 +123,7 @@ def getPoint_gr(angle:int,radius:int=6,offset_x:int=0):
 
 
 
-def draw(groups, col1, col2, filename, firstSpecs):
+def draw(groups, col1, col2, filename, firstSpecs, colour):
   grey = (200,200,200)
   white = (255,255,255)
 
@@ -178,7 +179,7 @@ def draw(groups, col1, col2, filename, firstSpecs):
         fill_color = col2
         #Define the size of the circle
       
-      if filename == "blueSpec.png":
+      if colour == "blue":
         if s.bigCircle:
           size = 18
         else: 
@@ -192,7 +193,7 @@ def draw(groups, col1, col2, filename, firstSpecs):
           fill=fill_color,
           width=2
         )
-      elif filename == "greenSpec.png":
+      elif colour == "green":
         draw.ellipse(
           [s.topLeft,
            s.bottomRight],

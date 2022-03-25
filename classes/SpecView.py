@@ -9,10 +9,10 @@ from classes.Spec import specInfo
 
 class SelectLanguage(Select):
   """Dropdown for sector"""
-  def __init__(self,languages:[str]):
+  def __init__(self,flags:[str]):
     super().__init__(placeholder = "Select the language",row=0,min_values=1, max_values=1)
     options = []
-    for l in languages:
+    for l in flags:
       options.append(SelectOption(label=l))
     self.options = options
   
@@ -38,12 +38,14 @@ class SelectBanner(Select):
 
 lang_list = ('German', 'French')
 banneropt = ('y', 'n')
+flags =()
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,lang_list:[lang_list], banneropt:[banneropt]):
+  def __init__(self,lang_list:[lang_list], banneropt:[banneropt],flags:[flags]):
     super().__init__()
     self.specinfo = specInfo()
     self.lang_list = lang_list
+    self.flags = flags
     self.banneropt = banneropt
     self.content = "."
     self.whatNext()
@@ -55,7 +57,7 @@ class SpecView(View):
     if self.specinfo.language == None:
       #Get List of sectors if only one item continue to typ
       languages = []
-      for l in self.lang_list:
+      for l in self.flags:
         if not(l in languages):
           languages.append(l)
       languages = sorted(languages)
@@ -63,9 +65,9 @@ class SpecView(View):
       print(len(languages))
       if len(languages) > 1:
         self.content = "Select a Language."
-        self.add_item(SelectLanguage(lang_list))
+        self.add_item(SelectLanguage(languages))
         return
-      self.specinfo.language = lang_list[0]
+      self.specinfo.language = languages[0]
       
     if self.specinfo.banner == None:
       #Get List of typs if only one item continue to lvl
@@ -79,4 +81,4 @@ class SpecView(View):
         self.content = f"You selected **{self.specinfo.language}**.\nNow select a type:"
         self.add_item(SelectBanner(ban))
         return
-      self.specinfo.banner = banneropt[0]
+      self.specinfo.banner = ban[0]

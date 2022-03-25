@@ -6,7 +6,7 @@ from nextcord.utils import get
 from classes.SpecView import SpecView
 
 
-
+flags =['🇬🇧','🇪🇸','🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
 
 class specAdv2(commands.Cog):
   """Handle spec advice"""
@@ -15,6 +15,7 @@ class specAdv2(commands.Cog):
     self.bot = bot
     self.lang_list = ('German', 'French')
     self.banneropt = ('yes', 'no')
+    self.flags = flags
     #self.banner = False
     #self.selectOpt = False
     #self.target_lang = 'en'
@@ -34,7 +35,7 @@ class specAdv2(commands.Cog):
       return
     
 
-    view = view = SpecView(self.lang_list, self.banneropt)
+    view = view = SpecView(self.lang_list, self.banneropt, self.flags)
     await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)
 
 def setup(bot: commands.Bot):

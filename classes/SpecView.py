@@ -73,11 +73,10 @@ class SpecView(View):
       for b in self.banneropt:
         if not(b in ban):
           ban.append(b)
-      ban = sorted(b)
-      print(ban)
-      print(len(ban))
-      if len(b) > 1:
+      ban = sorted(ban)
+
+      if len(ban) > 1:
         self.content = f"You selected **{self.specinfo.language}**.\nNow select a type:"
         self.add_item(SelectBanner(ban))
         return
-      self.specinfo.banner = ban[0]
+      self.specinfo.banner = banneropt[0]

@@ -1,6 +1,7 @@
 from nextcord import SelectOption, Interaction
 from nextcord.ui import Select, View
 from classes.Spec import specInfo
+from deep_translator import (GoogleTranslator)
 
 
 
@@ -17,18 +18,25 @@ class SelectLanguage(Select):
     self.options = options
   
   async def callback(self, interaction:Interaction):
-    self.view.specinfo.language = self.values[0]
+    if self.values[0] == '🇬🇧':
+      self.view.specinfo.language = 'english'
+    elif self.values[0]== '🇪🇸':
+      self.view.specinfo.language = 'spanish'
+    else: 
+      self.view.specinfo.language = 'german'
+    #self.view.specinfo.language = self.values[0]
     print (self.view.specinfo.language)
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
 class SelectBanner(Select):
   """Dropdown for type"""
-  def __init__(self,banner:[str]):
+  def __init__(self,banner:[str],target_lang):
     super().__init__(placeholder = "are you a banner castle",row=0,min_values=1, max_values=1)
     options = []
     for b in banner:
-      options.append(SelectOption(label=b))
+      bt = GoogleTranslator(source='auto', target=target_lang).translate(text=b)
+      options.append(SelectOption(label=bt))
     self.options = options
   
   async def callback(self, interaction:Interaction):
@@ -44,7 +52,7 @@ class SpecView(View):
   def __init__(self,lang_list:[lang_list], banneropt:[banneropt],flags:[flags]):
     super().__init__()
     self.specinfo = specInfo()
-    self.lang_list = lang_list
+    #self.lang_list = lang_list
     self.flags = flags
     self.banneropt = banneropt
     self.content = "."
@@ -61,13 +69,18 @@ class SpecView(View):
         if not(l in languages):
           languages.append(l)
       languages = sorted(languages)
-      print(languages)
-      print(len(languages))
       if len(languages) > 1:
         self.content = "Select a Language."
         self.add_item(SelectLanguage(languages))
         return
-      self.specinfo.language = languages[0]
+       # [,,'🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
+      if languages[0] == '🇬🇧':
+        self.specinfo.language = 'english'
+      elif languages[0] == '🇪🇸':
+        self.specinfo.language = 'spanish'
+      else: 
+        self.specinfo.language = 'german'
+        
       
     if self.specinfo.banner == None:
       #Get List of typs if only one item continue to lvl
@@ -78,7 +91,7 @@ class SpecView(View):
       ban = sorted(ban)
 
       if len(ban) > 1:
-        self.content = f"You selected **{self.specinfo.language}**.\nNow select a type:"
-        self.add_item(SelectBanner(ban))
+        self.content = f"You selected **{self.specinfo.language}**.\nAre you a banner castle?:"
+        self.add_item(SelectBanner(ban, self.specinfo.language))
         return
       self.specinfo.banner = ban[0]

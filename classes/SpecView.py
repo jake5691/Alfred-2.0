@@ -91,7 +91,9 @@ class SpecView(View):
       ban = sorted(ban)
 
       if len(ban) > 1:
-        self.content = f"You selected **{self.specinfo.language}**.\nAre you a banner castle?:"
+        text = "Are you a banner castle?"
+        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+        self.content = content
         self.add_item(SelectBanner(ban, self.specinfo.language))
         return
       self.specinfo.banner = ban[0]

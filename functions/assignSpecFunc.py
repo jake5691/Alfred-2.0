@@ -256,7 +256,7 @@ def most_use(priorities_list_full, userSpecPoints):
   return(userSpecPointsNew)
  
 
-def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr):
+def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr, redFile, greenFile, blueFile):
   priorities_list = list1
   finished = False
   while finished == False:
@@ -298,8 +298,8 @@ def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(list1, list2)
-  draw(groups_bl,bl,bl_l,"blueSpec.png", firstSpecs_bl)
-  draw(groups_gr,gr,gr_l,"greenSpec.png", firstSpecs_gr)
+  draw(groups_bl,bl,bl_l, blueFile, firstSpecs_bl, "blue")
+  draw(groups_gr,gr,gr_l, greenFile, firstSpecs_gr, "green")
 
   #set all nodes back to zero
   for group in groups_bl:

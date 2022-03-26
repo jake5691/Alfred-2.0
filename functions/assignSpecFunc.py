@@ -8,6 +8,8 @@ from functions.drawSpecFunc import draw
 import pandas as pd
 import itertools
 import datetime 
+import functools
+import typing
 
 
 # if extra tiles is selected, puts a group for each extra tile node in the list of priorities
@@ -272,7 +274,8 @@ def most_use(priorities_list_full, userSpecPoints):
  
 
 def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
-  if view.specinfo.banner == True:
+  #print(view.specinfo.banner)
+  if view.specinfo.banner == "YES":
     print("banner start")
     if userSpecPoints >= 47:
       list0 = ("Banner")

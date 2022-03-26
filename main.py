@@ -16,6 +16,7 @@ import logging
 from functions import setupFunc as sf
 from replit import db
 
+
 logging.basicConfig(level=logging.WARNING)
 
 intents = nextcord.Intents.default()
@@ -24,6 +25,7 @@ intents.reactions = True
 client = commands.Bot(intents=intents, command_prefix="?A")
 
 #sf.importStructureCSV()
+
 
 @client.event
 async def on_ready():

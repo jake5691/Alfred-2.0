@@ -1,10 +1,10 @@
 #maximise usefulness score given the contraint of user spec points
 #allocate usefulness points to specific nodes based on user priorities
 
-from functions.blueSpecFunc import *
-from functions.greenSpecFunc import *
-from functions.redSpecFunc import *
-from functions.drawSpecFunc import *
+from functions.blueSpecFunc import groups_bl,bl,bl_l, firstSpecs_bl, blueSpec_gr
+from functions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr
+from functions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
+from functions.drawSpecFunc import draw
 import pandas as pd
 import itertools
 import datetime 
@@ -325,9 +325,12 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(list1, list2)
-  draw(groups_bl,bl,bl_l,"blueSpec.png", firstSpecs_bl)
-  draw(groups_gr,gr,gr_l,"greenSpec.png", firstSpecs_gr)
-  draw(groups_red,red,red_l,"redSpec.png", firstSpecs_red)
+  blueFile = draw(groups_bl,bl,bl_l,"blueSpec.png", firstSpecs_bl)
+  print("blueSpec.png")
+  greenFile = draw(groups_gr,gr,gr_l,"greenSpec.png", firstSpecs_gr)
+  print("green draw")
+  redFile = draw(groups_red,red,red_l,"redSpec.png", firstSpecs_red)
+  print("red")
 
   #set all nodes back to zero
   for group in groups_bl:
@@ -335,6 +338,7 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
     for s in group:
       s.currentLvl  = 0
       s.usefulScore = 0
+  print("blue reset")
   for group in groups_gr:
       #Loop specs in group
     for s in group:
@@ -345,4 +349,7 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
     for s in group:
       s.currentLvl  = 0
       s.usefulScore = 0
+  print("all reset")
+
+  return(blueFile, greenFile, redFile)
         

@@ -95,18 +95,22 @@ class SelectOutput(Select):
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = 120
     try:
-      specAdvice(self.view.specinfo.banner,self.view.specinfo.list1, self.view.specinfo.list2, spec, groups_bl, groups_gr)
-      
+      outputs = specAdvice(self.view.specinfo.banner,self.view.specinfo.list1, self.view.specinfo.list2, spec, groups_bl, groups_gr)
+      print("spec advice complete even if it's wrong")
+      blueFile = outputs[0]
+      greenFile = outputs[1]
+      redFile = outputs[2]
+      notes = self.view.specinfo.notes
     #send advice
-      await channel.send(content =notes)
-      if specInfo.language != 'en':
-        notes_trans = GoogleTranslator(source='auto', target=target_lang).translate(text=notes)
-        await channel.send(content =notes_trans) 
-      await channel.send(file=File('blueSpec.png'))
-      await channel.send(file=File('greenSpec.png'))
-      await channel.send(file=File('redSpec.png'))
+      await self.view.channel.send(content =notes)
+      #if specInfo.language != 'en':
+       # notes_trans = GoogleTranslator(source='auto', target=target_lang).translate(text=notes)
+        #await self.view.channel.send(content =notes_trans) 
+      await self.view.channel.send(file=File(blueFile))
+      await self.view.channel.send(file=File(greenFile))
+      await self.view.channel.send(file=File(redFile))
     except:
-      await channel.send(content = "Oops, something went wrong")
+      await self.view.channel.send(content = "Oops, something went wrong")
 
 
 flags =()

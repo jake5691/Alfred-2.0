@@ -3,9 +3,9 @@ from nextcord.ui import Select, View
 from classes.Spec import specInfo
 from deep_translator import (GoogleTranslator)
 from functions.assignSpecFunc import specAdvice
-from functions.blueSpecFunc import groups_bl
-from functions.greenSpecFunc import groups_gr
-from functions.redSpecFunc import groups_red
+from functions.blueSpecFunc import *
+from functions.greenSpecFunc import *
+from functions.redSpecFunc import *
 
 class SelectLanguage(Select):
   """Dropdown for language for translation"""
@@ -90,17 +90,16 @@ class SelectOutput(Select):
     self.options = options
 
   async def callback(self, interaction:Interaction):
-    
+    self.view.specinput(self.view.channel)
     #await self.view.specinput(channel)
     await interaction.response.edit_message(content=self.view.content, view = self.view)
-    spec = 120
-    print(groups_bl)
+    spec = 57
     try:
-      outputs = specAdvice(self.view.specinfo.banner,self.view.specinfo.list1, self.view.specinfo.list2, spec, groups_bl, groups_gr, self.view.bluefile, self.view.greenfile, self.view.redfile)
+      specAdvice(self.view, spec, groups_bl, groups_gr)
       print("spec advice complete even if it's wrong")
-      blueFile = outputs[0]
-      greenFile = outputs[1]
-      redFile = outputs[2]
+      blueFile = self.view.bluefile
+      greenFile = self.view.greenfile
+      redFile = self.view.redfile
       notes = self.view.specinfo.notes
     #send advice
       await self.view.channel.send(content =notes)
@@ -117,14 +116,14 @@ class SelectOutput(Select):
 flags =()
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,flags:[flags], channel, redFile, blueFile, greenFile):
+  def __init__(self,flags:[flags], channel, blueFile, greenFile, redFile):
     super().__init__()
     self.specinfo = specInfo()
     self.channel = channel
     self.flags = flags
-    self.redfile = redFile
-    self.greenfile = greenFile
     self.bluefile = blueFile
+    self.greenfile = greenFile
+    self.redfile = redFile
     self.content = "."
     self.whatNext()
     self.specinput(self.channel)
@@ -202,10 +201,10 @@ class SpecView(View):
       
     if self.specinfo.output == False:
       opt = []
-      for op in ('YES', 'NO'):
-        opt.append(op)
-      if len(opt) > 1:
-        text = "Working...this could take a few moments so please have a cup of coffee"
+      
+      opt.append("OK")
+      if len(opt) > 0:
+        text = "Press OK to continue...this could take a few moments so please have a cup of coffee"
         content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
         self.content = content
         self.add_item(SelectOutput(self.channel))
@@ -217,6 +216,8 @@ class SpecView(View):
 
   def specinput(self, channel):
     #specinfo = specInfo()
+    print("loyalty = ", self.specinfo.loyalty)
+    #print(self.view.specinfo.loyalty)
     if self.specinfo.loyalty == 'NO':
     
       self.specinfo.notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n \n"

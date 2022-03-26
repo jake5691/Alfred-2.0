@@ -146,10 +146,10 @@ def getPoint_red(angle:int,radius:int=6,offset_x:int=0):
 
 
 
-def draw(groups, col1, col2, filename, firstSpecs):
+def draw(groups, col1, col2, filename, firstSpecs, colour):
   grey = (200,200,200)
   white = (255,255,255)
-
+  print(filename)
   with Image.new("RGB",(x,y),color = (255,255,255)) as im:
     draw = ImageDraw.Draw(im)
     #Draw the connections
@@ -202,7 +202,7 @@ def draw(groups, col1, col2, filename, firstSpecs):
         fill_color = col2
         #Define the size of the circle
       
-      if filename == "blueSpec.png":
+      if colour == "blue":
         if s.bigCircle:
           size = 18
         else: 
@@ -216,7 +216,7 @@ def draw(groups, col1, col2, filename, firstSpecs):
           fill=fill_color,
           width=2
         )
-      elif filename == "greenSpec.png":
+      elif colour == "green":
         draw.ellipse(
           [s.topLeft,
            s.bottomRight],
@@ -224,7 +224,7 @@ def draw(groups, col1, col2, filename, firstSpecs):
           fill=fill_color,
           width=2
         )
-      elif filename == "redSpec.png":
+      elif colour == "red":
         draw.ellipse(
           [s.topLeft,
            s.bottomRight],

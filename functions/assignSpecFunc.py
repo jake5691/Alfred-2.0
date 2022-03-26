@@ -112,7 +112,6 @@ def useful_assign(priorities_list):
   #if LoyaltySpeedGroup is in the priorities, it should have a higher weighting than other priorities
   for index, row in nodes_list2.iterrows():
     if row['Priority'] in ('LoyaltySpeedGroup'):
-      print("lsg")
       if row['Node'].activatable == True:
         nodes_list2.at[index, 'Score'] = 50
       else:
@@ -272,8 +271,8 @@ def most_use(priorities_list_full, userSpecPoints):
   return(userSpecPointsNew)
  
 
-def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr,  blueFile, greenFile, redFile):
-  if banner == True:
+def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
+  if view.specinfo.banner == True:
     print("banner start")
     if userSpecPoints >= 47:
       list0 = ("Banner")
@@ -284,7 +283,7 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr,  blue
   if userSpecPoints == 0:
     finished = True
   else:
-    priorities_list = list1
+    priorities_list = view.specinfo.list1
     finished = False
   while finished == False:
     priorities = []
@@ -293,9 +292,9 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr,  blue
   #gets dependencies for Extra tiles depending on other selections
       if i == "ExtraTile":
         eval_list = []
-        for i in list1:
+        for i in view.specinfo.list1:
           eval_list.append(i)
-        for i in list2:
+        for i in view.specinfo.list2:
           eval_list.append(i)
         ExTiles = extra_tile(eval_list)
         for g in ExTiles:
@@ -317,20 +316,20 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr,  blue
  
     print("updates sp", userSpecPoints)
     if userSpecPoints > 0:
-      if priorities_list == list2:
+      if priorities_list == view.specinfo.list2:
         finished = True
       else:
-        priorities_list = list2
+        priorities_list = view.specinfo.list2
     else:
       finished = True
   
-  print(list1, list2)
-  draw(groups_bl,bl,bl_l,blueFile, firstSpecs_bl)
-  print("blueSpec.png")
-  draw(groups_gr,gr,gr_l,greenFile, firstSpecs_gr)
-  print("green draw")
-  draw(groups_red,red,red_l,redFile, firstSpecs_red)
-  print("red")
+  print(view.specinfo.list1, view.specinfo.list2)
+  draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue")
+  
+  draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green")
+  
+  draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red")
+  
 
   #set all nodes back to zero
   for group in groups_bl:

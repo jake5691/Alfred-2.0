@@ -33,12 +33,14 @@ class specAdv2(commands.Cog):
     if not(sv.channel.skill_point_advice == interaction.channel.id):
       await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
       return
+    
+    channel = interaction.channel
     user = interaction.user.id
     redFile = f"drawings/red{user}.png"
     blueFile = f"drawings/blue{user}.png"
     greenFile = f"drawings/green{user}.png"
-    channel = interaction.channel
-    view  = SpecView( self.flags, channel, redFile, blueFile, greenFile)
+        
+    view  = SpecView( self.flags, channel, blueFile, greenFile, redFile)
     
     
     await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)

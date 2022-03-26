@@ -180,6 +180,7 @@ class specAdv(commands.Cog):
       await channel.send(file=File('blueSpec.png'))
       await channel.send(file=File('greenSpec.png'))
       await channel.send(file=File('redSpec.png'))
+      await channel.send()
     except:
       await channel.send(content = "Oops, something went wrong")
     

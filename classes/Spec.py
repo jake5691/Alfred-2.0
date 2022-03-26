@@ -25,3 +25,7 @@ class specInfo():
     self.fwmax = None
     self.fulliw = None
     self.spec = 0
+    self.list1 = []
+    self.list2 = []
+    self.notes = None
+    self.output = False

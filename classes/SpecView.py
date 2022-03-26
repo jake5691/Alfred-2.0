@@ -1,4 +1,4 @@
-from nextcord import SelectOption, Interaction
+from nextcord import SelectOption, Interaction, File
 from nextcord.ui import Select, View
 from classes.Spec import specInfo
 from deep_translator import (GoogleTranslator)
@@ -101,6 +101,7 @@ class SelectOutput(Select):
       greenFile = self.view.greenfile
       redFile = self.view.redfile
       notes = self.view.specinfo.notes
+      print(blueFile)
     #send advice
       await self.view.channel.send(content =notes)
       #if specInfo.language != 'en':

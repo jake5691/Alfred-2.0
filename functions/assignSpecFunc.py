@@ -272,7 +272,7 @@ def most_use(priorities_list_full, userSpecPoints):
   return(userSpecPointsNew)
  
 
-def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
+def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr,  blueFile, greenFile, redFile):
   if banner == True:
     print("banner start")
     if userSpecPoints >= 47:
@@ -325,11 +325,11 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(list1, list2)
-  blueFile = draw(groups_bl,bl,bl_l,"blueSpec.png", firstSpecs_bl)
+  draw(groups_bl,bl,bl_l,blueFile, firstSpecs_bl)
   print("blueSpec.png")
-  greenFile = draw(groups_gr,gr,gr_l,"greenSpec.png", firstSpecs_gr)
+  draw(groups_gr,gr,gr_l,greenFile, firstSpecs_gr)
   print("green draw")
-  redFile = draw(groups_red,red,red_l,"redSpec.png", firstSpecs_red)
+  draw(groups_red,red,red_l,redFile, firstSpecs_red)
   print("red")
 
   #set all nodes back to zero
@@ -351,5 +351,5 @@ def specAdvice(banner, list1, list2, userSpecPoints, groups_bl, groups_gr):
       s.usefulScore = 0
   print("all reset")
 
-  return(blueFile, greenFile, redFile)
+  return
         

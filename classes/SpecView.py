@@ -3,9 +3,9 @@ from nextcord.ui import Select, View
 from classes.Spec import specInfo
 from deep_translator import (GoogleTranslator)
 from functions.assignSpecFunc import specAdvice
-from functions.blueSpecFunc import *
-from functions.greenSpecFunc import *
-from functions.redSpecFunc import *
+from functions.blueSpecFunc import groups_bl
+from functions.greenSpecFunc import groups_gr
+from functions.redSpecFunc import groups_red
 
 class SelectLanguage(Select):
   """Dropdown for language for translation"""
@@ -94,8 +94,9 @@ class SelectOutput(Select):
     #await self.view.specinput(channel)
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = 120
+    print(groups_bl)
     try:
-      outputs = specAdvice(self.view.specinfo.banner,self.view.specinfo.list1, self.view.specinfo.list2, spec, groups_bl, groups_gr)
+      outputs = specAdvice(self.view.specinfo.banner,self.view.specinfo.list1, self.view.specinfo.list2, spec, groups_bl, groups_gr, self.view.bluefile, self.view.greenfile, self.view.redfile)
       print("spec advice complete even if it's wrong")
       blueFile = outputs[0]
       greenFile = outputs[1]
@@ -116,11 +117,14 @@ class SelectOutput(Select):
 flags =()
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,flags:[flags], channel):
+  def __init__(self,flags:[flags], channel, redFile, blueFile, greenFile):
     super().__init__()
     self.specinfo = specInfo()
     self.channel = channel
     self.flags = flags
+    self.redfile = redFile
+    self.greenfile = greenFile
+    self.bluefile = blueFile
     self.content = "."
     self.whatNext()
     self.specinput(self.channel)

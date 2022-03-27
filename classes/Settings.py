@@ -5,7 +5,7 @@ class Feature():
   def __init__(self, name=str, description=str, dbKey=str):
     self.name:str = name
     self.description:str = name
-    self.enabled = {}
+    self.enabled:{int:bool} = {}
     self.commands:[Command] = []
     self.dbKey:str = dbKey
 

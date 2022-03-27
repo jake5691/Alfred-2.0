@@ -113,16 +113,19 @@ def allFeatures() -> [Feature]:
   ##Load stored Data
   allFeatu = []
   for f in allFeat:
-    if f.dbKey in db.keys():
-      print(db[f.dbKey])
-    else:
+    if f.dbKey not in db.keys():
+      print(f.dbKey)
+      print(db.prefix("feature"))
       db[f.dbKey] = jsons.dumps(f)
     ff = jsons.loads(db[f.dbKey], Feature)
+    newenabled = {}
+    for g in ff.enabled:
+      newenabled[int(g)] = True if ff.enabled[g] == "True" else False
+    ff.enabled = newenabled
     coms = []
     for c in ff.commands:
       coms.append(jsons.loads(str(c).replace("'",'"'), Command))
     ff.commands = coms
     allFeatu.append(ff)
-    print(ff.commands)
   return allFeatu
   

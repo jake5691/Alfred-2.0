@@ -108,7 +108,7 @@ def allFeatures() -> [Feature]:
   randomReplyCommand.replies = {}
   randReplyFeature.commands.append(randomReplyCommand)
   allFeat.append(randReplyFeature)
-
+  
 
   ##Load stored Data
   allFeatu = []
@@ -116,7 +116,7 @@ def allFeatures() -> [Feature]:
     if f.dbKey not in db.keys():
       print(f.dbKey)
       print(db.prefix("feature"))
-      db[f.dbKey] = jsons.dumps(f)
+    db[f.dbKey] = jsons.dumps(f)
     ff = jsons.loads(db[f.dbKey], Feature)
     newenabled = {}
     for g in ff.enabled:

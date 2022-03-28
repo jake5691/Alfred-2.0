@@ -1,8 +1,10 @@
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from functions import staticValues as sv
 from functions import setupFunc as sf
 from replit import db
+from nextcord import Interaction, slash_command
 import jsons
+from classes.SettingsView import SettingsView
 
 class Settings(commands.Cog):
   """Settings"""
@@ -11,24 +13,38 @@ class Settings(commands.Cog):
     self.bot = bot
     self.catName = "Alfred"
     self.chanName = "Overview"
+    self.Features = sf.allFeatures()
 
   @commands.Cog.listener('on_ready')
   async def on_ready(self):
     """load/set default settings for all servers where Alfred is present"""
-    self.Features = sf.allFeatures()
     for guild in self.bot.guilds:
       #print(guild.name)
       for f in self.Features:
         if guild.id in f.enabled:
           if f.enabled[guild.id]:
-            print("Active")
+            print(f"{guild.name} has {f.name} Active")
           else:
-            print("Deactive")
-          print(f"{guild.name} has {f.name} values stored")
+            print(f"{guild.name} has {f.name} Deactive")
+          #print(f"{guild.name} has {f.name} values stored")
         else:
           f.enabled[guild.id] = False #set feature per default to False
           db[f.dbKey] = jsons.dumps(f)
           print(f"{guild.name} has {f.name} values NOT stored")
+
+  def isLeader(interaction):
+    userRoles = [i.id for i in interaction.user.roles]
+    if not(sv.roles.Developers in userRoles):
+      print(f"{interaction.user.display_name} is not allowed to use this.")
+      return False
+    return True
+
+  @slash_command(name="settings",
+                      description="Press send to view and edit the settings.",
+                      guild_ids=sv.gIDS)
+  @application_checks.check(isLeader)
+  async def settingsSlashCommand(self, interaction: Interaction):
+    await interaction.response.send_message("**Settings**\nSelect the Feature you want to view", view=SettingsView(self.Features, interaction.guild_id), ephemeral=True)
 
   def isDev(ctx):
     userRoles = [i.id for i in ctx.author.roles]

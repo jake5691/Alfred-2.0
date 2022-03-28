@@ -281,6 +281,26 @@ class Members(commands.Cog):
       for e in mf.getFirstAbove(self.dataCog.members,int(skLo[0]),typ):
         await message.channel.send(embed=e,delete_after=300)
         return
+        
+    #Loyalty/skill Ranking above certain lvl
+    elif any(word in msg for word in ["above", ">","higher","greater"]):
+      if any(word in msg for word in ["skill", "spec"]):
+        typ = "skill"
+      elif any(word in msg for word in ["loyalty"]):
+        typ = "loyalty"
+      else:
+        await message.channel.send("Cannot process your Input",delete_after = 30)
+        await message.delete()
+        return
+      skLo = re.findall('[0-9]+', msg)
+      if len(skLo) == 1:
+        embeds = mf.getRankingEmbeds(self.dataCog.members, typ, above=int(skLo[0]))
+        #Post Ranking
+        for e in embeds:
+          await message.channel.send(embed=e, delete_after = 240)
+        return
+      else:
+        print('Unprocessable message: ' + msg)
     else:
       skLo = re.findall('[0-9]+', msg)
     skLoo = []

@@ -139,8 +139,9 @@ class MemberClass:
       return False, 0, datetime.now() + timedelta(hours = -2)
     if self.loyaltyData.loyalty.max() > loy:
       loys = self.loyaltyData[self.loyaltyData['loyalty'].ge(loy)]
-      lo = loys['date'].idxmin()
-      return True, loys['loyalty'][lo], loys['date'][lo]
+      loys.reset_index(inplace=True)
+      #lo = loys['date'].idxmin()
+      return True, loys['loyalty'][0], loys['date'][0]
     else:
       loys = (self.loyaltyData.sort_values(by=['date'], ascending=True))
       loys['sortLoy'] = [-i for i in loys['loyalty']]
@@ -153,8 +154,9 @@ class MemberClass:
       return False, 0, datetime.now() + timedelta(hours = -2)
     if self.skillData.skill.max() > skill:
       vals = self.skillData[self.skillData['skill'].ge(skill)]
-      va = vals['date'].idxmin()
-      return True, vals['skill'][va], vals['date'][va]
+      vals.reset_index(inplace=True)
+      #va = vals['date'].idxmin()
+      return True, vals['skill'][0], vals['date'][0]
     else:
       vals = (self.skillData.sort_values(by=['date'], ascending=True))
       vals['sortSki'] = [-i for i in vals['skill']]

@@ -263,6 +263,24 @@ class Members(commands.Cog):
           msg = msg.replace(b.lower(),'').strip()
           skLo = re.findall('[0-9]+', msg)
           break
+    #First to reach certain lvl/Loyalty and time diff of the rest to get there
+    elif "first at" in msg:
+      skLo = re.findall('[0-9]+', msg)
+      if any(word in msg for word in ["skill", "spec"]):
+        typ = "skill"
+      elif any(word in msg for word in ["loyalty"]):
+        typ = "loyalty"
+      else:
+        await message.channel.send("Cannot process your Input",delete_after = 30)
+        await message.delete()
+        return
+      if len(skLo) != 1:
+        await message.channel.send("Cannot process your Input",delete_after = 30)
+        await message.delete()
+
+      for e in mf.getFirstAbove(self.dataCog.members,int(skLo[0]),typ):
+        await message.channel.send(embed=e,delete_after=300)
+        return
     else:
       skLo = re.findall('[0-9]+', msg)
     skLoo = []
@@ -270,6 +288,7 @@ class Members(commands.Cog):
       s = int(s)
       if (s < sv.skillCap and s > 0) or (s >= sv.loyalty_min and s <= sv.loyalty_max):
         skLoo.append(s)
+        
     if len(skLoo) == 0:
       return # do nothing if no correct numbers are inserted
     #Get correct member instance

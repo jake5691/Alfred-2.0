@@ -6,6 +6,7 @@ from functions.assignSpecFunc import specAdvice
 from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
 from functions.redSpecFunc import *
+from functions.generalFunc import target_lang
 #from classes.Member import MemberClass
 
 
@@ -19,13 +20,11 @@ class SelectLanguage(Select):
     self.options = options
   
   async def callback(self, interaction:Interaction):
-    if self.values[0] == '🇬🇧':
-      self.view.specinfo.language = 'english'
-    elif self.values[0]== '🇪🇸':
-      self.view.specinfo.language = 'spanish'
-    else: 
-      self.view.specinfo.language = 'german'
+    print(self.values[0])
+    self.view.specinfo.language = target_lang(self.values[0])
+    print(self.view.specinfo.language)
     self.view.whatNext()
+    
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
 
@@ -122,7 +121,7 @@ class SelectOutput(Select):
 flags =()
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,flags:[flags], channel, blueFile, greenFile, redFile, user, member):
+  def __init__(self,flags:[flags], channel, blueFile, greenFile, redFile,  member):
     super().__init__()
     
     self.specinfo = specInfo()
@@ -131,7 +130,6 @@ class SpecView(View):
     self.bluefile = blueFile
     self.greenfile = greenFile
     self.redfile = redFile
-    self.userid = user
     self.member = member
     self.specinfo.spec = self.member.currentSkillLvl
     self.content = "."
@@ -153,7 +151,7 @@ class SpecView(View):
         self.content = "Language:"
         self.add_item(SelectLanguage(languages))
         return
-       # [,,'🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
+       
       self.specinfo.language = 'english'
       
     if self.specinfo.banner == None:

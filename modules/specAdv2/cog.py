@@ -42,7 +42,7 @@ class specAdv2(commands.Cog):
     blueFile = f"drawings/blue{user}.png"
     greenFile = f"drawings/green{user}.png"
         
-    view  = SpecView( self.flags, channel, blueFile, greenFile, redFile, user, member)
+    view  = SpecView( self.flags, channel, blueFile, greenFile, redFile, member)
     
     
     await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)

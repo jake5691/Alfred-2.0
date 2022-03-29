@@ -1,6 +1,21 @@
 from nextcord.ui import Select, View, Button
 from nextcord import SelectOption, Interaction, ButtonStyle
-
+################
+class AllowedChannelsRightButton(Button):
+  """Button to navigate between selecting allowed channels"""
+  def __init__(self):
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    
+  async def callback(self, interaction:Interaction):
+    pass
+################
+class AllowedChannelsLeftButton(Button):
+  """BButton to navigate between selecting allowed channels"""
+  def __init__(self):
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    
+  async def callback(self, interaction:Interaction):
+    pass
 ################
 class AllowedChannelsButton(Button):
   """Button to select allowed channels"""
@@ -12,11 +27,11 @@ class AllowedChannelsButton(Button):
     for children in self.view.children:
       if children.row == 0:
         toRemove.append(children)
-      print(children.row)
     for c in toRemove:
       self.view.remove_item(c)
     self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[:24]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
+    
 ################
 class AllowedChannels(Select):
   """Dropdown for Allowed Channels"""
@@ -39,6 +54,8 @@ class AllowedChannels(Select):
       else:
         if op.value in self.view.command.allowedChannels[self.view.guildID]:
           self.view.command.allowedChannels[self.view.guildID].remove(op.value)
+    self.view.remove_item(self)
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[:24]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
 
 ################

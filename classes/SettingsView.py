@@ -1,21 +1,70 @@
 from nextcord.ui import Select, View, Button
 from nextcord import SelectOption, Interaction, ButtonStyle
 ################
+class BackButton(Button):
+  """Button to navigate back"""
+  def __init__(self):
+    super().__init__(style=ButtonStyle.secondary, emoji="🔙", row=1)
+      
+  async def callback(self, interaction:Interaction):
+    self.view.textChannelGroup = 0
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+
+    self.view.add_item(AllowedChannelsButton())
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
 class AllowedChannelsRightButton(Button):
   """Button to navigate between selecting allowed channels"""
-  def __init__(self):
+  def __init__(self, current, max):
     super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
-    
+    if current == max-1:
+      self.disabled = True
+    else:
+      self.disabled = False
+      
   async def callback(self, interaction:Interaction):
-    pass
+    self.view.textChannelGroup += 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
+    self.view.add_item(BackButton())
+    self.view.add_item(AllowedChannelsLeftButton(self.view.textChannelGroup))
+    self.view.add_item(AllowedChannelsRightButton(self.view.textChannelGroup, len(self.view.textChannels)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+    
 ################
 class AllowedChannelsLeftButton(Button):
-  """BButton to navigate between selecting allowed channels"""
-  def __init__(self):
+  """Button to navigate between selecting allowed channels"""
+  def __init__(self, current):
     super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    if current == 0:
+      self.disabled = True
+    else:
+      self.disabled = False
     
   async def callback(self, interaction:Interaction):
-    pass
+    self.view.textChannelGroup -= 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
+    self.view.add_item(BackButton())
+    self.view.add_item(AllowedChannelsLeftButton(self.view.textChannelGroup))
+    self.view.add_item(AllowedChannelsRightButton(self.view.textChannelGroup, len(self.view.textChannels)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+
 ################
 class AllowedChannelsButton(Button):
   """Button to select allowed channels"""
@@ -29,7 +78,10 @@ class AllowedChannelsButton(Button):
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
-    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[:24]))
+    self.view.add_item(BackButton())
+    self.view.add_item(AllowedChannelsLeftButton(self.view.textChannelGroup))
+    self.view.add_item(AllowedChannelsRightButton(self.view.textChannelGroup, len(self.view.textChannels)))
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
     
 ################
@@ -55,7 +107,7 @@ class AllowedChannels(Select):
         if op.value in self.view.command.allowedChannels[self.view.guildID]:
           self.view.command.allowedChannels[self.view.guildID].remove(op.value)
     self.view.remove_item(self)
-    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[:24]))
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
 
 ################
@@ -145,8 +197,10 @@ class SettingsView(View):
     self.feature = None
     self.command = None
     self.guildID = guild.id
-    self.textChannels = guild.text_channels
-    self.roles = guild.roles
+    self.textChannels = [guild.text_channels[x:x+25] for x in range(0, len(guild.text_channels), 25)]
+    self.textChannelGroup = 0
+    self.roles = [guild.roles[x:x+25] for x in range(0, len(guild.roles), 25)]
+    self.roleGroup = 0
     self.text = ""
     self.content()
     self.add_item(SelectFeature(self.settings, self.guildID, self.feature))

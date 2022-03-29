@@ -22,6 +22,7 @@ class specAdv2(commands.Cog):
   def __init__(self, bot: commands.Bot):
     self.bot = bot
     self.flags = flags
+    self.dataCog = bot.get_cog('Data')
 
   @slash_command(name="specadviceadvanced",
                       description="Press for spec advice.",
@@ -36,11 +37,12 @@ class specAdv2(commands.Cog):
     
     channel = interaction.channel
     user = interaction.user.id
+    member = self.dataCog.getMemberByID(user)    
     redFile = f"drawings/red{user}.png"
     blueFile = f"drawings/blue{user}.png"
     greenFile = f"drawings/green{user}.png"
         
-    view  = SpecView( self.flags, channel, blueFile, greenFile, redFile)
+    view  = SpecView( self.flags, channel, blueFile, greenFile, redFile, user, member)
     
     
     await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)

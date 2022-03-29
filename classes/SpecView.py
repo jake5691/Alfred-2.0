@@ -6,6 +6,8 @@ from functions.assignSpecFunc import specAdvice
 from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
 from functions.redSpecFunc import *
+#from classes.Member import MemberClass
+
 
 class SelectLanguage(Select):
   """Dropdown for language for translation"""
@@ -25,6 +27,9 @@ class SelectLanguage(Select):
       self.view.specinfo.language = 'german'
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
+
+
+
 
 class SelectBanner(Select):
   """Dropdown for banner question"""
@@ -93,7 +98,7 @@ class SelectOutput(Select):
     self.view.specinput(self.view.channel)
     #await self.view.specinput(channel)
     await interaction.response.edit_message(content=self.view.content, view = self.view)
-    spec = 57
+    spec = self.view.specinfo.spec
     try:
       specAdvice(self.view, spec, groups_bl, groups_gr)
       print("spec advice complete even if it's wrong")
@@ -117,19 +122,21 @@ class SelectOutput(Select):
 flags =()
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,flags:[flags], channel, blueFile, greenFile, redFile):
+  def __init__(self,flags:[flags], channel, blueFile, greenFile, redFile, user, member):
     super().__init__()
+    
     self.specinfo = specInfo()
     self.channel = channel
     self.flags = flags
     self.bluefile = blueFile
     self.greenfile = greenFile
     self.redfile = redFile
+    self.userid = user
+    self.member = member
+    self.specinfo.spec = self.member.currentSkillLvl
     self.content = "."
     self.whatNext()
     self.specinput(self.channel)
-
-  
 
     
   def whatNext(self):
@@ -149,7 +156,6 @@ class SpecView(View):
        # [,,'🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
       self.specinfo.language = 'english'
       
-
     if self.specinfo.banner == None:
       #Get List of typs if only one item continue to lvl
       

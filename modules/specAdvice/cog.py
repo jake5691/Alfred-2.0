@@ -36,7 +36,7 @@ class specAdv(commands.Cog):
     redFile = f"drawings/red{user}.png"
     blueFile = f"drawings/blue{user}.png"
     greenFile = f"drawings/green{user}.png"
-    print(msg)
+    #print(msg)
     if message.author == self.bot.user or message.author.bot:
         return
 

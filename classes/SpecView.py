@@ -5,7 +5,6 @@ from deep_translator import (GoogleTranslator)
 from functions.assignSpecFunc import specAdvice
 from functions.blueSpecFunc import groups_bl
 from functions.greenSpecFunc import groups_gr
-
 from functions.generalFunc import target_lang
 
 
@@ -73,59 +72,16 @@ class SelectBanner(Select):
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
-class SelectLoyalty(Select):
-  """Dropdown for loyalty question"""
-  def __init__(self,opt:[str]):
-    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
-    options = []
-    for op in opt:
-      options.append(SelectOption(label=op))
-    self.options = options
-
-  async def callback(self, interaction:Interaction):
-    self.view.specinfo.loyalty = self.values[0]
-    self.view.whatNext()
-    await interaction.response.edit_message(content=self.view.content, view = self.view)
-
-class SelectFullIW(Select):
-  """Dropdown for full on iron and wood question"""
-  def __init__(self,opt:[str]):
-    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
-    options = []
-    for op in opt:
-      options.append(SelectOption(label=op))
-    self.options = options
-
-  async def callback(self, interaction:Interaction):
-    self.view.specinfo.fulliw = self.values[0]
-    self.view.whatNext()
-    await interaction.response.edit_message(content=self.view.content, view = self.view)
-
-class SelectFWMax(Select):
-  """Dropdown for full on iron and wood question"""
-  def __init__(self,opt:[str]):
-    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
-    options = []
-    for op in opt:
-      options.append(SelectOption(label=op))
-    self.options = options
-
-  async def callback(self, interaction:Interaction):
-    self.view.specinfo.fwmax = self.values[0]
-    self.view.whatNext()
-    await interaction.response.edit_message(content=self.view.content, view = self.view)
-
 class SelectOutput(Select):
   """Dropdown for full on iron and wood question"""
   def __init__(self, channel):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
-    options.append(SelectOption(label="ok"))
+    options.append(SelectOption(label="OK"))
     self.options = options
 
   async def callback(self, interaction:Interaction):
     self.view.specinput()
-    #await self.view.specinput(channel)
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = self.view.specinfo.spec
     try:
@@ -147,10 +103,9 @@ class SelectOutput(Select):
       await self.view.channel.send(content = "Oops, something went wrong")
 
 
-flags =()
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,flags:[flags], channel, blueFile, greenFile, redFile,  member):
+  def __init__(self,flags, channel, blueFile, greenFile, redFile,  member):
     super().__init__()
     
     self.specinfo = specInfo()
@@ -173,7 +128,7 @@ class SpecView(View):
     """Function that selects the next Dropdown to present"""
     self.clear_items()
     if self.specinfo.language == None:
-      #Get List of sectors if only one item continue to typ
+      #get languages from those in staticvalues
       languages = []
       for l in self.flags:
         if not(l in languages):
@@ -229,65 +184,31 @@ class SpecView(View):
         trans.append(p_trans)
       opt = list(zip(preset, trans))
       text = "Select Preset option?"
-      content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+      trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+      if self.specinfo.language != 'en':
+        content = text + trans
+      else:
+        content = text
       self.content = content
-      self.specinfo.loyalty = "na"
-      self.specinfo.fwmax = "na"
-      self.specinfo.fulliw = "na"
       self.ready = True
       self.add_item(SelectPreset(opt))
       return
 
-    if self.specinfo.loyalty == None:
-      opt = []
-      for op in ('YES', 'NO'):
-        opt.append(op)
-      if len(opt) > 1:
-        text = "Have you reached your target loyalty?"
-        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-        self.content = content
-        self.add_item(SelectLoyalty(opt))
-        return
-      self.specinfo.loyalty = opt[0]
-
-    if self.specinfo.fulliw == None:
-      opt = []
-      for op in ('YES', 'NO'):
-        opt.append(op)
-      if len(opt) > 1:
-        text = "Are you full on iron and wood tiles?"
-        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-        self.content = content
-        self.add_item(SelectFullIW(opt))
-        return
-      self.specinfo.fulliw = opt[0]
-
-    if self.specinfo.fwmax == None:
-      opt = []
-      for op in ('YES', 'NO'):
-        opt.append(op)
-      if len(opt) > 1:
-        text = "Are your Frontline Workshops at the maximum level?"
-        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-        self.content = content
-        self.add_item(SelectFWMax(opt))
-        return
-      self.specinfo.fwmax = opt[0]
-      
     if self.output == False:
       opt = []
-      
       opt.append("OK")
       if len(opt) > 0:
         text = "Press OK to continue...this could take a few moments so please have a cup of coffee"
-        content = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+        trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+        if self.specinfo.language != 'en':
+            content = text + trans
+        else:
+          content = text
         self.content = content
         self.add_item(SelectOutput(self.channel))
         return
       
-      
-     
-      #self.add_item(self.specinput)
+
 
   def specinput(self):
     #specinfo = specInfo()

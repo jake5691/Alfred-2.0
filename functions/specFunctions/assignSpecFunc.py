@@ -1,15 +1,14 @@
 #maximise usefulness score given the contraint of user spec points
 #allocate usefulness points to specific nodes based on user priorities
 
-from functions.blueSpecFunc import groups_bl,bl,bl_l, firstSpecs_bl, blueSpec_gr
-from functions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr
-from functions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
-from functions.drawSpecFunc import draw
+from functions.specFunctions.blueSpecFunc import groups_bl,bl,bl_l, firstSpecs_bl, blueSpec_gr
+from functions.specFunctions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr
+from functions.specFunctions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
+from functions.specFunctions.drawSpecFunc import draw
 import pandas as pd
 import itertools
 import datetime 
-import functools
-import typing
+
 
 
 # if extra tiles is selected, puts a group for each extra tile node in the list of priorities
@@ -252,7 +251,7 @@ def assignPoints(nodeset,userSpecPoints):
       
 
 
-def most_use(priorities_list_full, userSpecPoints):
+async def most_use(priorities_list_full, userSpecPoints):
   print("start", datetime.datetime.now())
   df = getNodes(priorities_list_full)[1]
   Nodes = list(df['Node'])
@@ -315,7 +314,7 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
     print(priorities)
 
     useful_assign(priorities)
-    userSpecPoints  = most_use(priorities, userSpecPoints)
+    userSpecPoints  = await most_use(priorities, userSpecPoints)
  
     print("updates sp", userSpecPoints)
     if userSpecPoints > 0:

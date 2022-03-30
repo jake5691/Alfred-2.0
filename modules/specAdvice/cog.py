@@ -5,10 +5,10 @@
 from deep_translator import (GoogleTranslator)
 from nextcord import File, Embed
 from nextcord.ext import commands
-from functions.drawSpecFunc import draw
-from functions.blueSpecFunc import *
-from functions.greenSpecFunc import *
-from functions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
+from functions.specFunctions.drawSpecFunc import draw
+from functions.specFunctions.blueSpecFunc import *
+from functions.specFunctions.greenSpecFunc import *
+from functions.specFunctions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
 from functions import staticValues as sv
 from replit import db
 from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message

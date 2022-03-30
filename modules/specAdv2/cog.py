@@ -1,18 +1,8 @@
 from nextcord.ext import commands
 from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
 from functions import staticValues as sv
-from operator import attrgetter
-from nextcord.utils import get
 from classes.SpecView import SpecView
-from classes.Spec import specInfo
-from deep_translator import (GoogleTranslator)
-from functions.drawSpecFunc import draw
-from functions.blueSpecFunc import *
-from functions.greenSpecFunc import *
-from functions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
-from functions.specInput import specInput
-import functions.staticValues as sv
-import time
+
 
 
 

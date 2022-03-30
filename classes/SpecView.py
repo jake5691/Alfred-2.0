@@ -2,9 +2,9 @@ from nextcord import SelectOption, Interaction, File
 from nextcord.ui import Select, View
 from classes.Spec import specInfo
 from deep_translator import (GoogleTranslator)
-from functions.assignSpecFunc import specAdvice
-from functions.blueSpecFunc import groups_bl
-from functions.greenSpecFunc import groups_gr
+from functions.specFunctions.assignSpecFunc import specAdvice
+from functions.specFunctions.blueSpecFunc import groups_bl
+from functions.specFunctions.greenSpecFunc import groups_gr
 from functions.generalFunc import target_lang
 
 
@@ -198,7 +198,7 @@ class SpecView(View):
       opt = []
       opt.append("OK")
       if len(opt) > 0:
-        text = "Press OK to continue...this could take a few moments so please have a cup of coffee"
+        text = "Press OK to continue...this could take a few moments so please have a cup of coffee.\n\n"
         trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
         if self.specinfo.language != 'en':
             content = text + trans

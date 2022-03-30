@@ -146,7 +146,7 @@ def getPoint_red(angle:int,radius:int=6,offset_x:int=0):
 
 
 
-def draw(groups, col1, col2, filename, firstSpecs, colour):
+async def draw(groups, col1, col2, filename, firstSpecs, colour):
   grey = (200,200,200)
   white = (255,255,255)
   print(filename)

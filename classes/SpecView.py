@@ -129,7 +129,7 @@ class SelectOutput(Select):
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = self.view.specinfo.spec
     try:
-      specAdvice(self.view, spec, groups_bl, groups_gr)
+      await specAdvice(self.view, spec, groups_bl, groups_gr)
       blueFile = self.view.bluefile
       greenFile = self.view.greenfile
       redFile = self.view.redfile

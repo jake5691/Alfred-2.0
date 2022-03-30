@@ -273,7 +273,7 @@ def most_use(priorities_list_full, userSpecPoints):
   return(userSpecPointsNew)
  
 
-def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
+async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   #print(view.specinfo.banner)
   if view.specinfo.banner == "YES":
     print("banner start")
@@ -327,11 +327,11 @@ def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(view.specinfo.list1, view.specinfo.list2)
-  draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue")
+  await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue")
   
-  draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green")
+  await draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green")
   
-  draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red")
+  await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red")
   
 
   #set all nodes back to zero

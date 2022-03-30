@@ -72,6 +72,19 @@ class SelectBanner(Select):
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
+class SelectOwn(Select):
+  """Dropdown for full on iron and wood question"""
+  def __init__(self):
+    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+    options = []
+    options.append(SelectOption(label="OK"))
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    #self.view.whatNext()
+    await interaction.response.edit_message(content=self.view.content, view = self.view)
+  
+
 class SelectOutput(Select):
   """Dropdown for full on iron and wood question"""
   def __init__(self, channel):
@@ -193,6 +206,18 @@ class SpecView(View):
       self.ready = True
       self.add_item(SelectPreset(opt))
       return
+
+    if self.pathway == "Select":
+      text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
+      trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+      if self.specinfo.language != 'en':
+        content = text + trans
+      else:
+        content = text
+      self.content = content
+      self.add_item(SelectOwn())
+      return
+      
 
     if self.output == False:
       opt = []

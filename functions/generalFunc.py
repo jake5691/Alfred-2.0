@@ -40,8 +40,10 @@ def Ranking2Embeds(ranking,fTitle,description,header,color):
 
 def target_lang(flag):
   if flag == '🇬🇧':
-      target_lang = 'english'
-  elif flag== '🇪🇸':
+    target_lang = 'english'
+  elif flag == '🇩🇪':
+    target_lang = 'german'
+  elif flag == '🇪🇸':
     target_lang = 'spanish'
   elif flag == '🇰🇷':
     target_lang = 'korean'

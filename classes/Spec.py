@@ -24,8 +24,9 @@ class specInfo():
     self.loyalty = None
     self.fwmax = None
     self.fulliw = None
+    self.preset = None
     self.spec = 0
     self.list1 = []
     self.list2 = []
     self.notes = None
-    self.output = False
+    

@@ -11,9 +11,10 @@ from functions.blueSpecFunc import *
 from functions.greenSpecFunc import *
 from functions.assignSpecFunc import useful_assign, most_use, extra_tile, specAdvice
 from functions.specInput import specInput
+import functions.staticValues as sv
 import time
 
-flags =['🇬🇧','🇪🇸','🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
+
 
 
 class specAdv2(commands.Cog):
@@ -21,16 +22,16 @@ class specAdv2(commands.Cog):
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
-    self.flags = flags
+    self.flags = sv.flags
     self.dataCog = bot.get_cog('Data')
 
-  @slash_command(name="specadviceadvanced",
+  @slash_command(name="specadvice",
                       description="Press for spec advice.",
                       guild_ids=sv.gIDS)
   async def specadviceadvanced(self,
       interaction: Interaction):
-    """spec advice"""
-    #Check if user has Permission
+    """Provides advice on where to place your specialisation points"""
+    #Check if advice is asked for in the right channel
     if not(sv.channel.skill_point_advice == interaction.channel.id):
       await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
       return

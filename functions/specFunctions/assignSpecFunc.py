@@ -203,7 +203,7 @@ def combinations (df):
   print("num poss comb", len(possibleComb))
   return (possibleComb)
 
-def evaluate(Nodes, df, userSpecPoints):
+async def evaluate(Nodes, df, userSpecPoints):
   possibleSets = []
   setPoints = []
   setScores = []
@@ -263,7 +263,7 @@ async def most_use(priorities_list_full, userSpecPoints):
     userSpecPointsNew = userSpecPoints - nodePoints
   else:
     print("eval", datetime.datetime.now())
-    eval = evaluate(Nodes, df, userSpecPoints)
+    eval = await evaluate(Nodes, df, userSpecPoints)
     nodeset = eval[0]
     userSpecPointsNew = eval[1]
     print("assign p", datetime.datetime.now())

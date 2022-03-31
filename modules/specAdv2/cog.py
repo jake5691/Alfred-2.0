@@ -27,17 +27,25 @@ class specAdv2(commands.Cog):
       return
     
     channel = interaction.channel
-    user = interaction.user.id
-    member = self.dataCog.getMemberByID(user)    
-    redFile = f"drawings/red{user}.png"
-    blueFile = f"drawings/blue{user}.png"
-    greenFile = f"drawings/green{user}.png"
+    user = interaction.user
+    try:
+      member = self.dataCog.getMemberByID(user.id)
+      points = member.currentSkillLvl
+      if points < 10:
+        await interaction.response.send_message("Please enter your specialisation points in the #loyalty skill channel", ephemeral = True)
         
-    view  = SpecView( self.flags, channel, blueFile, greenFile, redFile, member)
-    
+        return
+    except:
+      await interaction.response.send_message("Please enter your specialisation points in the #loyalty skill channel", ephemeral = True)
+      return
       
+    redFile = f"drawings/red{user.id}.png"
+    blueFile = f"drawings/blue{user.id}.png"
+    greenFile = f"drawings/green{user.id}.png"
+        
+    view  = SpecView( self.flags, channel, blueFile, greenFile, redFile, member, user)
     
-    
+
     await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)
     #waitUntil(view.specinfo.ready == True, specInput(channel, view)) #runs function  
     

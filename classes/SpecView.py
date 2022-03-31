@@ -6,6 +6,7 @@ from functions.specFunctions.assignSpecFunc import specAdvice
 from functions.specFunctions.blueSpecFunc import groups_bl
 from functions.specFunctions.greenSpecFunc import groups_gr
 from functions.generalFunc import target_lang
+import os
 
 
 
@@ -74,8 +75,8 @@ class SelectBanner(Select):
 
 class SelectOwn(Select):
   """Dropdown for full on iron and wood question"""
-  def __init__(self):
-    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+  def __init__(self, opt):
+    super().__init__(placeholder = ".",row=0,min_values=3, max_values=3)
     options = []
     options.append(SelectOption(label="OK"))
     self.options = options
@@ -83,6 +84,7 @@ class SelectOwn(Select):
   async def callback(self, interaction:Interaction):
     #self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
+
   
 
 class SelectOutput(Select):
@@ -104,27 +106,32 @@ class SelectOutput(Select):
       greenFile = self.view.greenfile
       redFile = self.view.redfile
       notes = self.view.specinfo.notes
-      print(blueFile)
     #send advice
-      await self.view.channel.send(content =notes)
-      #if specInfo.language != 'en':
-       # notes_trans = GoogleTranslator(source='auto', target=target_lang).translate(text=notes)
-        #await self.view.channel.send(content =notes_trans) 
-      await self.view.channel.send(file=File(blueFile))
-      await self.view.channel.send(file=File(greenFile))
-      await self.view.channel.send(file=File(redFile))
+      await self.view.channel.send(content =f"{self.view.author.mention}: {notes}")
+      if self.view.specinfo.language != 'english':
+        print(self.view.specinfo.language)
+        notes_trans = GoogleTranslator(source='auto', target=self.view.specinfo.language).translate(text=notes)
+        await self.view.channel.send(content =f"{self.view.author.mention}: {notes_trans}") 
+      await self.view.channel.send(content = f"{self.view.author.mention}",file=File(blueFile))
+      await self.view.channel.send(f"{self.view.author.mention}",file=File(greenFile))
+      await self.view.channel.send(f"{self.view.author.mention}",file=File(redFile))
       await self.view.channel.send(content=helpText)
     except:
-      await self.view.channel.send(content = "Oops, something went wrong")
+      await self.view.channel.send(content = f"{self.view.author.mention},Oops, something went wrong")
       await self.view.channel.send(content=helpText)
+
+    os.remove(redFile)
+    os.remove(blueFile)
+    os.remove(greenFile)
 
 
 class SpecView(View):
   """The view to hold the Dropdown and Buttons"""
-  def __init__(self,flags, channel, blueFile, greenFile, redFile,  member):
+  def __init__(self,flags, channel, blueFile, greenFile, redFile,  member, user):
     super().__init__()
     
     self.specinfo = specInfo()
+    self.author = user
     self.channel = channel
     self.flags = flags
     self.bluefile = blueFile
@@ -165,7 +172,7 @@ class SpecView(View):
         opt.append(item)
       text = 'Are you a banner castle?\n\n'
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-      if self.specinfo.language != 'en':
+      if self.specinfo.language != 'english':
         content = text + trans
       else:
         content = text
@@ -181,7 +188,7 @@ class SpecView(View):
         opt.append(item)
       text = "Use Preset recommendations or Select your own Priorities?\n\n"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-      if self.specinfo.language != 'en':
+      if self.specinfo.language != 'english':
         content = text + trans
       else:
         content = text
@@ -193,7 +200,7 @@ class SpecView(View):
       trans =[]
       #preset = ('Start', 'Week1', 'Week2', 'Loyalty', 'FillIW', 'FW', 'Tile Honour')
       #p_text =('Place buildings at start of season', 'Week 1 loyalty', 'Week 2 loyalty and tilespeed', 'Increasing loyalty', 'Keep loyalty while filling on iron/wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour')
-      preset = ('Loyalty', 'FillIW', 'Upgrade buildings', 'Tile Honour')
+      preset = ('Loyalty', 'Iron/Wood', 'Upgrade buildings', 'Tile Honour')
       p_text =('Increasing loyalty', 'Keep loyalty high while taking iron and wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour')
       for p in p_text:
         p_trans =  GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
@@ -201,7 +208,7 @@ class SpecView(View):
       opt = list(zip(preset, trans))
       text = "Select Preset option?"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-      if self.specinfo.language != 'en':
+      if self.specinfo.language != 'english':
         content = text + trans
       else:
         content = text
@@ -213,13 +220,16 @@ class SpecView(View):
     if self.pathway == "Select":
       text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-      if self.specinfo.language != 'en':
+      if self.specinfo.language != 'english':
         content = text + trans
       else:
         content = text
       self.content = content
       self.add_item(SelectOwn())
       return
+
+    if self.pathway == 'Select':
+      opt = []
       
 
     if self.output == False:
@@ -228,7 +238,7 @@ class SpecView(View):
       if len(opt) > 0:
         text = "Press OK to continue...this could take a few moments so please have a cup of coffee.\n\n"
         trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
-        if self.specinfo.language != 'en':
+        if self.specinfo.language != 'english':
             content = text + trans
         else:
           content = text
@@ -245,14 +255,14 @@ class SpecView(View):
   
     if self.specinfo.preset == 'Loyalty':
     
-      self.specinfo.notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n \n"
-      self.specinfo.list1 = ('LoyaltySpeedGroup', 'CBCMat', 'OneExtQ')
+      self.specinfo.notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n\n"
+      self.specinfo.list1 = ('Loyalty', 'CBCMat', 'OneExtQ')
       self.specinfo.list2 = ('ExtraTile', 'TileHonour', 'UpgradeBuild')
     
-    elif self.specinfo.preset == 'FillIW':
+    elif self.specinfo.preset == 'Iron/Wood':
      
       self.specinfo.notes = "Your focus is getting high level wood and iron tiles. You may wish to keep a few CBC material tiles if you wish to increase loyalty. You can always take more iron/wood and upgrade later using land development.\n\nIf you think you will fill up on iron/wood before next specialisation reset, ask in alliance chat for advice.\n\n"
-      self.specinfo.list1 = ('LoyaltySpeedGroup', 'FWMat', 'OneExtQ')
+      self.specinfo.list1 = ('Loyalty', 'FWMat', 'OneExtQ')
       self.specinfo.list2 = ('ExtraTile', 'TileHonour', 'TwoExtQs')
     elif self.specinfo.preset == 'Upgrade buildings':
       self.specinfo.notes = "Your focus is on upgrading your Frontline Workshops and getting the maximum honour bonus from these upgrades.\n\n"

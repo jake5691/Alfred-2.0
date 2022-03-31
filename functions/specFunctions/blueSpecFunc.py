@@ -179,7 +179,7 @@ blueSpec_gr = {
   "OneExtQ":(OneExtQ, 10), 
   "TwoExtQs":(TwoExtQs, 17),
   "MaxQs":(MaxQs, 31), 
-  "LoyaltySpeedGroup":(LoyaltySpeedGroup, 47)
+  "Loyalty":(LoyaltySpeedGroup, 47)
   }
 
 #First Spec from Center

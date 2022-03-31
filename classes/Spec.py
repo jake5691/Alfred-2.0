@@ -17,6 +17,8 @@ class Spec():
     self.activatable = False
     self.usefulScore = 0
 
+
+#object for production spec advice
 class specInfo():
   def __init__(self):
     self.language = None

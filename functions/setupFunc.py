@@ -128,4 +128,7 @@ def allFeatures() -> [Feature]:
     ff.commands = coms
     allFeatu.append(ff)
   return allFeatu
+
+def saveFeature(f=Feature):
+  db[f.dbKey] = jsons.dumps(f)
   

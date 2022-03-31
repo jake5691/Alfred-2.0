@@ -1,21 +1,300 @@
 from nextcord.ui import Select, View, Button
 from nextcord import SelectOption, Interaction, ButtonStyle
+from replit import db
+import jsons
+
 ################
 class BackButton(Button):
   """Button to navigate back"""
   def __init__(self):
-    super().__init__(style=ButtonStyle.secondary, emoji="🔙", row=1)
+    super().__init__(style=ButtonStyle.blurple, emoji="🔙", row=1)
       
   async def callback(self, interaction:Interaction):
-    self.view.textChannelGroup = 0
+    self.view.group = 0
     removeChannels = []
     for ch in self.view.children:
       if ch.row <=1:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
-
+    
     self.view.add_item(AllowedChannelsButton())
+    self.view.add_item(AllowedRolesButton())
+    self.view.add_item(ExcludedChannelsButton())
+    self.view.add_item(ExcludedRolesButton())
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
+class ExcludedChannelsRightButton(Button):
+  """Button to navigate between selecting excluded channels"""
+  def __init__(self, current, max):
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    if current == max-1:
+      self.disabled = True
+    else:
+      self.disabled = False
+      
+  async def callback(self, interaction:Interaction):
+    self.view.group += 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(ExcludedChannels(self.view.command.excludedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
+    self.view.add_item(BackButton())
+    self.view.add_item(ExcludedChannelsLeftButton(self.view.group))
+    self.view.add_item(ExcludedChannelsRightButton(self.view.group, len(self.view.textChannels)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+    
+################
+class ExcludedChannelsLeftButton(Button):
+  """Button to navigate between selecting excluded channels"""
+  def __init__(self, current):
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    if current == 0:
+      self.disabled = True
+    else:
+      self.disabled = False
+    
+  async def callback(self, interaction:Interaction):
+    self.view.group -= 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(ExcludedChannels(self.view.command.excludedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
+    self.view.add_item(BackButton())
+    self.view.add_item(ExcludedChannelsLeftButton(self.view.group))
+    self.view.add_item(ExcludedChannelsRightButton(self.view.group, len(self.view.textChannels)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+
+################
+class ExcludedChannelsButton(Button):
+  """Button to select excluded channels"""
+  def __init__(self):
+    super().__init__(label="#", style=ButtonStyle.red, emoji="🔴", row=0)
+    
+  async def callback(self, interaction:Interaction):
+    toRemove = []
+    for children in self.view.children:
+      if children.row == 0:
+        toRemove.append(children)
+    for c in toRemove:
+      self.view.remove_item(c)
+    self.view.add_item(BackButton())
+    self.view.add_item(ExcludedChannelsLeftButton(self.view.group))
+    self.view.add_item(ExcludedChannelsRightButton(self.view.group, len(self.view.textChannels)))
+    self.view.add_item(ExcludedChannels(self.view.command.excludedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+    
+################
+class ExcludedChannels(Select):
+  """Dropdown for Excluded Channels"""
+  def __init__(self, excludedChannels, availableChannels):
+    super().__init__(placeholder = "Channels the command should NOT work in.", row=0, min_values=0, max_values=len(availableChannels))
+
+    options = []
+    for c in availableChannels:
+      selected = False
+      if c.id in excludedChannels:
+        selected = True
+      options.append(SelectOption(label=c.name, value=c.id, default=selected))
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    for op in self.options:
+      if str(op.value) in self.values:
+        if op.value not in self.view.command.excludedChannels[self.view.guildID]:
+          self.view.command.excludedChannels[self.view.guildID].append(op.value)
+      else:
+        if op.value in self.view.command.excludedChannels[self.view.guildID]:
+          self.view.command.excludedChannels[self.view.guildID].remove(op.value)
+    self.view.remove_item(self)
+    self.view.add_item(ExcludedChannels(self.view.command.excludedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+
+################
+class ExcludedRolesRightButton(Button):
+  """Button to navigate between selecting excluded roles"""
+  def __init__(self, current, max):
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    if current == max-1:
+      self.disabled = True
+    else:
+      self.disabled = False
+      
+  async def callback(self, interaction:Interaction):
+    self.view.group += 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(ExcludedRolesSelect(self.view.command.excludedRoles[self.view.guildID], self.view.roles[self.view.group]))
+    self.view.add_item(BackButton())
+    self.view.add_item(ExcludedRolesLeftButton(self.view.group))
+    self.view.add_item(ExcludedRolesRightButton(self.view.group, len(self.view.roles)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+    
+################
+class ExcludedRolesLeftButton(Button):
+  """Button to navigate between selecting excluded roles"""
+  def __init__(self, current):
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    if current == 0:
+      self.disabled = True
+    else:
+      self.disabled = False
+    
+  async def callback(self, interaction:Interaction):
+    self.view.group -= 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(ExcludedRolesSelect(self.view.command.excludedRoles[self.view.guildID], self.view.roles[self.view.group]))
+    self.view.add_item(BackButton())
+    self.view.add_item(ExcludedRolesLeftButton(self.view.group))
+    self.view.add_item(ExcludedRolesRightButton(self.view.group, len(self.view.roles)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
+class ExcludedRolesButton(Button):
+  """Button to select excluded roles"""
+  def __init__(self):
+    super().__init__(label="@", style=ButtonStyle.red, emoji="🔴", row=0)
+    
+  async def callback(self, interaction:Interaction):
+    toRemove = []
+    for children in self.view.children:
+      if children.row == 0:
+        toRemove.append(children)
+    for c in toRemove:
+      self.view.remove_item(c)
+    self.view.add_item(BackButton())
+    self.view.add_item(ExcludedRolesLeftButton(self.view.group))
+    self.view.add_item(ExcludedRolesRightButton(self.view.group, len(self.view.roles)))
+    self.view.add_item(ExcludedRolesSelect(self.view.command.excludedRoles[self.view.guildID], self.view.roles[self.view.group]))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
+class ExcludedRolesSelect(Select):
+  """Dropdown for excluded Roles"""
+  def __init__(self, excludedRoles, availableRoles):
+    super().__init__(placeholder = "Roles that should NOT be able to use the command.", row=0, min_values=0, max_values=len(availableRoles))
+
+    options = []
+    for r in availableRoles:
+      selected = False
+      if r.id in excludedRoles:
+        selected = True
+      options.append(SelectOption(label=r.name, value=r.id, default=selected))
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    for op in self.options:
+      if str(op.value) in self.values:
+        if op.value not in self.view.command.excludedRoles[self.view.guildID]:
+          self.view.command.excludedRoles[self.view.guildID].append(op.value)
+      else:
+        if op.value in self.view.command.excludedRoles[self.view.guildID]:
+          self.view.command.excludedRoles[self.view.guildID].remove(op.value)
+    self.view.remove_item(self)
+    self.view.add_item(ExcludedRolesSelect(self.view.command.excludedRoles[self.view.guildID], self.view.roles[self.view.group]))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
+class AllowedRolesRightButton(Button):
+  """Button to navigate between selecting allowed roles"""
+  def __init__(self, current, max):
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    if current == max-1:
+      self.disabled = True
+    else:
+      self.disabled = False
+      
+  async def callback(self, interaction:Interaction):
+    self.view.group += 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(AllowedRolesSelect(self.view.command.allowedRoles[self.view.guildID], self.view.roles[self.view.group]))
+    self.view.add_item(BackButton())
+    self.view.add_item(AllowedRolesLeftButton(self.view.group))
+    self.view.add_item(AllowedRolesRightButton(self.view.group, len(self.view.roles)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+    
+################
+class AllowedRolesLeftButton(Button):
+  """Button to navigate between selecting allowed roles"""
+  def __init__(self, current):
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    if current == 0:
+      self.disabled = True
+    else:
+      self.disabled = False
+    
+  async def callback(self, interaction:Interaction):
+    self.view.group -= 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row <=1:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(AllowedRolesSelect(self.view.command.allowedRoles[self.view.guildID], self.view.roles[self.view.group]))
+    self.view.add_item(BackButton())
+    self.view.add_item(AllowedRolesLeftButton(self.view.group))
+    self.view.add_item(AllowedRolesRightButton(self.view.group, len(self.view.roles)))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
+class AllowedRolesButton(Button):
+  """Button to select allowed roles"""
+  def __init__(self):
+    super().__init__(label="@", style=ButtonStyle.green, emoji="🟢", row=0)
+    
+  async def callback(self, interaction:Interaction):
+    toRemove = []
+    for children in self.view.children:
+      if children.row == 0:
+        toRemove.append(children)
+    for c in toRemove:
+      self.view.remove_item(c)
+    self.view.add_item(BackButton())
+    self.view.add_item(AllowedRolesLeftButton(self.view.group))
+    self.view.add_item(AllowedRolesRightButton(self.view.group, len(self.view.roles)))
+    self.view.add_item(AllowedRolesSelect(self.view.command.allowedRoles[self.view.guildID], self.view.roles[self.view.group]))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
+class AllowedRolesSelect(Select):
+  """Dropdown for Allowed Roles"""
+  def __init__(self, allowedRoles, availableRoles):
+    super().__init__(placeholder = "Roles that should be able to use the feature.", row=0, min_values=0, max_values=len(availableRoles))
+
+    options = []
+    for r in availableRoles:
+      selected = False
+      if r.id in allowedRoles:
+        selected = True
+      options.append(SelectOption(label=r.name, value=r.id, default=selected))
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    for op in self.options:
+      if str(op.value) in self.values:
+        if op.value not in self.view.command.allowedRoles[self.view.guildID]:
+          self.view.command.allowedRoles[self.view.guildID].append(op.value)
+      else:
+        if op.value in self.view.command.allowedRoles[self.view.guildID]:
+          self.view.command.allowedRoles[self.view.guildID].remove(op.value)
+    self.view.remove_item(self)
+    self.view.add_item(AllowedRolesSelect(self.view.command.allowedRoles[self.view.guildID], self.view.roles[self.view.group]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
 ################
 class AllowedChannelsRightButton(Button):
@@ -28,17 +307,17 @@ class AllowedChannelsRightButton(Button):
       self.disabled = False
       
   async def callback(self, interaction:Interaction):
-    self.view.textChannelGroup += 1
+    self.view.group += 1
     removeChannels = []
     for ch in self.view.children:
       if ch.row <=1:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
-    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
     self.view.add_item(BackButton())
-    self.view.add_item(AllowedChannelsLeftButton(self.view.textChannelGroup))
-    self.view.add_item(AllowedChannelsRightButton(self.view.textChannelGroup, len(self.view.textChannels)))
+    self.view.add_item(AllowedChannelsLeftButton(self.view.group))
+    self.view.add_item(AllowedChannelsRightButton(self.view.group, len(self.view.textChannels)))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
     
 ################
@@ -52,24 +331,24 @@ class AllowedChannelsLeftButton(Button):
       self.disabled = False
     
   async def callback(self, interaction:Interaction):
-    self.view.textChannelGroup -= 1
+    self.view.group -= 1
     removeChannels = []
     for ch in self.view.children:
       if ch.row <=1:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
-    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
     self.view.add_item(BackButton())
-    self.view.add_item(AllowedChannelsLeftButton(self.view.textChannelGroup))
-    self.view.add_item(AllowedChannelsRightButton(self.view.textChannelGroup, len(self.view.textChannels)))
+    self.view.add_item(AllowedChannelsLeftButton(self.view.group))
+    self.view.add_item(AllowedChannelsRightButton(self.view.group, len(self.view.textChannels)))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
 
 ################
 class AllowedChannelsButton(Button):
   """Button to select allowed channels"""
   def __init__(self):
-    super().__init__(label="channels", style=ButtonStyle.secondary, emoji="🟢", row=0)
+    super().__init__(label="#", style=ButtonStyle.green, emoji="🟢", row=0)
     
   async def callback(self, interaction:Interaction):
     toRemove = []
@@ -79,16 +358,16 @@ class AllowedChannelsButton(Button):
     for c in toRemove:
       self.view.remove_item(c)
     self.view.add_item(BackButton())
-    self.view.add_item(AllowedChannelsLeftButton(self.view.textChannelGroup))
-    self.view.add_item(AllowedChannelsRightButton(self.view.textChannelGroup, len(self.view.textChannels)))
-    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
+    self.view.add_item(AllowedChannelsLeftButton(self.view.group))
+    self.view.add_item(AllowedChannelsRightButton(self.view.group, len(self.view.textChannels)))
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
     
 ################
 class AllowedChannels(Select):
   """Dropdown for Allowed Channels"""
   def __init__(self, allowedChannels, availableChannels):
-    super().__init__(placeholder = "Select the channels you want the feature to work in.", row=0, min_values=0, max_values=len(availableChannels))
+    super().__init__(placeholder = "Channels the command should work in.", row=0, min_values=0, max_values=len(availableChannels))
 
     options = []
     for c in availableChannels:
@@ -107,7 +386,7 @@ class AllowedChannels(Select):
         if op.value in self.view.command.allowedChannels[self.view.guildID]:
           self.view.command.allowedChannels[self.view.guildID].remove(op.value)
     self.view.remove_item(self)
-    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.textChannelGroup]))
+    self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
 
 ################
@@ -157,7 +436,9 @@ class SelectCommand(Select):
       #Create empty List if no list exists (default for allowed everywhere)
       self.view.command.allowedChannels[self.view.guildID] = []
     self.view.add_item(AllowedChannelsButton())
-      #self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[:24]))
+    self.view.add_item(AllowedRolesButton())
+    self.view.add_item(ExcludedChannelsButton())
+    self.view.add_item(ExcludedRolesButton())
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
     
 ################    
@@ -182,6 +463,7 @@ class SelectFeature(Select):
   async def callback(self, interaction:Interaction):
     self.view.command = None
     self.view.feature = self.view.settings[int(self.values[0])]
+    db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.clear_items()
     self.view.add_item(SelectFeature(self.view.settings, self.view.guildID, self.view.feature))
     self.view.add_item(SelectCommand(self.view.feature, self.view.command))
@@ -198,9 +480,8 @@ class SettingsView(View):
     self.command = None
     self.guildID = guild.id
     self.textChannels = [guild.text_channels[x:x+25] for x in range(0, len(guild.text_channels), 25)]
-    self.textChannelGroup = 0
     self.roles = [guild.roles[x:x+25] for x in range(0, len(guild.roles), 25)]
-    self.roleGroup = 0
+    self.group = 0
     self.text = ""
     self.content()
     self.add_item(SelectFeature(self.settings, self.guildID, self.feature))
@@ -228,7 +509,7 @@ class SettingsView(View):
       args += f" `{arg}`"
     res += f"**{self.command.name}**{args} - {self.command.typ}\n*{self.command.description}*\n"
 
-    res += f"\n**Allowed Channels:**"
+    res += f"\n🟢# **Allowed Channels:**"
     if not self.guildID in self.command.allowedChannels:
       #Create empty List if no list exists (default for allowed everywhere)
       self.command.allowedChannels[self.guildID] = []
@@ -238,17 +519,17 @@ class SettingsView(View):
     else:
       res += " `All channels (except the excluded once)`"
       
-    res += f"\n**Allowed Roles:** "
+    res += f"\n🟢@ **Allowed Roles:** "
     if not self.guildID in self.command.allowedRoles:
       #Create empty List if no list exists (default for allowed everywhere)
       self.command.allowedRoles[self.guildID] = []
     if self.command.allowedRoles[self.guildID]:
       for r in self.command.allowedRoles[self.guildID]:
-        res += f" <#{r}>"
+        res += f" <@&{r}>"
     else:
       res += " `All Roles (except the excluded once)`"
 
-    res += f"\n**Excluded Channels:** "
+    res += f"\n🔴# **Excluded Channels:** "
     if not self.guildID in self.command.excludedChannels:
       #Create empty List if no list exists
       self.command.excludedChannels[self.guildID] = []
@@ -258,13 +539,13 @@ class SettingsView(View):
     else:
       res += " `None`"
 
-    res += f"\n**Excluded Roles:** "
+    res += f"\n🔴@ **Excluded Roles:** "
     if not self.guildID in self.command.excludedRoles:
       #Create empty List if no list exists
       self.command.excludedRoles[self.guildID] = []
     if self.command.excludedRoles[self.guildID]:
       for r in self.command.excludedRoles[self.guildID]:
-        res += f" <@!{r}>"
+        res += f" <@&{r}>"
     else:
       res += " `None`"
     

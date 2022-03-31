@@ -97,6 +97,7 @@ class SelectOutput(Select):
     self.view.specinput()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = self.view.specinfo.spec
+    helpText = 'Type "/specadvice" to get advice on where to use your specialisation points'
     try:
       await specAdvice(self.view, spec, groups_bl, groups_gr)
       blueFile = self.view.bluefile
@@ -112,8 +113,10 @@ class SelectOutput(Select):
       await self.view.channel.send(file=File(blueFile))
       await self.view.channel.send(file=File(greenFile))
       await self.view.channel.send(file=File(redFile))
+      await self.view.channel.send(content=helpText)
     except:
       await self.view.channel.send(content = "Oops, something went wrong")
+      await self.view.channel.send(content=helpText)
 
 
 class SpecView(View):

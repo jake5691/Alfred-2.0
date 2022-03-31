@@ -35,6 +35,8 @@ class specAdv2(commands.Cog):
         
     view  = SpecView( self.flags, channel, blueFile, greenFile, redFile, member)
     
+      
+    
     
     await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)
     #waitUntil(view.specinfo.ready == True, specInput(channel, view)) #runs function  

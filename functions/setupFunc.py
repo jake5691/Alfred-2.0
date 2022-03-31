@@ -116,15 +116,32 @@ def allFeatures() -> [Feature]:
     if f.dbKey not in db.keys():
       print(f.dbKey)
       print(db.prefix("feature"))
-    db[f.dbKey] = jsons.dumps(f)
+      db[f.dbKey] = jsons.dumps(f)
     ff = jsons.loads(db[f.dbKey], Feature)
     newenabled = {}
     for g in ff.enabled:
-      newenabled[int(g)] = True if ff.enabled[g] == "True" else False
+      newenabled[int(g)] = ff.enabled[g]
     ff.enabled = newenabled
     coms = []
     for c in ff.commands:
       coms.append(jsons.loads(str(c).replace("'",'"'), Command))
+      aR = {}
+      for g in coms[-1].allowedRoles:
+        aR[int(g)] = coms[-1].allowedRoles[g]
+      coms[-1].allowedRoles = aR
+      aC = {}
+      for g in coms[-1].allowedChannels:
+        aC[int(g)] = coms[-1].allowedChannels[g]
+      coms[-1].allowedChannels = aC
+      eR = {}
+      for g in coms[-1].excludedRoles:
+        eR[int(g)] = coms[-1].excludedRoles[g]
+      coms[-1].excludedRoles = eR
+      eC = {}
+      for g in coms[-1].excludedChannels:
+        eC[int(g)] = coms[-1].excludedChannels[g]
+      coms[-1].excludedChannels = eC
+      
     ff.commands = coms
     allFeatu.append(ff)
   return allFeatu

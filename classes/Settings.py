@@ -16,7 +16,7 @@ class Command():
     self.description:str = description
     self.typ:str = typ
     self.arguments:[str] = []
-    self.allowedChannels = {}
-    self.allowedRoles = {}
-    self.excludedChannels = {}
-    self.excludedRoles = {}
+    self.allowedChannels:{int:[int]} = {}
+    self.allowedRoles:{int:[int]} = {}
+    self.excludedChannels:{int:[int]} = {}
+    self.excludedRoles:{int:[int]} = {}

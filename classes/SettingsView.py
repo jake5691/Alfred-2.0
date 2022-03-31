@@ -112,6 +112,7 @@ class ExcludedChannels(Select):
       else:
         if op.value in self.view.command.excludedChannels[self.view.guildID]:
           self.view.command.excludedChannels[self.view.guildID].remove(op.value)
+    db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.remove_item(self)
     self.view.add_item(ExcludedChannels(self.view.command.excludedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
@@ -203,6 +204,7 @@ class ExcludedRolesSelect(Select):
       else:
         if op.value in self.view.command.excludedRoles[self.view.guildID]:
           self.view.command.excludedRoles[self.view.guildID].remove(op.value)
+    db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.remove_item(self)
     self.view.add_item(ExcludedRolesSelect(self.view.command.excludedRoles[self.view.guildID], self.view.roles[self.view.group]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
@@ -293,6 +295,7 @@ class AllowedRolesSelect(Select):
       else:
         if op.value in self.view.command.allowedRoles[self.view.guildID]:
           self.view.command.allowedRoles[self.view.guildID].remove(op.value)
+    db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.remove_item(self)
     self.view.add_item(AllowedRolesSelect(self.view.command.allowedRoles[self.view.guildID], self.view.roles[self.view.group]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
@@ -385,6 +388,7 @@ class AllowedChannels(Select):
       else:
         if op.value in self.view.command.allowedChannels[self.view.guildID]:
           self.view.command.allowedChannels[self.view.guildID].remove(op.value)
+    db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.remove_item(self)
     self.view.add_item(AllowedChannels(self.view.command.allowedChannels[self.view.guildID], self.view.textChannels[self.view.group]))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
@@ -405,6 +409,7 @@ class ActivateButton(Button):
       self.label = "deactivate"
     else:
       self.label = "activate"
+    db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.clear_items()
     self.view.add_item(self)
     self.view.add_item(SelectCommand(self.view.feature, self.view.command))
@@ -463,7 +468,6 @@ class SelectFeature(Select):
   async def callback(self, interaction:Interaction):
     self.view.command = None
     self.view.feature = self.view.settings[int(self.values[0])]
-    db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.clear_items()
     self.view.add_item(SelectFeature(self.view.settings, self.view.guildID, self.view.feature))
     self.view.add_item(SelectCommand(self.view.feature, self.view.command))

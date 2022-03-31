@@ -19,14 +19,12 @@ class Settings(commands.Cog):
   async def on_ready(self):
     """load/set default settings for all servers where Alfred is present"""
     for guild in self.bot.guilds:
-      #print(guild.name)
       for f in self.Features:
         if guild.id in f.enabled:
           if f.enabled[guild.id]:
             print(f"{guild.name} has {f.name} Active")
           else:
             print(f"{guild.name} has {f.name} Deactive")
-          #print(f"{guild.name} has {f.name} values stored")
         else:
           f.enabled[guild.id] = False #set feature per default to False
           db[f.dbKey] = jsons.dumps(f)

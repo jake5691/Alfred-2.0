@@ -7,13 +7,13 @@ import jsons
 class BackButton(Button):
   """Button to navigate back"""
   def __init__(self):
-    super().__init__(style=ButtonStyle.blurple, emoji="🔙", row=1)
+    super().__init__(style=ButtonStyle.blurple, emoji="🔙", row=4)
       
   async def callback(self, interaction:Interaction):
     self.view.group = 0
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -27,7 +27,7 @@ class BackButton(Button):
 class ExcludedChannelsRightButton(Button):
   """Button to navigate between selecting excluded channels"""
   def __init__(self, current, max):
-    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=4)
     if current == max-1:
       self.disabled = True
     else:
@@ -37,7 +37,7 @@ class ExcludedChannelsRightButton(Button):
     self.view.group += 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -51,7 +51,7 @@ class ExcludedChannelsRightButton(Button):
 class ExcludedChannelsLeftButton(Button):
   """Button to navigate between selecting excluded channels"""
   def __init__(self, current):
-    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=4)
     if current == 0:
       self.disabled = True
     else:
@@ -61,7 +61,7 @@ class ExcludedChannelsLeftButton(Button):
     self.view.group -= 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -75,12 +75,12 @@ class ExcludedChannelsLeftButton(Button):
 class ExcludedChannelsButton(Button):
   """Button to select excluded channels"""
   def __init__(self):
-    super().__init__(label="#", style=ButtonStyle.red, emoji="🔴", row=0)
+    super().__init__(label="#", style=ButtonStyle.red, emoji="🔴", row=3)
     
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 0:
+      if children.row == 3:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -94,7 +94,7 @@ class ExcludedChannelsButton(Button):
 class ExcludedChannels(Select):
   """Dropdown for Excluded Channels"""
   def __init__(self, excludedChannels, availableChannels):
-    super().__init__(placeholder = "Channels the command should NOT work in.", row=0, min_values=0, max_values=len(availableChannels))
+    super().__init__(placeholder = "Channels the command should NOT work in.", row=3, min_values=0, max_values=len(availableChannels))
 
     options = []
     for c in availableChannels:
@@ -121,7 +121,7 @@ class ExcludedChannels(Select):
 class ExcludedRolesRightButton(Button):
   """Button to navigate between selecting excluded roles"""
   def __init__(self, current, max):
-    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=4)
     if current == max-1:
       self.disabled = True
     else:
@@ -131,7 +131,7 @@ class ExcludedRolesRightButton(Button):
     self.view.group += 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -145,7 +145,7 @@ class ExcludedRolesRightButton(Button):
 class ExcludedRolesLeftButton(Button):
   """Button to navigate between selecting excluded roles"""
   def __init__(self, current):
-    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=4)
     if current == 0:
       self.disabled = True
     else:
@@ -155,7 +155,7 @@ class ExcludedRolesLeftButton(Button):
     self.view.group -= 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -168,12 +168,12 @@ class ExcludedRolesLeftButton(Button):
 class ExcludedRolesButton(Button):
   """Button to select excluded roles"""
   def __init__(self):
-    super().__init__(label="@", style=ButtonStyle.red, emoji="🔴", row=0)
+    super().__init__(label="@", style=ButtonStyle.red, emoji="🔴", row=3)
     
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 0:
+      if children.row == 3:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -186,7 +186,7 @@ class ExcludedRolesButton(Button):
 class ExcludedRolesSelect(Select):
   """Dropdown for excluded Roles"""
   def __init__(self, excludedRoles, availableRoles):
-    super().__init__(placeholder = "Roles that should NOT be able to use the command.", row=0, min_values=0, max_values=len(availableRoles))
+    super().__init__(placeholder = "Roles that should NOT be able to use the command.", row=3, min_values=0, max_values=len(availableRoles))
 
     options = []
     for r in availableRoles:
@@ -212,7 +212,7 @@ class ExcludedRolesSelect(Select):
 class AllowedRolesRightButton(Button):
   """Button to navigate between selecting allowed roles"""
   def __init__(self, current, max):
-    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=4)
     if current == max-1:
       self.disabled = True
     else:
@@ -222,7 +222,7 @@ class AllowedRolesRightButton(Button):
     self.view.group += 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -236,7 +236,7 @@ class AllowedRolesRightButton(Button):
 class AllowedRolesLeftButton(Button):
   """Button to navigate between selecting allowed roles"""
   def __init__(self, current):
-    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=4)
     if current == 0:
       self.disabled = True
     else:
@@ -246,7 +246,7 @@ class AllowedRolesLeftButton(Button):
     self.view.group -= 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -259,12 +259,12 @@ class AllowedRolesLeftButton(Button):
 class AllowedRolesButton(Button):
   """Button to select allowed roles"""
   def __init__(self):
-    super().__init__(label="@", style=ButtonStyle.green, emoji="🟢", row=0)
+    super().__init__(label="@", style=ButtonStyle.green, emoji="🟢", row=3)
     
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 0:
+      if children.row == 3:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -277,7 +277,7 @@ class AllowedRolesButton(Button):
 class AllowedRolesSelect(Select):
   """Dropdown for Allowed Roles"""
   def __init__(self, allowedRoles, availableRoles):
-    super().__init__(placeholder = "Roles that should be able to use the feature.", row=0, min_values=0, max_values=len(availableRoles))
+    super().__init__(placeholder = "Roles that should be able to use the feature.", row=3, min_values=0, max_values=len(availableRoles))
 
     options = []
     for r in availableRoles:
@@ -303,7 +303,7 @@ class AllowedRolesSelect(Select):
 class AllowedChannelsRightButton(Button):
   """Button to navigate between selecting allowed channels"""
   def __init__(self, current, max):
-    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=4)
     if current == max-1:
       self.disabled = True
     else:
@@ -313,7 +313,7 @@ class AllowedChannelsRightButton(Button):
     self.view.group += 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -327,7 +327,7 @@ class AllowedChannelsRightButton(Button):
 class AllowedChannelsLeftButton(Button):
   """Button to navigate between selecting allowed channels"""
   def __init__(self, current):
-    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=1)
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=4)
     if current == 0:
       self.disabled = True
     else:
@@ -337,7 +337,7 @@ class AllowedChannelsLeftButton(Button):
     self.view.group -= 1
     removeChannels = []
     for ch in self.view.children:
-      if ch.row <=1:
+      if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
@@ -351,12 +351,12 @@ class AllowedChannelsLeftButton(Button):
 class AllowedChannelsButton(Button):
   """Button to select allowed channels"""
   def __init__(self):
-    super().__init__(label="#", style=ButtonStyle.green, emoji="🟢", row=0)
+    super().__init__(label="#", style=ButtonStyle.green, emoji="🟢", row=3)
     
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 0:
+      if children.row == 3:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -370,7 +370,7 @@ class AllowedChannelsButton(Button):
 class AllowedChannels(Select):
   """Dropdown for Allowed Channels"""
   def __init__(self, allowedChannels, availableChannels):
-    super().__init__(placeholder = "Channels the command should work in.", row=0, min_values=0, max_values=len(availableChannels))
+    super().__init__(placeholder = "Channels the command should work in.", row=3, min_values=0, max_values=len(availableChannels))
 
     options = []
     for c in availableChannels:
@@ -397,18 +397,22 @@ class AllowedChannels(Select):
 class ActivateButton(Button):
   """Button to (De)Activate a feature"""
   def __init__(self, feature, guildID):
-    super().__init__(style=ButtonStyle.secondary,row=0)
+    super().__init__(row=3)
     if feature.enabled[guildID]:
       self.label = "deactivate"
+      self.style = ButtonStyle.red
     else:
       self.label = "activate"
+      self.style = ButtonStyle.green
 
   async def callback(self, interaction:Interaction):
     self.view.feature.enabled[self.view.guildID] = not(self.view.feature.enabled[self.view.guildID])
     if self.view.feature.enabled[self.view.guildID]:
       self.label = "deactivate"
+      self.style = ButtonStyle.red
     else:
       self.label = "activate"
+      self.style = ButtonStyle.green
     db[self.view.feature.dbKey] = jsons.dumps(self.view.feature)
     self.view.clear_items()
     self.view.add_item(self)
@@ -420,7 +424,7 @@ class ActivateButton(Button):
 class SelectCommand(Select):
   """Dropdown for Command"""
   def __init__(self, feature, command):
-    super().__init__(placeholder = "Select the command you want to view",row=3,min_values=1, max_values=1)
+    super().__init__(placeholder = "Select the command you want to view",row=1,min_values=1, max_values=1)
     
     options = []
     for idx, f in enumerate(feature.commands):
@@ -450,7 +454,7 @@ class SelectCommand(Select):
 class SelectFeature(Select):
   """Dropdown for Feature"""
   def __init__(self, settings, guildID, feature):
-    super().__init__(placeholder = "Select the feature you want to view",row=4,min_values=1, max_values=1)
+    super().__init__(placeholder = "Select the feature you want to view",row=0,min_values=1, max_values=1)
     
     options = []
     for idx, f in enumerate(settings):

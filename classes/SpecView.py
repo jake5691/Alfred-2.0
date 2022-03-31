@@ -3,12 +3,13 @@ from nextcord.ui import Select, View
 from classes.Spec import specInfo
 from deep_translator import (GoogleTranslator)
 from functions.specFunctions.assignSpecFunc import specAdvice
-from functions.specFunctions.blueSpecFunc import groups_bl
-from functions.specFunctions.greenSpecFunc import groups_gr
+from functions.specFunctions.blueSpecFunc import groups_bl, blueSpec_gr
+from functions.specFunctions.greenSpecFunc import groups_gr, greenSpec_gr
+from functions.specFunctions.redSpecFunc import redSpec_gr
 from functions.generalFunc import target_lang
 import os
 
-
+priorityOpt = ('Loyalty', 'Upgrade Buildings', 'Extra Tiles', 'Tile Honour', 'CBC Materials', 'FW/AF/GF Materials', 'One Extra Queue', 'Two Extra Queues', 'Maximum Queues', 'Marching speed to tiles', 'Land Development' )
 
 class SelectLanguage(Select):
   """Dropdown for language for translation"""
@@ -78,7 +79,8 @@ class SelectOwn(Select):
   def __init__(self, opt):
     super().__init__(placeholder = ".",row=0,min_values=3, max_values=3)
     options = []
-    options.append(SelectOption(label="OK"))
+    for p, t in opt:
+      options.append(SelectOption(label=p, description=t))
     self.options = options
 
   async def callback(self, interaction:Interaction):
@@ -218,7 +220,14 @@ class SpecView(View):
       return
 
     if self.pathway == "Select":
-      text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
+      opt = []
+      priorityOpt = ('Loyalty', 'Upgrade Buildings', 'Extra Tiles', 'Tile Honour', 'CBC Materials', 'FW/AF/GF Materials', 'One Extra Queue', 'Two Extra Queues', 'Maximum Queues', 'Marching speed to tiles', 'Land Development' )
+      for p in priorityOpt:
+        trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
+        item =(p, trans)
+        opt.append(item) 
+      print(opt)
+      text = "Please select your top 3 priorities.\n\n"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
       if self.specinfo.language != 'english':
         content = text + trans
@@ -228,9 +237,7 @@ class SpecView(View):
       self.add_item(SelectOwn())
       return
 
-    if self.pathway == 'Select':
-      opt = []
-      
+
 
     if self.output == False:
       opt = []

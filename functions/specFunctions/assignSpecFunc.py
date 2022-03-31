@@ -128,7 +128,7 @@ def useful_assign(priorities_list):
     row['Node'].usefulScore = row['Score']
 
 
-def sumPoints(x):
+async def sumPoints(x):
   Points = 0
   nodes = []
   for i in x:
@@ -148,7 +148,7 @@ def sumPoints(x):
 
   return(Points)
 
-def useScore(score_dict):
+async def useScore(score_dict):
   useScore = 0
   for i in score_dict:
     try:
@@ -211,9 +211,9 @@ async def evaluate(Nodes, df, userSpecPoints):
   possibleComb  = combinations(df)
   print("eval sets", datetime.datetime.now())
   for comb in possibleComb:
-    pointsReq = sumPoints(comb)
+    pointsReq = await sumPoints(comb)
     if userSpecPoints - 10 <= pointsReq <= userSpecPoints:
-      setScore = useScore(comb)
+      setScore = await useScore(comb)
       possibleSets.append(comb)
       setPoints.append(pointsReq)
       setScores.append(setScore)
@@ -248,14 +248,12 @@ def assignPoints(nodeset,userSpecPoints):
           x.currentLvl += 1
           userSpecPoints -= 1
     
-      
-
 
 async def most_use(priorities_list_full, userSpecPoints):
   print("start", datetime.datetime.now())
   df = getNodes(priorities_list_full)[1]
   Nodes = list(df['Node'])
-  nodePoints = sumPoints(Nodes)
+  nodePoints = await sumPoints(Nodes)
   print("node points", nodePoints)
   if nodePoints <= userSpecPoints:
     print("assign p straight away")
@@ -326,11 +324,11 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(view.specinfo.list1, view.specinfo.list2)
-  await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue")
+  await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", "bob")
   
-  await draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green")
+  await draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green", "bob")
   
-  await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red")
+  await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", "bob")
   
 
   #set all nodes back to zero

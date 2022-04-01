@@ -37,8 +37,6 @@ class SelectAdvOpt(Select):
   async def callback(self, interaction:Interaction):
     self.view.pathway = self.values[0]
     print("pathway", self.values[0])
-    for i in self.values:
-      print(i)
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)  
 
@@ -47,10 +45,7 @@ class SelectPreset(Select):
   def __init__(self, opt):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
-    print(list(opt))
     for o, t in list(opt):
-      print(o)
-      print(t)
       options.append(SelectOption(label=o, description=t))
     self.options = options
     
@@ -83,6 +78,10 @@ class SelectOwn(Select):
     self.options = options
 
   async def callback(self, interaction:Interaction):
+    for p in self.values:
+      self.view.specinfo.list1.append(p)
+    print(self.view.specinfo.list1)
+    self.ready = True
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
@@ -218,7 +217,7 @@ class SpecView(View):
       self.add_item(SelectPreset(opt))
       return
 
-    if self.pathway == "Select":
+    if self.pathway == "Select" and self.ready == False:
       text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
       opt = []
       priorityOpt = ('Loyalty', 'Extra tiles', 'One extra queue', 'Two extra queues', 'three extra queues', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles')
@@ -236,8 +235,7 @@ class SpecView(View):
       self.add_item(SelectOwn(opt))
       return
 
-    if self.pathway == 'Select':
-      opt = []
+
       
 
     if self.output == False:

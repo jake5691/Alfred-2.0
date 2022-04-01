@@ -78,11 +78,12 @@ class SelectOwn(Select):
   def __init__(self, opt):
     super().__init__(placeholder = ".",row=0,min_values=3, max_values=3)
     options = []
-    options.append(SelectOption(label="OK"))
+    for p, t in opt:
+      options.append(SelectOption(label=p, description=t))
     self.options = options
 
   async def callback(self, interaction:Interaction):
-    #self.view.whatNext()
+    self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
   
@@ -219,13 +220,20 @@ class SpecView(View):
 
     if self.pathway == "Select":
       text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
+      opt = []
+      priorityOpt = ('Loyalty', 'Extra tiles', 'One extra queue', 'Two extra queues', 'three extra queues', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles')
+      for p in priorityOpt:
+        trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
+        item =(p, trans)
+        opt.append(item)
+      print(opt)
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
       if self.specinfo.language != 'english':
         content = text + trans
       else:
         content = text
       self.content = content
-      self.add_item(SelectOwn())
+      self.add_item(SelectOwn(opt))
       return
 
     if self.pathway == 'Select':

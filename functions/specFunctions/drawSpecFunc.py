@@ -3,6 +3,7 @@ import io
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import matplotlib.pyplot as plt
+from langdetect import detect
 
 
 #Image size
@@ -66,9 +67,12 @@ radiusDict_red = {
 }
 
 # Load font from URI
-truetype_url = 'https://github.com/googlefonts/roboto/blob/main/src/hinted/Roboto-Black.ttf?raw=true'
+#truetype_url = 'https://github.com/googlefonts/roboto/blob/main/src/hinted/Roboto-Black.ttf?raw=true'
+
+truetype_url = 'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSans/NotoSans-Black.ttf?raw=true'
 r = requests.get(truetype_url, allow_redirects=True)
 font = ImageFont.truetype(io.BytesIO(r.content), size=24)
+
 
 font_wm = ImageFont.truetype(io.BytesIO(r.content), size=42)
 
@@ -147,6 +151,11 @@ def getPoint_red(angle:int,radius:int=6,offset_x:int=0):
 
 
 async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
+  try:
+    language = detect(author.display_name)
+  except:
+    language = 'en'
+ 
   grey = (200,200,200)
   white = (255,255,255)
   print(filename)
@@ -238,8 +247,8 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
       if text == "0" and not(s.activatable):
         text = ""
       fill = grey if s.currentLvl == 0 else white
-      draw.text(s.center, text=text, fill=fill, font=font,anchor="mm")
-
+      draw.text(s.center, text=text, fill=fill, font=font,language=language, anchor="mm")
+      print(language)
       if s.currentLvl == s.maxLvl:
         precondition = True
       else:

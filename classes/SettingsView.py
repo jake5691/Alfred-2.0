@@ -525,6 +525,15 @@ class SettingsView(View):
       args += f" `{arg}`"
     res += f"**{self.command.name}**{args} - {self.command.typ}\n*{self.command.description}*\n"
 
+    #check if guild is already in the settings list
+    if self.guildID not in self.command.allowedChannels:
+      self.command.allowedChannels[self.guildID] = []
+    if self.guildID not in self.command.excludedChannels:
+      self.command.excludedChannels[self.guildID] = []
+    if self.guildID not in self.command.allowedRoles:
+      self.command.allowedRoles[self.guildID] = []
+    if self.guildID not in self.command.excludedRoles:
+      self.command.excludedRoles[self.guildID] = []
     #Channels
     if self.command.allowedChannels[self.guildID] == [] and self.command.excludedChannels[self.guildID] == []:
       res += "\nThis command is **allowed in all channels.**\n*To exclude some channels use 🔴#, to only allow specific ones use 🟢#*"

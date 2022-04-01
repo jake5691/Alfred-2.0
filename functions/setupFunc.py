@@ -109,7 +109,6 @@ def allFeatures() -> [Feature]:
   randReplyFeature.commands.append(randomReplyCommand)
   allFeat.append(randReplyFeature)
   
-
   ##Load stored Data
   allFeatu = []
   for f in allFeat:

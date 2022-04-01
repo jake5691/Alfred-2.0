@@ -1,10 +1,12 @@
-from nextcord.ext import commands, application_checks
-from functions import staticValues as sv
-from functions import setupFunc as sf
 from replit import db
+from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command
 import jsons
+
 from classes.SettingsView import SettingsView
+from classes.Settings import Feature, Command
+from functions import staticValues as sv
+from functions import setupFunc as sf
 
 class Settings(commands.Cog):
   """Settings"""
@@ -18,13 +20,41 @@ class Settings(commands.Cog):
   @commands.Cog.listener('on_ready')
   async def on_ready(self):
     """load/set default settings for all servers where Alfred is present"""
+    commands_ = self.bot.get_all_application_commands()
+    commands_grouped = {}
+    for c in commands_:
+      group = c.self_argument.qualified_name
+      if group in commands_grouped:
+        commands_grouped[group].append(c)
+      else:
+        commands_grouped[group] = [c]
+
+    for g in commands_grouped:
+      print(g)
+      f = next((x for x in self.Features if x.name == g), None)
+      if f == None:
+        f = Feature(g, self.bot.cogs[g].description, f"feature{g}")
+        self.Features.append(f)
+      else:
+        f.description = self.bot.cogs[g].description
+      for c in commands_grouped[g]:
+        co = next((x for x in f.commands if x.name == c.name), None)
+        if co == None:
+          co = Command(c.name, c.description, "Slash Command")
+          f.commands.append(co)
+        else:
+          co.description = c.description
+        print(f" {c.name}")
+        
     for guild in self.bot.guilds:
       for f in self.Features:
         if guild.id in f.enabled:
           if f.enabled[guild.id]:
-            print(f"{guild.name} has {f.name} Active")
+            pass
+            #print(f"{guild.name} has {f.name} Active")
           else:
-            print(f"{guild.name} has {f.name} Deactive")
+            pass
+            #print(f"{guild.name} has {f.name} Deactive")
         else:
           f.enabled[guild.id] = False #set feature per default to False
           db[f.dbKey] = jsons.dumps(f)
@@ -42,6 +72,9 @@ class Settings(commands.Cog):
                       guild_ids=sv.gIDS)
   @application_checks.check(isLeader)
   async def settingsSlashCommand(self, interaction: Interaction):
+    """
+    View and change the settings for Alfred and all his features and commands.
+    """
     await interaction.response.send_message("**Settings**\nSelect the feature you want to view.", view=SettingsView(self.Features, interaction.guild), ephemeral=True)
 
   def isDev(ctx):
@@ -53,8 +86,15 @@ class Settings(commands.Cog):
   
   @commands.command()
   @commands.check(isDev)
-  async def settings(self, ctx):
+  async def setting(self, ctx):
     """Displaying of all Alfred variables"""
+    commands_ = self.bot.get_all_application_commands()
+    for cog in self.bot.cogs:
+      print(cog)
+      cog = self.bot.cogs[cog]
+      for command in cog.get_commands():
+        print(f" {command}")
+    return
     #Random Reply
     aChannels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general]
     channels = ""

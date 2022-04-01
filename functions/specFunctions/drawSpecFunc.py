@@ -146,7 +146,7 @@ def getPoint_red(angle:int,radius:int=6,offset_x:int=0):
 
 
 
-async def draw(groups, col1, col2, filename, firstSpecs, colour, user):
+async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
   grey = (200,200,200)
   white = (255,255,255)
   print(filename)
@@ -247,8 +247,7 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, user):
       #add watermark
       draw.text((20, 20), "RbC - 232", 
           (0, 0, 0), font=font_wm)
-      #add name
-      draw.text((20,50), user.display_name,
+      draw.text((20,80), author, 
           (0, 0, 0), font=font_wm)
       
   im.save(filename)

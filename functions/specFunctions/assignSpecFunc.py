@@ -128,7 +128,7 @@ def useful_assign(priorities_list):
     row['Node'].usefulScore = row['Score']
 
 
-async def sumPoints(x):
+def sumPoints(x):
   Points = 0
   nodes = []
   for i in x:
@@ -148,7 +148,7 @@ async def sumPoints(x):
 
   return(Points)
 
-async def useScore(score_dict):
+def useScore(score_dict):
   useScore = 0
   for i in score_dict:
     try:
@@ -211,9 +211,9 @@ async def evaluate(Nodes, df, userSpecPoints):
   possibleComb  = combinations(df)
   print("eval sets", datetime.datetime.now())
   for comb in possibleComb:
-    pointsReq = await sumPoints(comb)
+    pointsReq = sumPoints(comb)
     if userSpecPoints - 10 <= pointsReq <= userSpecPoints:
-      setScore = await useScore(comb)
+      setScore = useScore(comb)
       possibleSets.append(comb)
       setPoints.append(pointsReq)
       setScores.append(setScore)
@@ -248,12 +248,14 @@ def assignPoints(nodeset,userSpecPoints):
           x.currentLvl += 1
           userSpecPoints -= 1
     
+      
+
 
 async def most_use(priorities_list_full, userSpecPoints):
   print("start", datetime.datetime.now())
   df = getNodes(priorities_list_full)[1]
   Nodes = list(df['Node'])
-  nodePoints = await sumPoints(Nodes)
+  nodePoints = sumPoints(Nodes)
   print("node points", nodePoints)
   if nodePoints <= userSpecPoints:
     print("assign p straight away")
@@ -324,11 +326,13 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(view.specinfo.list1, view.specinfo.list2)
-  await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", "bob")
+  print(view.author)
+  print(view.author.display_name)
+  await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", view.author.display_name)
   
-  await draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green", "bob")
+  await draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green", view.author.display_name)
   
-  await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", "bob")
+  await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", view.author.display_name)
   
 
   #set all nodes back to zero

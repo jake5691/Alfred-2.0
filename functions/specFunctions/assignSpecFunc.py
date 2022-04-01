@@ -326,7 +326,6 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       finished = True
   
   print(view.specinfo.list1, view.specinfo.list2)
-  print(view.author)
   print(view.author.display_name)
   await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", view.author.display_name)
   
@@ -341,7 +340,6 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
     for s in group:
       s.currentLvl  = 0
       s.usefulScore = 0
-  print("blue reset")
   for group in groups_gr:
       #Loop specs in group
     for s in group:

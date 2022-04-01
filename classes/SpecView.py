@@ -30,7 +30,6 @@ class SelectAdvOpt(Select):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
     for p, t in pathopt:
-      print(p)
       options.append(SelectOption(label=p, description=t))
     self.options = options
     
@@ -51,6 +50,7 @@ class SelectPreset(Select):
     
   async def callback(self, interaction:Interaction):
     self.view.specinfo.preset = self.values[0]
+    self.view.clear_items()
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     
@@ -70,18 +70,24 @@ class SelectBanner(Select):
 
 class SelectOwn(Select):
   """Dropdown for full on iron and wood question"""
-  def __init__(self, opt):
-    super().__init__(placeholder = ".",row=0,min_values=3, max_values=3)
+  def __init__(self, opt, lookup):
+    super().__init__(placeholder = "select three options", min_values=3, max_values=3)
     options = []
-    for p, t in opt:
-      options.append(SelectOption(label=p, description=t))
+    
+    for p, t in opt:   
+      options.append(SelectOption(label=p, value=lookup[p], description=t, default=False))
+  
+        
     self.options = options
+    
 
   async def callback(self, interaction:Interaction):
+    global lookup
     for p in self.values:
+      #g = lookup[p]
       self.view.specinfo.list1.append(p)
-    print(self.view.specinfo.list1)
     self.ready = True
+    print("here")
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
@@ -89,14 +95,17 @@ class SelectOwn(Select):
 
 class SelectOutput(Select):
   """Dropdown for full on iron and wood question"""
-  def __init__(self, channel):
+  def __init__(self):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
-    options.append(SelectOption(label="OK"))
+    options.append(SelectOption(label="OK", default=True))
     self.options = options
 
   async def callback(self, interaction:Interaction):
-    self.view.specinput()
+    if self.view.pathway == 'Preset':
+      self.view.specinput()
+    else:
+      print('select option')
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = self.view.specinfo.spec
     helpText = 'Type "/specadvice" to get advice on where to use your specialisation points'
@@ -109,8 +118,11 @@ class SelectOutput(Select):
     #send advice
       await self.view.channel.send(content =f"{self.view.author.mention}: {notes}")
       if self.view.specinfo.language != 'english':
-        print(self.view.specinfo.language)
-        notes_trans = GoogleTranslator(source='auto', target=self.view.specinfo.language).translate(text=notes)
+        try:
+          notes_trans = GoogleTranslator(source='auto', target=self.view.specinfo.language).translate(text=notes)
+        except:
+          notes_trans = ""
+          
         await self.view.channel.send(content =f"{self.view.author.mention}: {notes_trans}") 
       await self.view.channel.send(file=File(blueFile))
       await self.view.channel.send(file=File(greenFile))
@@ -218,21 +230,32 @@ class SpecView(View):
       return
 
     if self.pathway == "Select" and self.ready == False:
-      text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
+      
       opt = []
-      priorityOpt = ('Loyalty', 'Extra tiles', 'One extra queue', 'Two extra queues', 'three extra queues', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles')
+      priorityOpt = ('Loyalty', 'Extra tiles', 'One extra queue', 'Two extra queues', 'Three extra queues', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles')
+      #defaultOpt = (True, True, True, False, False, False, False, False,False)
+      priorityGroup = ('Loyalty', 'ExtraTile', 'OneExtQ', 'TwoExtQ', 'MaxQs', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat' )
+      global lookup
+      #values = list(zip(priorityGroup, defaultOpt))
+      
+      
       for p in priorityOpt:
         trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
         item =(p, trans)
         opt.append(item)
-      print(opt)
+        #priorityOptTrans.append(trans)
+      lookup = dict(zip(priorityOpt, priorityGroup))
+      print(lookup)
+      #text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
+      text = "Please select your top three priorities.\n\n"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
       if self.specinfo.language != 'english':
         content = text + trans
       else:
         content = text
       self.content = content
-      self.add_item(SelectOwn(opt))
+      self.ready = True
+      self.add_item(SelectOwn(opt, lookup))
       return
 
 
@@ -249,15 +272,12 @@ class SpecView(View):
         else:
           content = text
         self.content = content
-        self.add_item(SelectOutput(self.channel))
+        self.add_item(SelectOutput())
         return
       
 
 
   def specinput(self):
-    #specinfo = specInfo()
-    #print("loyalty = ", self.specinfo.loyalty)
-    #print(self.view.specinfo.loyalty)
   
     if self.specinfo.preset == 'Loyalty':
     

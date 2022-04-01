@@ -154,7 +154,7 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
   try:
     language = detect(author.display_name)
   except:
-    language = 'en'
+    language = 'english'
  
   grey = (200,200,200)
   white = (255,255,255)
@@ -247,8 +247,7 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
       if text == "0" and not(s.activatable):
         text = ""
       fill = grey if s.currentLvl == 0 else white
-      draw.text(s.center, text=text, fill=fill, font=font,language=language, anchor="mm")
-      print(language)
+      draw.text(s.center, text=text, fill=fill, font=font, language=language, anchor="mm")
       if s.currentLvl == s.maxLvl:
         precondition = True
       else:

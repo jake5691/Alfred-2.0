@@ -42,7 +42,7 @@ class Settings(commands.Cog):
                       guild_ids=sv.gIDS)
   @application_checks.check(isLeader)
   async def settingsSlashCommand(self, interaction: Interaction):
-    await interaction.response.send_message("**Settings**\nSelect the Feature you want to view", view=SettingsView(self.Features, interaction.guild), ephemeral=True)
+    await interaction.response.send_message("**Settings**\nSelect the feature you want to view.", view=SettingsView(self.Features, interaction.guild), ephemeral=True)
 
   def isDev(ctx):
     userRoles = [i.id for i in ctx.author.roles]

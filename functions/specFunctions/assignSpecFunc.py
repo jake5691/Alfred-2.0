@@ -91,15 +91,10 @@ def getNodes(priorities_list_full):
         nodes_list.append(node)
         node_priority.append(p)
 
-  score = []
-  title = []
-  maxLevel = []
-  
-  for node in nodes_list:
-    score.append(node.usefulScore)
-    title.append(node.title)
-    maxLevel.append(node.maxLvl)
-    
+  score = [node.usefulScore for node in nodes_list]
+  title = [node.title for node in nodes_list]
+  maxLevel = [node.maxLvl for node in nodes_list]
+
   data = {'Node':nodes_list, 'Score':score, 'Title':title,'maxLvl':maxLevel, 'Priority':node_priority}
   df = pd.DataFrame(data)
   #print(df)
@@ -127,25 +122,11 @@ def useful_assign(priorities_list):
   for index, row in nodes_list2.iterrows():
     row['Node'].usefulScore = row['Score']
 
-
+    
+  
 def sumPoints(x):
-  Points = 0
-  nodes = []
-  for i in x:
-    try: 
-      if i in nodes:
-        pass
-      else:
-        Points += i.maxLvl - i.currentLvl
-        nodes.append(i)
-    except:
-      for n in i:
-        if n in nodes:
-          pass
-        else:
-          Points += n.maxLvl - n.currentLvl
-          nodes.append(n)
-
+  nodePoints = [n.maxLvl-n.currentLvl for n in x]
+  Points = sum(nodePoints)
   return(Points)
 
 def useScore(score_dict):
@@ -158,7 +139,15 @@ def useScore(score_dict):
         useScore += x.usefulScore
   return(useScore)
 
-
+def flatten2list(object):
+    gather = []
+    for item in object:
+        if isinstance(item, (list, tuple, set)):
+            gather.extend(flatten2list(item))            
+        else:
+            gather.append(item)
+    return gather
+  
 def combinations (df):
   df['match'] = df.Priority.eq(df.Priority.shift())
 
@@ -183,7 +172,11 @@ def combinations (df):
       except:
         group.append(row['Node'])
       df.at[index,'req_nodes'] = group
-      
+  print(df.shape)
+  df.drop(df[df['match']==False].index, inplace = True)
+  print(df.shape, "after")
+
+     
   #get list of possible combinations of nodes for each main priority
   mp_list = df['Priority'].unique()
   possibleCombSets = []
@@ -191,7 +184,6 @@ def combinations (df):
     mp_combs = []
     mp_combs=df.query('Priority==@mp')['req_nodes'].to_list()
     possibleCombSets.append(mp_combs)
-
   possibleComb =[]
   #gets all possible combinations (only 1 from each set, but does not have to be one from every set)
   for L in range(0, len(possibleCombSets)+1):
@@ -201,23 +193,32 @@ def combinations (df):
         possibleComb.append(i)
           #print(possibleComb)
   print("num poss comb", len(possibleComb))
-  return (possibleComb)
+  possibleSets = []
+  for c in possibleComb:
+    try:
+      comb_list = flatten2list(c)
+      comb_set = set(comb_list)
+      possibleSets.append(comb_set)
+    except:
+      print("fail", comb_list)
+
+  return (possibleSets)
 
 async def evaluate(Nodes, df, userSpecPoints):
-  possibleSets = []
+  possibleComb = []
   setPoints = []
   setScores = []
   print("comb", datetime.datetime.now())
-  possibleComb  = combinations(df)
+  possibleSets  = combinations(df)
   print("eval sets", datetime.datetime.now())
-  for comb in possibleComb:
-    pointsReq = sumPoints(comb)
+  for s in possibleSets:
+    pointsReq = sumPoints(s)
     if userSpecPoints - 10 <= pointsReq <= userSpecPoints:
-      setScore = useScore(comb)
-      possibleSets.append(comb)
+      setScore = useScore(s)
+      possibleComb.append(s)
       setPoints.append(pointsReq)
       setScores.append(setScore)
-  data = {'NodeSets':possibleSets, 'PointsReq':setPoints, 'UseScore':setScores}
+  data = {'NodeSets':possibleComb, 'PointsReq':setPoints, 'UseScore':setScores}
   
   print("create df", datetime.datetime.now())
   print(f"valid combos: {len(setScores)}")

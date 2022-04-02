@@ -1,12 +1,14 @@
 import os
+import jsons
 from nextcord.ext import commands
 import pandas as pd
 from replit import db
+from operator import attrgetter
+
 from classes.Structure import Structure
-from functions import staticValues as sv
-import jsons
 from classes.Member import MemberClass
 from classes.Settings import Feature, Command
+from functions import staticValues as sv
 
 def loadCogs(client: commands.Bot):
   """Load the initializing Cog"""
@@ -94,29 +96,10 @@ def checkCurrent(member:MemberClass) -> MemberClass:
 
 
 def allFeatures() -> [Feature]:
-  allFeat = []
-  #Coffee
-  coffeeFeature = Feature(name="coffee", description="Fun feature to serve coffee", dbKey="featureCoffee")
-  coffeeCommand = Command(name="coffee", description="Send a random coffee picture to every message with the keyword **coffee** in it", typ="on_message")
-  coffeeFeature.commands.append(coffeeCommand)
-  allFeat.append(coffeeFeature)
-
-  #RandomReply
-  randReplyFeature = Feature(name="Random Reply", description="Give random reply to keywords", dbKey="featureRandomReply")
-  randomReplyCommand = Command(name="randomReply", description="Send a random reply to specific keywords", typ="on_message")
-  randomReplyCommand.keywords = {}
-  randomReplyCommand.replies = {}
-  randReplyFeature.commands.append(randomReplyCommand)
-  allFeat.append(randReplyFeature)
-  
-  ##Load stored Data
-  allFeatu = []
-  for f in allFeat:
-    if f.dbKey not in db.keys():
-      print(f.dbKey)
-      print(db.prefix("feature"))
-      db[f.dbKey] = jsons.dumps(f)
-    ff = jsons.loads(db[f.dbKey], Feature)
+  """Load all features from database"""
+  res = []
+  for dbKey in db.prefix("feature"):
+    ff = jsons.loads(db[dbKey], Feature)
     newenabled = {}
     for g in ff.enabled:
       newenabled[int(g)] = ff.enabled[g]
@@ -142,8 +125,39 @@ def allFeatures() -> [Feature]:
       coms[-1].excludedChannels = eC
       
     ff.commands = coms
-    allFeatu.append(ff)
-  return allFeatu
+    res.append(ff)
+  
+  additionalFeatures = []
+  #Fun Feature
+  funFeature = Feature(name="Fun", description="Collection of fun features", dbKey="featureFun")
+  #Coffee command
+  coffeeCommand = Command(name="coffee", description="Send a random coffee picture to every message with the keyword **coffee** in it", typ="on_message")
+  funFeature.commands.append(coffeeCommand)
+  #RandomReply command
+  randomReplyCommand = Command(name="randomReply", description="Send a random reply to specific keywords", typ="on_message")
+  randomReplyCommand.keywords = {}
+  randomReplyCommand.replies = {}
+  funFeature.commands.append(randomReplyCommand)
+  additionalFeatures.append(funFeature)
+
+  for af in additionalFeatures:
+    f = next((x for x in res if x.dbKey == af.dbKey), None)
+    if f == None:
+      res.append(af)
+      db[af.dbKey] = jsons.dumps(af)
+      continue
+    f.description = af.description
+    f.name = af.name
+    for ac in af.commands:
+      c = next((x for x in f.commands if x.name == ac.name), None)
+      if c == None:
+        f.commands.append(c)
+        continue
+      c.description = ac.description
+      c.typ = ac.typ
+    db[f.dbKey] = jsons.dumps(f)
+  res = sorted(res, key=attrgetter('name'))
+  return res
 
 def saveFeature(f=Feature):
   db[f.dbKey] = jsons.dumps(f)

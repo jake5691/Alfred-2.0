@@ -13,8 +13,6 @@ class Settings(commands.Cog):
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
-    self.catName = "Alfred"
-    self.chanName = "Overview"
     self.Features = sf.allFeatures()
 
   @commands.Cog.listener('on_ready')
@@ -30,7 +28,6 @@ class Settings(commands.Cog):
         commands_grouped[group] = [c]
 
     for g in commands_grouped:
-      print(g)
       f = next((x for x in self.Features if x.name == g), None)
       if f == None:
         f = Feature(g, self.bot.cogs[g].description, f"feature{g}")
@@ -44,21 +41,13 @@ class Settings(commands.Cog):
           f.commands.append(co)
         else:
           co.description = c.description
-        print(f" {c.name}")
         
     for guild in self.bot.guilds:
       for f in self.Features:
-        if guild.id in f.enabled:
-          if f.enabled[guild.id]:
-            pass
-            #print(f"{guild.name} has {f.name} Active")
-          else:
-            pass
-            #print(f"{guild.name} has {f.name} Deactive")
-        else:
+        if guild.id not in f.enabled:
           f.enabled[guild.id] = False #set feature per default to False
           db[f.dbKey] = jsons.dumps(f)
-          print(f"{guild.name} has {f.name} values NOT stored")
+          #print(f"{guild.name} has {f.name} values NOT stored")
 
   def isLeader(interaction):
     userRoles = [i.id for i in interaction.user.roles]

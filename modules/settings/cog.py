@@ -48,6 +48,19 @@ class Settings(commands.Cog):
           f.enabled[guild.id] = False #set feature per default to False
           db[f.dbKey] = jsons.dumps(f)
           #print(f"{guild.name} has {f.name} values NOT stored")
+        for c in f.commands:
+          if guild.id not in c.allowedChannels:
+            c.allowedChannels[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
+          if guild.id not in c.excludedChannels:
+            c.excludedChannels[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
+          if guild.id not in c.allowedRoles:
+            c.allowedRoles[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
+          if guild.id not in c.excludedRoles:
+            c.excludedRoles[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
 
   def isLeader(interaction):
     userRoles = [i.id for i in interaction.user.roles]

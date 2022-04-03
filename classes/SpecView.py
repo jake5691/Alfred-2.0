@@ -40,7 +40,7 @@ class SelectAdvOpt(Select):
     await interaction.response.edit_message(content=self.view.content, view = self.view)  
 
 class SelectPreset(Select):
-  """Dropdown for preset question"""
+  """Dropdown to select which preset option"""
   def __init__(self, opt):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
@@ -68,13 +68,14 @@ class SelectBanner(Select):
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
-class SelectOwn(Select):
-  """Dropdown for full on iron and wood question"""
+class SelectTop3(Select):
+  """Dropdown for the top three priorities selection"""
   def __init__(self, opt, lookup):
     super().__init__(placeholder = "select three options", min_values=3, max_values=3)
     options = []
     
-    for p, t in opt:   
+    for p, t in opt:  
+      print(p, t)
       options.append(SelectOption(label=p, value=lookup[p], description=t, default=False))
   
         
@@ -82,15 +83,29 @@ class SelectOwn(Select):
     
 
   async def callback(self, interaction:Interaction):
-    global lookup
-    for p in self.values:
-      #g = lookup[p]
-      self.view.specinfo.list1.append(p)
-    self.ready = True
     print("here")
+    for p in self.values:
+      print("selected", p)
+      self.view.specinfo.list1.append(p)
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
+class SelectNext3(Select):
+  """Dropdown for the next three priorities selection"""
+  def __init__(self, opt, lookup, list1):
+    super().__init__(placeholder = "select three options", min_values=1, max_values=3)
+    options = []
+    for p, t in opt:
+      if lookup[p] not in list1:
+        options.append(SelectOption(label=p, value=lookup[p], description=t, default=False))    
+    self.options = options
+
+  async def callback(self, interaction:Interaction):
+    for p in self.values:
+      self.view.specinfo.list2.append(p)
+    self.view.specinfo.notes = "You selected your own areas of focus"
+    self.view.whatNext()
+    await interaction.response.edit_message(content=self.view.content, view = self.view)
   
 
 class SelectOutput(Select):
@@ -102,10 +117,7 @@ class SelectOutput(Select):
     self.options = options
 
   async def callback(self, interaction:Interaction):
-    if self.view.pathway == 'Preset':
-      self.view.specinput()
-    else:
-      print('select option')
+    self.view.specinput()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = self.view.specinfo.spec
     helpText = 'Type "/specadvice" to get advice on where to use your specialisation points'
@@ -151,6 +163,8 @@ class SpecView(View):
     self.redfile = redFile
     self.member = member
     self.pathway = None
+    self.priorityoptions = ['Loyalty', 'Extra tiles', 'One extra queue', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles', 'Two extra queues', 'Three extra queues']
+    self.prioritygroups = ['Loyalty', 'ExtraTile', 'OneExtQ', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat', 'TwoExtQ', 'MaxQs']
     self.ready = False
     self.output = False
     self.specinfo.spec = self.member.currentSkillLvl
@@ -229,23 +243,16 @@ class SpecView(View):
       self.add_item(SelectPreset(opt))
       return
 
-    if self.pathway == "Select" and self.ready == False:
+    if self.pathway == "Select" and self.specinfo.list1 == []:
       
       opt = []
-      priorityOpt = ('Loyalty', 'Extra tiles', 'One extra queue', 'Two extra queues', 'Three extra queues', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles')
-      #defaultOpt = (True, True, True, False, False, False, False, False,False)
-      priorityGroup = ('Loyalty', 'ExtraTile', 'OneExtQ', 'TwoExtQ', 'MaxQs', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat' )
-      global lookup
-      #values = list(zip(priorityGroup, defaultOpt))
-      
-      
-      for p in priorityOpt:
+
+      for p in self.priorityoptions:
         trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
         item =(p, trans)
         opt.append(item)
         #priorityOptTrans.append(trans)
-      lookup = dict(zip(priorityOpt, priorityGroup))
-      print(lookup)
+      lookup = dict(zip(self.priorityoptions, self.prioritygroups))
       #text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
       text = "Please select your top three priorities.\n\n"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
@@ -254,11 +261,30 @@ class SpecView(View):
       else:
         content = text
       self.content = content
-      self.ready = True
-      self.add_item(SelectOwn(opt, lookup))
+      self.add_item(SelectTop3(opt, lookup))
       return
 
-
+    if self.pathway == 'Select' and self.specinfo.list2 == []:
+      opt =[]
+      for p in self.priorityoptions:
+        trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
+        item =(p, trans)
+        opt.append(item)
+        #priorityOptTrans.append(trans)
+      lookup = dict(zip(self.priorityoptions, self.prioritygroups))
+      #text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
+      text = "Please select your next priorities (minimum of 1 selection, maximum of three.\n\n"
+      trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
+      if self.specinfo.language != 'english':
+        content = text + trans
+      else:
+        content = text
+      self.content = content
+      self.ready = True
+      self.add_item(SelectNext3(opt, lookup, self.specinfo.list1))
+      return
+      
+      
       
 
     if self.output == False:

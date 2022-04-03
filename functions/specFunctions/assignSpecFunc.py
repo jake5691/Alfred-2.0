@@ -318,7 +318,8 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
     userSpecPoints  = await most_use(priorities, userSpecPoints)
  
     print("updates sp", userSpecPoints)
-    if userSpecPoints > 0:
+    #only attempt second list if spec points is greater than f (ie it can complete two nodes)
+    if userSpecPoints > 5:
       if priorities_list == view.specinfo.list2:
         finished = True
       else:

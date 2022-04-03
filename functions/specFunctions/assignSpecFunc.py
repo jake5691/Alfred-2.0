@@ -148,7 +148,7 @@ def flatten2list(object):
             gather.append(item)
     return gather
   
-def combinations (df, min_nodes, max_nodes):
+def combinations (df):
   df['match'] = df.Priority.eq(df.Priority.shift())
 
   df['req_nodes'] = ""
@@ -190,11 +190,7 @@ def combinations (df, min_nodes, max_nodes):
     for subset in itertools.combinations(possibleCombSets, L):
       c = list(itertools.product(*subset))
       for i in c:
-        numNodes = 0
-        for s in i:
-          numNodes += len(s)
-        if min_nodes <= numNodes <+ max_nodes:
-          possibleComb.append(i)
+        possibleComb.append(i)
           #print(possibleComb)
   print("num poss comb", len(possibleComb))
   #possibleSets = [set(flatten2list(c) for c in possibleComb)]
@@ -211,12 +207,10 @@ async def evaluate(Nodes, df, userSpecPoints):
   possibleComb = []
   setPoints = []
   setScores = []
-  min_nodes = userSpecPoints/3 - 10
-  max_nodes = userSpecPoints/3 + 10
-  print(min_nodes, "min nodes", max_nodes, "max nodes")
   print("comb", datetime.datetime.now())
-  possibleSets  = combinations(df, min_nodes, max_nodes)
+  possibleSets  = combinations(df)
   print("eval sets", datetime.datetime.now())
+  print(userSpecPoints)
   for s in possibleSets:
     pointsReq = sumPoints(s)
     if userSpecPoints - 10 <= pointsReq <= userSpecPoints:
@@ -261,7 +255,8 @@ def assignPoints(nodeset,userSpecPoints):
 async def most_use(priorities_list_full, userSpecPoints):
   print("start", datetime.datetime.now())
   df = getNodes(priorities_list_full)[1]
-  Nodes = list(df['Node'])
+  Nodes = set(df['Node'])
+  
   nodePoints = sumPoints(Nodes)
   print("node points", nodePoints)
   if nodePoints <= userSpecPoints:

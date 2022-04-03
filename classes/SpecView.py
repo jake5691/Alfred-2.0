@@ -16,7 +16,7 @@ class SelectLanguage(Select):
     super().__init__(placeholder = "Select the language",row=0,min_values=1, max_values=1)
     options = []
     for f in flags:
-      options.append(SelectOption(label=f))
+      options.append(SelectOption(label=f, default=False))
     self.options = options
   
   async def callback(self, interaction:Interaction):
@@ -30,7 +30,7 @@ class SelectAdvOpt(Select):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
     for p, t in pathopt:
-      options.append(SelectOption(label=p, description=t))
+      options.append(SelectOption(label=p, description=t, default=False))
     self.options = options
     
   async def callback(self, interaction:Interaction):
@@ -45,7 +45,7 @@ class SelectPreset(Select):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
     for o, t in list(opt):
-      options.append(SelectOption(label=o, description=t))
+      options.append(SelectOption(label=o, description=t, default=False))
     self.options = options
     
   async def callback(self, interaction:Interaction):
@@ -75,17 +75,11 @@ class SelectTop3(Select):
     options = []
     
     for p, t in opt:  
-      print(p, t)
-      options.append(SelectOption(label=p, value=lookup[p], description=t, default=False))
-  
-        
+      options.append(SelectOption(label=p, value=lookup[p], description=t, default=False)) 
     self.options = options
     
-
   async def callback(self, interaction:Interaction):
-    print("here")
     for p in self.values:
-      print("selected", p)
       self.view.specinfo.list1.append(p)
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
@@ -109,11 +103,11 @@ class SelectNext3(Select):
   
 
 class SelectOutput(Select):
-  """Dropdown for full on iron and wood question"""
+  """Dropdown to calculate and produce the drawings"""
   def __init__(self):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
-    options.append(SelectOption(label="OK", default=True))
+    options.append(SelectOption(label="OK", default=False))
     self.options = options
 
   async def callback(self, interaction:Interaction):

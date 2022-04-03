@@ -193,14 +193,13 @@ def combinations (df):
         possibleComb.append(i)
           #print(possibleComb)
   print("num poss comb", len(possibleComb))
+  #possibleSets = [set(flatten2list(c) for c in possibleComb)]
   possibleSets = []
   for c in possibleComb:
-    try:
-      comb_list = flatten2list(c)
-      comb_set = set(comb_list)
-      possibleSets.append(comb_set)
-    except:
-      print("fail", comb_list)
+    comb_list =  flatten2list(c)
+    comb_set = set(comb_list)
+    possibleSets.append(comb_set)
+
 
   return (possibleSets)
 

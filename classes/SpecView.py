@@ -26,11 +26,12 @@ class SelectLanguage(Select):
 
 class SelectAdvOpt(Select):
   """Dropdown for whether user wants to select their own or use preset values"""
-  def __init__(self,pathopt):
-    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+  def __init__(self,pathopt, content):
+    super().__init__(row=0,min_values=1, max_values=1)
     options = []
     for p, t in pathopt:
       options.append(SelectOption(label=p, description=t, default=False))
+    self.placeholder = content
     self.options = options
     
   async def callback(self, interaction:Interaction):
@@ -41,11 +42,12 @@ class SelectAdvOpt(Select):
 
 class SelectPreset(Select):
   """Dropdown to select which preset option"""
-  def __init__(self, opt):
+  def __init__(self, opt, content):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
     for o, t in list(opt):
       options.append(SelectOption(label=o, description=t, default=False))
+    self.placeholder = content
     self.options = options
     
   async def callback(self, interaction:Interaction):
@@ -56,13 +58,14 @@ class SelectPreset(Select):
     
 class SelectBanner(Select):
   """Dropdown for banner question"""
-  def __init__(self,banner):
-    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+  def __init__(self,banner, content):
+    super().__init__(row=0,min_values=1, max_values=1)
     options = []
     print(banner)
     for e, t in banner:
       options.append(SelectOption(label=e, description = t))
     self.options = options
+    self.placeholder = content
   async def callback(self, interaction:Interaction):
     self.view.specinfo.banner = self.values[0]
     self.view.whatNext()
@@ -70,12 +73,13 @@ class SelectBanner(Select):
 
 class SelectTop3(Select):
   """Dropdown for the top three priorities selection"""
-  def __init__(self, opt, lookup):
+  def __init__(self, opt, lookup, content):
     super().__init__(placeholder = "select three options", min_values=3, max_values=3)
     options = []
     
     for p, t in opt:  
       options.append(SelectOption(label=p, value=lookup[p], description=t, default=False)) 
+    self.placeholder = content
     self.options = options
     
   async def callback(self, interaction:Interaction):
@@ -86,12 +90,13 @@ class SelectTop3(Select):
 
 class SelectNext3(Select):
   """Dropdown for the next three priorities selection"""
-  def __init__(self, opt, lookup, list1):
+  def __init__(self, opt, lookup, content, list1):
     super().__init__(placeholder = "select three options", min_values=1, max_values=3)
     options = []
     for p, t in opt:
       if lookup[p] not in list1:
-        options.append(SelectOption(label=p, value=lookup[p], description=t, default=False))    
+        options.append(SelectOption(label=p, value=lookup[p], description=t, default=False))  
+    self.placeholder = content
     self.options = options
 
   async def callback(self, interaction:Interaction):
@@ -104,10 +109,11 @@ class SelectNext3(Select):
 
 class SelectOutput(Select):
   """Dropdown to calculate and produce the drawings"""
-  def __init__(self):
+  def __init__(self, content):
     super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
     options = []
     options.append(SelectOption(label="OK", default=False))
+    self.placeholder = content
     self.options = options
 
   async def callback(self, interaction:Interaction):
@@ -197,7 +203,7 @@ class SpecView(View):
       else:
         content = text
       self.content = content
-      self.add_item(SelectBanner(opt))
+      self.add_item(SelectBanner(opt, trans))
       return
       
     if self.pathway == None:
@@ -213,7 +219,7 @@ class SpecView(View):
       else:
         content = text
       self.content = content
-      self.add_item(SelectAdvOpt(opt))
+      self.add_item(SelectAdvOpt(opt, trans))
       return
 
     if self.pathway == "Preset" and self.ready ==False:
@@ -234,7 +240,7 @@ class SpecView(View):
         content = text
       self.content = content
       self.ready = True
-      self.add_item(SelectPreset(opt))
+      self.add_item(SelectPreset(opt, trans))
       return
 
     if self.pathway == "Select" and self.specinfo.list1 == []:
@@ -255,7 +261,7 @@ class SpecView(View):
       else:
         content = text
       self.content = content
-      self.add_item(SelectTop3(opt, lookup))
+      self.add_item(SelectTop3(opt, lookup, trans))
       return
 
     if self.pathway == 'Select' and self.specinfo.list2 == []:
@@ -275,7 +281,7 @@ class SpecView(View):
         content = text
       self.content = content
       self.ready = True
-      self.add_item(SelectNext3(opt, lookup, self.specinfo.list1))
+      self.add_item(SelectNext3(opt, lookup, trans, self.specinfo.list1))
       return
       
       
@@ -292,7 +298,7 @@ class SpecView(View):
         else:
           content = text
         self.content = content
-        self.add_item(SelectOutput())
+        self.add_item(SelectOutput(GoogleTranslator(source='auto', target=self.specinfo.language).translate(text="Press ok to continue")))
         return
       
 

@@ -1,6 +1,7 @@
 #Guild ID to make commands visible instantly
 gIDS = [953750698552619038]#895003315883085865]
 
+SETTINGS_COG = "Settings"
 #Discord limits
 class limits:
   charInMessage = 2000

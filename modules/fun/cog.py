@@ -12,10 +12,35 @@ class Fun(commands.Cog):
   def __init__(self, bot: commands.Bot):
     self.bot = bot
 
+  def checkCoffee(self, message) -> bool:
+    """Check if the Feature is allowed to be used by this user and in this channel"""
+    features = self.bot.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == self.qualified_name), None)
+    if feature == None:
+      print("ERROR feature")
+      return False
+    if not feature.isEnabled(message.guild.id):
+      print("Not enabled")
+      return False
+    command = next((x for x in feature.commands if x.name == "coffee"), None)
+    if command == None:
+      print("ERROR command")
+      return False
+    if not command.isAllowedByMember(message.guild.id, message.author):
+      print("Role not allowed")
+      return False
+    if not command.isAllowedInChannel(message.guild.id, message.channel.id):
+      print("Channel not allowed")
+      return False
+      
+    return True
+
   @commands.Cog.listener('on_message')
-  async def serve_coffee(self,message):
+  async def serve_coffee(self, message):
     """Serve coffee in specific channels"""
     if message.author == self.bot.user:
+      return
+    if not self.checkCoffee(message):
       return
     coffee_channels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general, sv.channel.guild_leadership]
     if not(any(c == message.channel.id for c in coffee_channels)):

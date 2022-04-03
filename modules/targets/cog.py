@@ -40,7 +40,6 @@ class Targets(commands.Cog):
 
   
   @slash_command(name="addtarget",
-                      description="Press send to add a target by selecting it.",
                       guild_ids=sv.gIDS)
   async def addTarget(self,
       interaction: Interaction):

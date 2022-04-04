@@ -17,13 +17,13 @@ class Fun(commands.Cog):
     features = self.bot.get_cog(sv.SETTINGS_COG).Features
     feature = next((x for x in features if x.name == self.qualified_name), None)
     if feature == None:
-      print("ERROR feature not found")
+      print(f"ERROR: {self.qualified_name} feature not found")
       return False
     if not feature.isEnabled(message.guild.id):
       return False
     command = next((x for x in feature.commands if x.name == "coffee"), None)
     if command == None:
-      print("ERROR command not found")
+      print("ERROR: coffee command not found")
       return False
     if not command.isAllowedByMember(message.guild.id, message.author):
       return False
@@ -63,13 +63,13 @@ class Fun(commands.Cog):
     features = self.bot.get_cog(sv.SETTINGS_COG).Features
     feature = next((x for x in features if x.name == self.qualified_name), None)
     if feature == None:
-      print("ERROR feature not found")
+      print(f"ERROR: {self.qualified_name} feature not found")
       return False
     if not feature.isEnabled(message.guild.id):
       return False
     command = next((x for x in feature.commands if x.name == "randomReply"), None)
     if command == None:
-      print("ERROR command not found")
+      print("ERROR: randomReply command not found")
       return False
     if not command.isAllowedByMember(message.guild.id, message.author):
       return False

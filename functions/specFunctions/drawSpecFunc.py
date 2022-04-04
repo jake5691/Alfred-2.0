@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from langdetect import detect
 
 
+
 #Image size
 x = 1024
 y = x
@@ -150,6 +151,7 @@ def getPoint_red(angle:int,radius:int=6,offset_x:int=0):
 
 
 
+
 async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
   try:
     language = detect(author.display_name)
@@ -226,6 +228,7 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
           width=2
         )
       elif colour == "green":
+
         draw.ellipse(
           [s.topLeft,
            s.bottomRight],
@@ -234,6 +237,7 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
           width=2
         )
       elif colour == "red":
+
         draw.ellipse(
           [s.topLeft,
            s.bottomRight],

@@ -7,6 +7,7 @@ from functions import memberFunc as mf
 import re
 from replit import db
 from nextcord.utils import get
+from datetime import datetime, timedelta, timezone
 
 
 class Members(commands.Cog):
@@ -144,7 +145,7 @@ class Members(commands.Cog):
       if message.author.bot:
         #Skip if message is from a bot
         continue
-      print(f"{message.author.display_name}: {message.content}")
+      #print(f"{message.author.display_name}: {message.content}")
       msg = message.content.lower()
       #Check if input is for a banner account
       bannerInput = False
@@ -263,6 +264,84 @@ class Members(commands.Cog):
           msg = msg.replace(b.lower(),'').strip()
           skLo = re.findall('[0-9]+', msg)
           break
+    #First to reach certain lvl/Loyalty and time diff of the rest to get there
+    elif "first at" in msg:
+      skLo = re.findall('[0-9]+', msg)
+      if any(word in msg for word in ["skill", "spec"]):
+        typ = "skill"
+      elif any(word in msg for word in ["loyalty"]):
+        typ = "loyalty"
+      else:
+        await message.channel.send("Cannot process your Input",delete_after = 30)
+        await message.delete()
+        return
+      if len(skLo) != 1:
+        await message.channel.send("Cannot process your Input",delete_after = 30)
+        await message.delete()
+
+      for e in mf.getFirstAbove(self.dataCog.members,int(skLo[0]),typ):
+        await message.channel.send(embed=e,delete_after=300)
+      return
+        
+    #Loyalty/skill Ranking above certain lvl
+    elif any(word in msg for word in ["above", ">","higher","greater"]):
+      if any(word in msg for word in ["skill", "spec"]):
+        typ = "skill"
+      elif any(word in msg for word in ["loyalty"]):
+        typ = "loyalty"
+      else:
+        await message.channel.send("Cannot process your Input",delete_after = 30)
+        await message.delete()
+        return
+      skLo = re.findall('[0-9]+', msg)
+      if len(skLo) == 1:
+        embeds = mf.getRankingEmbeds(self.dataCog.members, typ, above=int(skLo[0]))
+        #Post Ranking
+        for e in embeds:
+          await message.channel.send(embed=e, delete_after = 240)
+      else:
+        print('Unprocessable message: ' + msg)
+      return
+      
+    #Compare skill/loyalty to old data
+    elif any(k in msg for k in ['since','compare','ago','change']):
+      typ = ''
+      skLo = re.findall('[0-9]+', msg)
+      #which typ to compare 
+      if any(l in msg for l in ['skill','spec']):
+        typ = 'skill'
+      elif any(l in msg for l in ['loyalty']):
+        typ = 'loyalty'
+      else:
+        await message.channel.send('Sorry cannot process your input, please use a correct request. Type Help to get more information', delete_after = 20)
+        await message.delete()
+        return
+      if len(skLo) == 3:
+        #Date was given
+        if len(skLo[2]) == 2:
+          skLo[2] = '20' + skLo[2]
+        try:
+          t = datetime(int(skLo[2]), int(skLo[1]), int(skLo[0]), tzinfo=timezone.utc)
+        except:
+            try:
+              t = datetime(int(skLo[2]), int(skLo[0]), int(skLo[1]), tzinfo=timezone.utc)
+            except:
+              await message.channel.send('Sorry cannot process your input, please use a correct date format **dd.mm.yyyy**', delete_after = 45)
+              await message.delete()
+              return
+      elif len(skLo) == 1:
+        #Number of days was given
+        now = datetime.now((timezone.utc))
+        t = now - timedelta(days = int(skLo[0]), hours=now.hour, minutes=now.minute)
+      else:
+        await message.channel.send('Sorry cannot process your input, please use a correct date format **dd.mm.yyyy**', delete_after = 45)
+        await message.delete()
+        return
+      res = mf.getRankingEmbeds(self.dataCog.members, typ, progressSince=t)
+      for e in res:
+        await message.channel.send(embed=e,delete_after=300)
+      return
+      
     else:
       skLo = re.findall('[0-9]+', msg)
     skLoo = []
@@ -270,6 +349,7 @@ class Members(commands.Cog):
       s = int(s)
       if (s < sv.skillCap and s > 0) or (s >= sv.loyalty_min and s <= sv.loyalty_max):
         skLoo.append(s)
+        
     if len(skLoo) == 0:
       return # do nothing if no correct numbers are inserted
     #Get correct member instance
@@ -343,8 +423,8 @@ class Members(commands.Cog):
     #Help function
     if message.content.lower().startswith('help'):
       #Send Message
-      sendText = "**Enter your current loyalty** (e.g. 3701) and/or your **current skill lvl** (e.g. 97) to update it. (Just the number is enough)\n*banner-name* **skill-lvl/loyalty** - to update skill lvl or loyalty your registered banner account enter it's name and then the number\nMore functions comming back soon"
-      #\n**skill lvl above *XX*** - to get all players above *XX* skill lvl \n**loyalty above *XX*** - to get all players above *XX* loyalty\n**skill change since ** *dd.mm.yyyy* - show the change to the given date (also works for loyalty)\n**skill** *X* **days ago** - show the change to *X* days ago (also works for loyalty)\n**first at *X* loyalty** - shows a list with time difference of all that reached the loyalty compared to the first one (also works for skill lvl)\n**whose skill is missing?** - Remind players that haven't entered any skill lvl (works also for loyalty)\n**help** - This overview of all commands"
+      sendText = "**Enter your current loyalty** (e.g. 3701) and/or your **current skill lvl** (e.g. 97) to update it. (Just the number is enough)\n*banner-name* **skill-lvl/loyalty** - to update skill lvl or loyalty your registered banner account enter it's name and then the number\nMore functions comming back soon\n**skill lvl above *XX*** - to get all players above *XX* skill lvl \n**loyalty above *XX*** - to get all players above *XX* loyalty\n**skill change since ** *dd.mm.yyyy* - show the change to the given date (also works for loyalty)\n**skill** *X* **days ago** - show the change to *X* days ago (also works for loyalty)\n**first at *X* loyalty** - shows a list with time difference of all that reached the loyalty compared to the first one (also works for skill lvl)\n**help** - This overview of all commands"
+      #\n**whose skill is missing?** - Remind players that haven't entered any skill lvl (works also for loyalty)\n**help** - This overview of all commands"
       
       try:
         helpMesID = db[sv.db.skLoHelp]

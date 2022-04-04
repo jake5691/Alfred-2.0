@@ -274,6 +274,7 @@ async def most_use(priorities_list_full, userSpecPoints):
   return(userSpecPointsNew)
  
 
+
 async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   #print(view.specinfo.banner)
   startingSpec = userSpecPoints
@@ -290,6 +291,7 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   else:
     priorities_list = view.specinfo.list1
     finished = False
+
   while finished == False:
     priorities = []
     for i in priorities_list:

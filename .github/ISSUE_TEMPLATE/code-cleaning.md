@@ -1,7 +1,7 @@
 ---
 name: Code cleaning
 about: Idea to make the code cleaner and nicer
-title: ''
+title: "[Code]"
 labels: code enhancement
 assignees: ''
 

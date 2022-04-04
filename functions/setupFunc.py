@@ -1,11 +1,14 @@
 import os
+import jsons
 from nextcord.ext import commands
 import pandas as pd
 from replit import db
+from operator import attrgetter
+
 from classes.Structure import Structure
-from functions import staticValues as sv
-import jsons
 from classes.Member import MemberClass
+from classes.Settings import Feature, Command
+from functions import staticValues as sv
 
 def loadCogs(client: commands.Bot):
   """Load the initializing Cog"""
@@ -91,3 +94,71 @@ def checkCurrent(member:MemberClass) -> MemberClass:
     member.lastSkillUpdate = member.skillData.at[idx,'date']
   return member
 
+
+def allFeatures() -> [Feature]:
+  """Load all features from database"""
+  res = []
+  for dbKey in db.prefix("feature"):
+    ff = jsons.loads(db[dbKey], Feature)
+    newenabled = {}
+    for g in ff.enabled:
+      newenabled[int(g)] = ff.enabled[g]
+    ff.enabled = newenabled
+    coms = []
+    for c in ff.commands:
+      coms.append(jsons.loads(str(c).replace("'",'"'), Command))
+      aR = {}
+      for g in coms[-1].allowedRoles:
+        aR[int(g)] = coms[-1].allowedRoles[g]
+      coms[-1].allowedRoles = aR
+      aC = {}
+      for g in coms[-1].allowedChannels:
+        aC[int(g)] = coms[-1].allowedChannels[g]
+      coms[-1].allowedChannels = aC
+      eR = {}
+      for g in coms[-1].excludedRoles:
+        eR[int(g)] = coms[-1].excludedRoles[g]
+      coms[-1].excludedRoles = eR
+      eC = {}
+      for g in coms[-1].excludedChannels:
+        eC[int(g)] = coms[-1].excludedChannels[g]
+      coms[-1].excludedChannels = eC
+      
+    ff.commands = coms
+    res.append(ff)
+  
+  additionalFeatures = []
+  #Fun Feature
+  funFeature = Feature(name="Fun", description="Collection of fun features", dbKey="featureFun")
+  #Coffee command
+  coffeeCommand = Command(name="coffee", description="Send a random coffee picture to every message with the keyword **coffee** in it", typ="on_message")
+  funFeature.commands.append(coffeeCommand)
+  #RandomReply command
+  randomReplyCommand = Command(name="randomReply", description="Send a random reply to specific keywords", typ="on_message")
+  randomReplyCommand.keywords = {}
+  randomReplyCommand.replies = {}
+  funFeature.commands.append(randomReplyCommand)
+  additionalFeatures.append(funFeature)
+
+  for af in additionalFeatures:
+    f = next((x for x in res if x.dbKey == af.dbKey), None)
+    if f == None:
+      res.append(af)
+      db[af.dbKey] = jsons.dumps(af)
+      continue
+    f.description = af.description
+    f.name = af.name
+    for ac in af.commands:
+      c = next((x for x in f.commands if x.name == ac.name), None)
+      if c == None:
+        f.commands.append(c)
+        continue
+      c.description = ac.description
+      c.typ = ac.typ
+    db[f.dbKey] = jsons.dumps(f)
+  res = sorted(res, key=attrgetter('name'))
+  return res
+
+def saveFeature(f=Feature):
+  db[f.dbKey] = jsons.dumps(f)
+  

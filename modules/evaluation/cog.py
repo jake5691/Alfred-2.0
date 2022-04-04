@@ -1,13 +1,11 @@
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption, Role, File
 from operator import attrgetter
-from functions import staticValues as sv
-from datetime import date
 import csv
 
+from functions import staticValues as sv
 
 
-gIDS = [895003315883085865]
 
 class Evaluation(commands.Cog):
   """Evaluate members, roles and more"""
@@ -15,10 +13,37 @@ class Evaluation(commands.Cog):
   def __init__(self, client: commands.Bot):
     self.client = client
     self.dataCog = client.get_cog('Data')
+
+  async def checkcheck(interaction):
+    featureName = "Settings"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
   
   @slash_command(name="rolemembers",
-                      description="Shows a list of all Members with the selected role",
-                      guild_ids=gIDS)
+                      guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def rolemembers(self, interaction: Interaction,
       role: Role = SlashOption(
           name="role",
@@ -56,18 +81,13 @@ class Evaluation(commands.Cog):
   
   @slash_command(name="exportrole",
                       description="Export members to a csv-file",
-                      guild_ids=gIDS)
+                      guild_ids=sv.gIDS)
   async def exportrole(self, interaction: Interaction,
       role: Role = SlashOption(
           name="role",
           description="Role to export members of",
           required=True)):
     """Exports a list of all Members with the selected role"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
     await interaction.response.send_message("*please be patient while I'm creating your csv-file*",ephemeral=True)
     memberData = []
     for m in role.members:

@@ -33,10 +33,17 @@ async def on_ready():
 
 
 sf.loadCogs(client)
+#coms = client.get_all_application_commands()
+#for com in coms:
+#  print(f"{com.name} - {com.description}")
 
+#@client.listen('on_message')
+#async def on_message(message):
+#  pass
 
-@client.listen('on_message')
-async def on_message(message):
-  pass
+@client.event
+async def on_application_command_error(interaction, exception):
+  print(f"{interaction.user.display_name} tried {interaction.application_command.qualified_name} on {interaction.guild.name} in {interaction.channel.name}:\n{exception}")
+
 
 client.run(os.environ['TOKEN'])

@@ -12,13 +12,31 @@ class Fun(commands.Cog):
   def __init__(self, bot: commands.Bot):
     self.bot = bot
 
+  def checkCoffee(self, message) -> bool:
+    """Check if the Feature is allowed to be used by this user and in this channel"""
+    features = self.bot.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == self.qualified_name), None)
+    if feature == None:
+      print("ERROR feature not found")
+      return False
+    if not feature.isEnabled(message.guild.id):
+      return False
+    command = next((x for x in feature.commands if x.name == "coffee"), None)
+    if command == None:
+      print("ERROR command not found")
+      return False
+    if not command.isAllowedByMember(message.guild.id, message.author):
+      return False
+    if not command.isAllowedInChannel(message.guild.id, message.channel.id):
+      return False
+    return True
+
   @commands.Cog.listener('on_message')
-  async def serve_coffee(self,message):
+  async def serve_coffee(self, message):
     """Serve coffee in specific channels"""
     if message.author == self.bot.user:
       return
-    coffee_channels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general, sv.channel.guild_leadership]
-    if not(any(c == message.channel.id for c in coffee_channels)):
+    if not self.checkCoffee(message):
       return
     embeds = message.embeds # return list of embeds
     eContent = ''
@@ -39,14 +57,32 @@ class Fun(commands.Cog):
                 print('Could not download file...')
             data = BytesIO(await resp.read())
             await message.channel.send(file=File(data, 'coffee_image.png'))
-    
+
+  def checkRandomReply(self, message) -> bool:
+    """Check if the Feature is allowed to be used by this user and in this channel"""
+    features = self.bot.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == self.qualified_name), None)
+    if feature == None:
+      print("ERROR feature not found")
+      return False
+    if not feature.isEnabled(message.guild.id):
+      return False
+    command = next((x for x in feature.commands if x.name == "randomReply"), None)
+    if command == None:
+      print("ERROR command not found")
+      return False
+    if not command.isAllowedByMember(message.guild.id, message.author):
+      return False
+    if not command.isAllowedInChannel(message.guild.id, message.channel.id):
+      return False
+    return True
+  
   @commands.Cog.listener('on_message')
-  async def random_reply(self,message):
+  async def random_reply(self, message):
     """Random replies in specific channels"""
     if message.author == self.bot.user:
       return
-    coffee_channels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general]
-    if not(any(c == message.channel.id for c in coffee_channels)):
+    if not self.checkRandomReply(message):
       return
     res = None
     if any(x in message.content.lower() for x in sv.keywords):

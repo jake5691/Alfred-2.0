@@ -136,7 +136,7 @@ class SelectOutput(Button):
           notes_trans = GoogleTranslator(source='auto', target=self.view.specinfo.language).translate(text=notes)
         except:
           notes_trans = ""
-          
+        summary = summary +   GoogleTranslator(source='auto', target=self.view.specinfo.language).translate(text=summary)
         await self.view.channel.send(content =f"{self.view.author.mention}: {notes_trans}") 
       await self.view.channel.send(file=File(blueFile))
       await self.view.channel.send(file=File(greenFile))

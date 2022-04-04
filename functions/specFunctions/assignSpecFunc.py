@@ -338,7 +338,7 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   
   await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", view.author.display_name)
 
-  summary = f"You started with {startingSpec} and have {unusedSpec} points that have not been allocated"
+  summary = f"You started with {startingSpec} and have {unusedSpec} points that have not been allocated.\n\n"
   
 
   #set all nodes back to zero

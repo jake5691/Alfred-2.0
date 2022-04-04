@@ -260,12 +260,10 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
       if s not in ss:
         pointsUsed += s.currentLvl
         ss.append(s)
-  
-  print("pointused", pointsUsed)
+
   pointsText = (f"points used: {pointsUsed}")
-  print(pointsText)
       #add watermark
-  print("wm")
+ 
   draw.text((20, 20), "RbC - 232", 
           (0, 0, 0), font=font_wm)
   draw.text((20,80), author, 
@@ -273,7 +271,7 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
   
   draw.text((20,140), pointsText, 
           (0, 0, 0), font=font_wm)
-  print("end draw")
+ 
       
   im.save(filename)
 

@@ -1,8 +1,8 @@
-from nextcord.ext import commands
-from nextcord import Interaction, slash_command, SlashOption, Role, File
-from operator import attrgetter
-from functions import staticValues as sv
+from nextcord.ext import commands, application_checks
+from nextcord import Interaction, slash_command, SlashOption, File
 from datetime import date
+
+from functions import staticValues as sv
 from classes.Season import Season
 from functions import seasonFunc as sfu
 
@@ -14,11 +14,38 @@ class Seasons(commands.Cog):
   def __init__(self, client: commands.Bot):
     self.client = client
     self.dataCog = client.get_cog('Data')
-  
+
+  async def checkcheck(interaction):
+    featureName = "Seasons"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
 
   @slash_command(name="createseason",
                       description="Create a RoC/Eden season for bundling loyalty Data",
                       guild_ids=gIDS)
+  @application_checks.check(checkcheck)
   async def createSeason(self,interaction:Interaction,
       name:str =SlashOption(
         description="Name of the Season you want to create",
@@ -46,15 +73,6 @@ class Seasons(commands.Cog):
         description="End day of the Season",
         required=True)):
     """Create a Reign of Chaos/Eden Season"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.test_channel == interaction.channel.id): #admin_moderators
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     try:
       startdate = date(startyear,startmonth,startday)
@@ -83,19 +101,11 @@ class Seasons(commands.Cog):
   @slash_command(name="endseason",
                       description="close a season -> save all Loyalty to the database and reset all to 0",
                       guild_ids=gIDS)
+  @application_checks.check(checkcheck)
   async def endSeason(self,interaction:Interaction,
       season:str=SlashOption(
         description="Select the season you want to close",
         required=True)):
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.test_channel == interaction.channel.id): #admin_moderators
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     season = self.dataCog.getSeasonByName(season)
     if season.closed:
@@ -121,15 +131,11 @@ class Seasons(commands.Cog):
   @slash_command(name="seasoncsv",
                       description="Get a csv with everyones Loyalty history of the season.",
                       guild_ids=gIDS)
+  @application_checks.check(checkcheck)
   async def seasoncsv(self,interaction:Interaction,
       season:str=SlashOption(
         description="Select the season you want to have a csv from",
         required=True)):
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
     #Function
     season = self.dataCog.getSeasonByName(season)
     await interaction.response.send_message("Wait while I prepare the data",ephemeral=True)

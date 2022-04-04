@@ -62,23 +62,43 @@ class Settings(commands.Cog):
             c.excludedRoles[guild.id] = []
             db[f.dbKey] = jsons.dumps(f)
 
-  def isLeader(interaction):
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Developers in userRoles):
-      print(f"{interaction.user.display_name} is not allowed to use this.")
+  async def checkcheck(interaction):
+    featureName = "Settings"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    #if not feature.isEnabled(interaction.guild.id):
+    #  await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+    #  return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
       return False
     return True
 
+
   @slash_command(name="settings",
-                      description="Press send to view and edit the settings.",
                       guild_ids=sv.gIDS)
-  @application_checks.check(isLeader)
+  @application_checks.check(checkcheck)
   async def settingsSlashCommand(self, interaction: Interaction):
     """
     View and change the settings for Alfred and all his features and commands.
     """
-    await interaction.response.send_message("**Settings**\nSelect the feature you want to view.", view=SettingsView(self.Features, interaction.guild), ephemeral=True)
-
+    await interaction.send("**Settings**\nSelect the feature you want to view.", view=SettingsView(self.Features, interaction.guild), ephemeral=True)
+    
   def isDev(ctx):
     userRoles = [i.id for i in ctx.author.roles]
     if not(sv.roles.Developers in userRoles):

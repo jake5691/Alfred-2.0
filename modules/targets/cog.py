@@ -1,4 +1,4 @@
-from nextcord.ext import commands, tasks
+from nextcord.ext import commands, tasks, application_checks
 from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
 from functions import staticValues as sv
 from functions import targetFunctions as tf
@@ -11,7 +11,7 @@ from nextcord.utils import get
 
 
 class Targets(commands.Cog):
-  """Handle target data"""
+  """Target planning and announcing"""
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
@@ -19,6 +19,33 @@ class Targets(commands.Cog):
     self.dataCog = bot.get_cog('Data')
     self.structures = self.dataCog.structures
     self.remindTarget.start()
+
+  async def checkcheck(interaction):
+    featureName = "Targets"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.response.send_message(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.response.send_message(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.response.send_message(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.response.send_message(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.response.send_message(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
   
   @tasks.loop(seconds = 10)
   async def remindTarget(self):
@@ -41,37 +68,20 @@ class Targets(commands.Cog):
   
   @slash_command(name="addtarget",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def addTarget(self,
       interaction: Interaction):
     """Add Target from the structure list and assign time and flag"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles) and not(sv.roles.GuildLeader in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     view = TargetAddView(self.structures, self.dataCog.getFlags(),self.dataCog.targets)
     await interaction.response.send_message(content="Please select a sector:",view=view,ephemeral = True)
   
   @slash_command(name="listtargets",
-                      description="Press send to get a list of all Targets.",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def listTargets(self,
       interaction: Interaction):
-    """List Targets (not publish)"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
+    """List all current targets (not publish)"""
     #Function
     tList = "**Current Targets:**\n"
     targets = self.dataCog.targets
@@ -85,6 +95,7 @@ class Targets(commands.Cog):
   @slash_command(name="publishtargets",
                       description="Press send to publish the targets",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def publishTargets(self,
       interaction: Interaction,
       infotext: str = SlashOption(
@@ -92,15 +103,6 @@ class Targets(commands.Cog):
         required = False
       )):
     """Add Target from the structure list and assign time and flag"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.announcements == interaction.channel.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     targets = self.dataCog.targets
     if targets == []:
@@ -121,20 +123,11 @@ class Targets(commands.Cog):
     await interaction.response.send_message(embed=rEmbed)
   
   @slash_command(name="edittargets",
-                      description="Edit time and/or flag for targets",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def editTargets(self,
       interaction: Interaction):
     """Edit Target Time and Flag"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct category
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     targets = self.dataCog.targets
     if targets == []:
@@ -146,6 +139,7 @@ class Targets(commands.Cog):
   @slash_command(name="commenttarget",
                       description="Add/Replace a comment to a target (selected after entering the comment)",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def commentTarget(self,
       interaction: Interaction,
       comment: str = SlashOption(
@@ -153,15 +147,6 @@ class Targets(commands.Cog):
           description="comment to a target (which you will select after sinding this command)",
           required=True)):
     """Add comment to a target"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     targets = self.dataCog.targets
     targets = sorted(targets, key=attrgetter('hour', 'minute'))
@@ -172,20 +157,11 @@ class Targets(commands.Cog):
     await interaction.response.send_message(content=f"Please select the target where you want to add your comment:\n*{comment}*",view=view, ephemeral = True)
   
   @slash_command(name="deletetargets",
-                      description="delete all targets",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def deleteTargets(self,
       interaction: Interaction):
-    """Delete all targets"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
+    """Delete all current targets"""
     #Function
     content = "Do you really want to **delete all targets**?\n*Current Targets:*\n"
     targets = self.dataCog.targets
@@ -199,8 +175,8 @@ class Targets(commands.Cog):
     await interaction.response.send_message(content=content,view=view, ephemeral = True)
   
   @slash_command(name="structureinfo",
-                      description="Information of structures",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def structureinfo(self, interaction: Interaction,
       structure: str = SlashOption(
           description="Select a structure from the list",

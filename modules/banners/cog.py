@@ -1,4 +1,4 @@
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption, User
 from functions import staticValues as sv
 from functions import bannerFunc as bf
@@ -7,7 +7,6 @@ from classes.BannerDelete import BannerDeleteView
 from replit import db
 import asyncio
 
-#TODO: Set any member as flag
 
 class Banners(commands.Cog):
   """Handle banner data/commands"""
@@ -16,6 +15,33 @@ class Banners(commands.Cog):
     self.client = client
     #Load Members
     self.dataCog = client.get_cog('Data')
+
+  async def checkcheck(interaction):
+    featureName = "Banners"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
   
   #Keep channel clean and show the help
   @commands.Cog.listener('on_message')
@@ -49,6 +75,7 @@ class Banners(commands.Cog):
   @slash_command(name="newbanner",
     description="Create a new banner account",
     guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def addBanner(self, interaction: Interaction,
     name:str=SlashOption(
         name="name",
@@ -66,15 +93,6 @@ class Banners(commands.Cog):
         required=False
       )):
     """Create a new banner"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.RBC in userRoles) and not(sv.roles.GuildMember in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.banners == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     if owner == None:
       owner = interaction.user
@@ -114,17 +132,9 @@ class Banners(commands.Cog):
   @slash_command(name="deletebanner",
     description="Delete a banner account",
     guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def deletebanner(self,interaction:Interaction):
     """Delete a banner"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.RBC in userRoles) and not(sv.roles.GuildMember in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.banners == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     view = BannerDeleteView(self.dataCog)
     await interaction.response.send_message(content="Select the Banner you want to delete.", view=view, ephemeral=True)
@@ -133,6 +143,7 @@ class Banners(commands.Cog):
   @slash_command(name="editbanner",
     description="Edit a banner account",
     guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def editbanner(self,interaction:Interaction,
       name:str=SlashOption(
         name="name",
@@ -155,15 +166,6 @@ class Banners(commands.Cog):
         required=False
       )):
     """Edit a banner"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.RBC in userRoles) and not(sv.roles.GuildMember in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.banners == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     if not(name in self.dataCog.getBannerNames()):
       await interaction.response.send_message(f"There exists no banner account with the name **{name}**, to edit a banner use the correct spelling.", ephemeral=True)
@@ -231,6 +233,7 @@ class Banners(commands.Cog):
   @slash_command(name="changeflagspec",
                       description="(de)activate the flag spec for a member",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def changeflagspec(self,
       interaction: Interaction,
       member: User = SlashOption(
@@ -240,15 +243,6 @@ class Banners(commands.Cog):
         description="Is specced as flag?",
         required=True)):
     """Change a member to be set as flag"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.RBC in userRoles) and not(sv.roles.GuildMember in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.banners == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     m = self.dataCog.getMemberByID(member.id)
     print(m.bannerActive)

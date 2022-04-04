@@ -254,9 +254,12 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
         precondition = False
   print("here")
   pointsUsed = 0
+  ss = []
   for group in groups:
     for s in group:
-      pointsUsed += s.currentLvl
+      if s not in ss:
+        pointsUsed += s.currentLvl
+        ss.append(s)
   
   print("pointused", pointsUsed)
   pointsText = (f"points used: {pointsUsed}")

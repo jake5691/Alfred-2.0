@@ -3,6 +3,7 @@ import io
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import matplotlib.pyplot as plt
+from langdetect import detect
 
 
 
@@ -67,9 +68,12 @@ radiusDict_red = {
 }
 
 # Load font from URI
-truetype_url = 'https://github.com/googlefonts/roboto/blob/main/src/hinted/Roboto-Black.ttf?raw=true'
+#truetype_url = 'https://github.com/googlefonts/roboto/blob/main/src/hinted/Roboto-Black.ttf?raw=true'
+
+truetype_url = 'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSans/NotoSans-Black.ttf?raw=true'
 r = requests.get(truetype_url, allow_redirects=True)
 font = ImageFont.truetype(io.BytesIO(r.content), size=24)
+
 
 font_wm = ImageFont.truetype(io.BytesIO(r.content), size=42)
 
@@ -121,12 +125,42 @@ def getPoint_gr(angle:int,radius:int=6,offset_x:int=0):
   y = getY_gr(angle,radius,offset_x)
   return (x,y)
 
+def getX_red(angle:int,radius:int=6,offset_x:int=0):
+  """Get X coordinate (rotated correctly)"""
+  radiusDict = radiusDict_red
+  r = radiusDict[radius]
+  angle = angle * np.deg2rad(15) - np.arctan(offset_x/r)
+  radius = np.sqrt(r*r+offset_x*offset_x)
+  x = np.sin(angle) * radius + x_center
+  return x
+  
+def getY_red(angle:int,radius:int=6,offset_x:int=0):
+  """Get Y coordinate (rotated correctly)"""
+  radiusDict = radiusDict_red
+  r = radiusDict[radius]
+  angle = angle * np.deg2rad(15) - np.arctan(offset_x/r)
+  radius = np.sqrt(r*r+offset_x*offset_x)
+  y = np.cos(angle) * radius + y_center
+  return y
+
+def getPoint_red(angle:int,radius:int=6,offset_x:int=0):
+  """Get point (x,y)"""
+  x = getX_red(angle,radius,offset_x)
+  y = getY_red(angle,radius,offset_x)
+  return (x,y)
 
 
-def draw(groups, col1, col2, filename, firstSpecs, colour):
+
+
+async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
+  try:
+    language = detect(author.display_name)
+  except:
+    language = 'english'
+ 
   grey = (200,200,200)
   white = (255,255,255)
-
+  print(filename)
   with Image.new("RGB",(x,y),color = (255,255,255)) as im:
     draw = ImageDraw.Draw(im)
     #Draw the connections
@@ -194,6 +228,16 @@ def draw(groups, col1, col2, filename, firstSpecs, colour):
           width=2
         )
       elif colour == "green":
+
+        draw.ellipse(
+          [s.topLeft,
+           s.bottomRight],
+          outline = col1,
+          fill=fill_color,
+          width=2
+        )
+      elif colour == "red":
+
         draw.ellipse(
           [s.topLeft,
            s.bottomRight],
@@ -202,19 +246,36 @@ def draw(groups, col1, col2, filename, firstSpecs, colour):
           width=2
         )
         
+        
       text = str(s.currentLvl) if s.currentLvl < s.maxLvl else str(s.maxLvl)
       if text == "0" and not(s.activatable):
         text = ""
       fill = grey if s.currentLvl == 0 else white
-      draw.text(s.center, text=text, fill=fill, font=font,anchor="mm")
-
+      draw.text(s.center, text=text, fill=fill, font=font, language=language, anchor="mm")
       if s.currentLvl == s.maxLvl:
         precondition = True
       else:
         precondition = False
+  print("here")
+  pointsUsed = 0
+  ss = []
+  for group in groups:
+    for s in group:
+      if s not in ss:
+        pointsUsed += s.currentLvl
+        ss.append(s)
+
+  pointsText = (f"points used: {pointsUsed}")
       #add watermark
-      draw.text((20, 20), "RbC - 232", 
+ 
+  draw.text((20, 20), "RbC - 232", 
           (0, 0, 0), font=font_wm)
+  draw.text((20,80), author, 
+          (0, 0, 0), font=font_wm)
+  
+  draw.text((20,140), pointsText, 
+          (0, 0, 0), font=font_wm)
+ 
       
   im.save(filename)
 

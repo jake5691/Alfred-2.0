@@ -1,4 +1,4 @@
-from functions.drawSpecFunc import  getPoint_bl, x_center, y_center
+from functions.specFunctions.drawSpecFunc import  getPoint_bl, x_center, y_center
 from classes.Spec import Spec
 bl = (70,175,225)
 bl_l = (165,200,220)
@@ -179,7 +179,7 @@ blueSpec_gr = {
   "OneExtQ":(OneExtQ, 10), 
   "TwoExtQs":(TwoExtQs, 17),
   "MaxQs":(MaxQs, 31), 
-  "LoyaltySpeedGroup":(LoyaltySpeedGroup, 47)
+  "Loyalty":(LoyaltySpeedGroup, 47)
   }
 
 #First Spec from Center

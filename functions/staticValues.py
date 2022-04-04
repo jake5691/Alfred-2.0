@@ -27,6 +27,9 @@ class roles:
 #Reaction roles (reminder and translation)
 reac = ['⏰','🇪🇸','🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
 
+#flags for used in translation (includes English)
+flags =['🇬🇧','🇪🇸','🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
+
 #Name of emojis that are used for the Availabilty 
 emojiAlph = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰','🇱','🇲','🇳']
 
@@ -53,6 +56,8 @@ class db:
   loyaltyRanking = "msgLoyaltyRanking"
   skLoHelp = "skLoHelp"
   seasonInfo = "seasonInfo"
+  specHelp = "specHelp"
+  specHelpTrans = "specHelpTrans"
 
 #Skill/Loyalty limits
 skillCap = 170

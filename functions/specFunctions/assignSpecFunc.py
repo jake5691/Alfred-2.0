@@ -1,12 +1,14 @@
 #maximise usefulness score given the contraint of user spec points
 #allocate usefulness points to specific nodes based on user priorities
 
-from functions.blueSpecFunc import *
-from functions.greenSpecFunc import *
-from functions.drawSpecFunc import *
+from functions.specFunctions.blueSpecFunc import groups_bl,bl,bl_l, firstSpecs_bl, blueSpec_gr
+from functions.specFunctions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr
+from functions.specFunctions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
+from functions.specFunctions.drawSpecFunc import draw
 import pandas as pd
 import itertools
 import datetime 
+
 
 
 # if extra tiles is selected, puts a group for each extra tile node in the list of priorities
@@ -65,35 +67,42 @@ def extra_tile(priorities_list):
 def getNodes(priorities_list_full):
   nodes_list = []
   node_priority =[]
+  print("getnodes")
   print(priorities_list_full)
-  for p in priorities_list_full:
-
-    if p in blueSpec_gr:
-      l = blueSpec_gr[p][0]
-    elif p in greenSpec_gr:
-      l= greenSpec_gr[p][0]
-    else:
-      print ("l not assigned")
+  if priorities_list_full == 'Banner':
+    l = redSpec_gr['Banner'][0]
     for node in l:
-      #if node not in nodes_list:
       nodes_list.append(node)
-      node_priority.append(p)
+      node_priority.append('Banner')
+  else:
+    for p in priorities_list_full:
+      if p in blueSpec_gr:
+        #print("blue gr = ", blueSpec_gr)
+        l = blueSpec_gr[p][0]
+        #print("l=", l)
+      elif p in greenSpec_gr:
+        l= greenSpec_gr[p][0]
 
-  score = []
-  title = []
-  maxLevel = []
-  
-  for node in nodes_list:
-    score.append(node.usefulScore)
-    title.append(node.title)
-    maxLevel.append(node.maxLvl)
-    
+      else:
+        print ("l not assigned")
+
+      for node in l:
+      #if node not in nodes_list:
+        nodes_list.append(node)
+        node_priority.append(p)
+
+  score = [node.usefulScore for node in nodes_list]
+  title = [node.title for node in nodes_list]
+  maxLevel = [node.maxLvl for node in nodes_list]
+
   data = {'Node':nodes_list, 'Score':score, 'Title':title,'maxLvl':maxLevel, 'Priority':node_priority}
   df = pd.DataFrame(data)
+  #print(df)
   return(nodes_list, df)
 
 ### this is where you might want to tweak things to get better advice.  
 def useful_assign(priorities_list):
+  print("useful assign")
   priorities_list_full = priorities_list
   nodes_list2 = getNodes(priorities_list_full)[1]
   #if LoyaltySpeedGroup is in the priorities, it should have a higher weighting than other priorities
@@ -113,25 +122,11 @@ def useful_assign(priorities_list):
   for index, row in nodes_list2.iterrows():
     row['Node'].usefulScore = row['Score']
 
-
+    
+  
 def sumPoints(x):
-  Points = 0
-  nodes = []
-  for i in x:
-    try: 
-      if i in nodes:
-        pass
-      else:
-        Points += i.maxLvl - i.currentLvl
-        nodes.append(i)
-    except:
-      for n in i:
-        if n in nodes:
-          pass
-        else:
-          Points += n.maxLvl - n.currentLvl
-          nodes.append(n)
-
+  nodePoints = [n.maxLvl-n.currentLvl for n in x]
+  Points = sum(nodePoints)
   return(Points)
 
 def useScore(score_dict):
@@ -144,7 +139,15 @@ def useScore(score_dict):
         useScore += x.usefulScore
   return(useScore)
 
-
+def flatten2list(object):
+    gather = []
+    for item in object:
+        if isinstance(item, (list, tuple, set)):
+            gather.extend(flatten2list(item))            
+        else:
+            gather.append(item)
+    return gather
+  
 def combinations (df):
   df['match'] = df.Priority.eq(df.Priority.shift())
 
@@ -169,7 +172,11 @@ def combinations (df):
       except:
         group.append(row['Node'])
       df.at[index,'req_nodes'] = group
-      
+  print(df.shape)
+  df.drop(df[df['match']==False].index, inplace = True)
+  print(df.shape, "after")
+
+     
   #get list of possible combinations of nodes for each main priority
   mp_list = df['Priority'].unique()
   possibleCombSets = []
@@ -177,7 +184,6 @@ def combinations (df):
     mp_combs = []
     mp_combs=df.query('Priority==@mp')['req_nodes'].to_list()
     possibleCombSets.append(mp_combs)
-
   possibleComb =[]
   #gets all possible combinations (only 1 from each set, but does not have to be one from every set)
   for L in range(0, len(possibleCombSets)+1):
@@ -187,23 +193,32 @@ def combinations (df):
         possibleComb.append(i)
           #print(possibleComb)
   print("num poss comb", len(possibleComb))
-  return (possibleComb)
-
-def evaluate(Nodes, df, userSpecPoints):
+  #possibleSets = [set(flatten2list(c) for c in possibleComb)]
   possibleSets = []
+  for c in possibleComb:
+    comb_list =  flatten2list(c)
+    comb_set = set(comb_list)
+    possibleSets.append(comb_set)
+
+
+  return (possibleSets)
+
+async def evaluate(Nodes, df, userSpecPoints):
+  possibleComb = []
   setPoints = []
   setScores = []
   print("comb", datetime.datetime.now())
-  possibleComb  = combinations(df)
+  possibleSets  = combinations(df)
   print("eval sets", datetime.datetime.now())
-  for comb in possibleComb:
-    pointsReq = sumPoints(comb)
+  print(userSpecPoints)
+  for s in possibleSets:
+    pointsReq = sumPoints(s)
     if userSpecPoints - 10 <= pointsReq <= userSpecPoints:
-      setScore = useScore(comb)
-      possibleSets.append(comb)
+      setScore = useScore(s)
+      possibleComb.append(s)
       setPoints.append(pointsReq)
       setScores.append(setScore)
-  data = {'NodeSets':possibleSets, 'PointsReq':setPoints, 'UseScore':setScores}
+  data = {'NodeSets':possibleComb, 'PointsReq':setPoints, 'UseScore':setScores}
   
   print("create df", datetime.datetime.now())
   print(f"valid combos: {len(setScores)}")
@@ -228,17 +243,20 @@ def assignPoints(nodeset,userSpecPoints):
         while userSpecPoints > 0 and node.currentLvl < node.maxLvl: 
           node.currentLvl += 1
           userSpecPoints -= 1
+          
     except:
       while userSpecPoints > 0 and x.currentLvl < x.maxLvl: 
           x.currentLvl += 1
           userSpecPoints -= 1
+    
       
 
 
-def most_use(priorities_list_full, userSpecPoints):
+async def most_use(priorities_list_full, userSpecPoints):
   print("start", datetime.datetime.now())
   df = getNodes(priorities_list_full)[1]
-  Nodes = list(df['Node'])
+  Nodes = set(df['Node'])
+  
   nodePoints = sumPoints(Nodes)
   print("node points", nodePoints)
   if nodePoints <= userSpecPoints:
@@ -247,7 +265,7 @@ def most_use(priorities_list_full, userSpecPoints):
     userSpecPointsNew = userSpecPoints - nodePoints
   else:
     print("eval", datetime.datetime.now())
-    eval = evaluate(Nodes, df, userSpecPoints)
+    eval = await evaluate(Nodes, df, userSpecPoints)
     nodeset = eval[0]
     userSpecPointsNew = eval[1]
     print("assign p", datetime.datetime.now())
@@ -256,9 +274,24 @@ def most_use(priorities_list_full, userSpecPoints):
   return(userSpecPointsNew)
  
 
-def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr, redFile, greenFile, blueFile):
-  priorities_list = list1
-  finished = False
+
+async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
+  #print(view.specinfo.banner)
+  startingSpec = userSpecPoints
+  if view.specinfo.banner == "YES":
+    print("banner start")
+    if userSpecPoints >= 47:
+      list0 = ("Banner")
+      df = getNodes(list0)[1]
+      Nodes = list(df['Node'])
+      assignPoints(Nodes, userSpecPoints)
+      userSpecPoints -= 47
+  if userSpecPoints == 0:
+    finished = True
+  else:
+    priorities_list = view.specinfo.list1
+    finished = False
+
   while finished == False:
     priorities = []
     for i in priorities_list:
@@ -266,9 +299,9 @@ def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr, redFile, gree
   #gets dependencies for Extra tiles depending on other selections
       if i == "ExtraTile":
         eval_list = []
-        for i in list1:
+        for i in view.specinfo.list1:
           eval_list.append(i)
-        for i in list2:
+        for i in view.specinfo.list2:
           eval_list.append(i)
         ExTiles = extra_tile(eval_list)
         for g in ExTiles:
@@ -286,28 +319,47 @@ def specAdvice(list1, list2, userSpecPoints, groups_bl, groups_gr, redFile, gree
     print(priorities)
 
     useful_assign(priorities)
-    userSpecPoints  = most_use(priorities, userSpecPoints)
+    userSpecPoints  = await most_use(priorities, userSpecPoints)
  
     print("updates sp", userSpecPoints)
-    if userSpecPoints > 0:
-      if priorities_list == list2:
+    #only attempt second list if spec points is greater than f (ie it can complete two nodes)
+    if userSpecPoints > 5:
+      if priorities_list == view.specinfo.list2:
         finished = True
       else:
-        priorities_list = list2
+        priorities_list = view.specinfo.list2
     else:
       finished = True
+
+  unusedSpec = userSpecPoints
+  print(view.specinfo.list1, view.specinfo.list2)
+  print(view.author.display_name)
+  await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", view.author.display_name)
   
-  print(list1, list2)
-  draw(groups_bl,bl,bl_l, blueFile, firstSpecs_bl, "blue")
-  draw(groups_gr,gr,gr_l, greenFile, firstSpecs_gr, "green")
+  await draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green", view.author.display_name)
+  
+  await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", view.author.display_name)
+
+  summary = f"You started with {startingSpec} and have {unusedSpec} points that have not been allocated.\n\n"
+  
 
   #set all nodes back to zero
   for group in groups_bl:
       #Loop specs in group
     for s in group:
       s.currentLvl  = 0
+      s.usefulScore = 0
   for group in groups_gr:
       #Loop specs in group
     for s in group:
       s.currentLvl  = 0
+      s.usefulScore = 0
+  for group in groups_red:
+      #Loop specs in group
+    for s in group:
+      s.currentLvl  = 0
+      s.usefulScore = 0
+  print("all reset")
+
+  return summary
         

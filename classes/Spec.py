@@ -16,3 +16,16 @@ class Spec():
     self.bottomRight = (center[0]+self.size,center[1]+self.size)
     self.activatable = False
     self.usefulScore = 0
+
+
+#object for production spec advice
+class specInfo():
+  def __init__(self):
+    self.language = None
+    self.banner = None
+    self.preset = None
+    self.spec = 0
+    self.list1 = []
+    self.list2 = []
+    self.notes = None
+    

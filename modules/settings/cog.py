@@ -26,7 +26,8 @@ class Settings(commands.Cog):
         commands_grouped[group].append(c)
       else:
         commands_grouped[group] = [c]
-
+        
+    #Get all Features and commands that are in the bot
     for g in commands_grouped:
       f = next((x for x in self.Features if x.name == g), None)
       if f == None:
@@ -41,7 +42,17 @@ class Settings(commands.Cog):
           f.commands.append(co)
         else:
           co.description = c.description
+          
+    #Check for db entries that no longer are a feature
+    toDelete = []
+    for idx, f in enumerate(self.Features):
+      if f.name not in commands_grouped and f.name != "Fun":
+        del db[f.dbKey]
+        toDelete.append(idx)
+    for idx in toDelete:
+      del self.Features[idx]
         
+    #Make sure default values for all guilds are set 
     for guild in self.bot.guilds:
       for f in self.Features:
         if guild.id not in f.enabled:

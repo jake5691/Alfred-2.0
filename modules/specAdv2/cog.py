@@ -5,7 +5,7 @@ from functions import staticValues as sv
 from classes.SpecView import SpecView
 
 
-class specAdv2(commands.Cog):
+class SpecAdv2(commands.Cog):
   """Handle spec advice"""
 
   def __init__(self, bot: commands.Bot):
@@ -14,7 +14,7 @@ class specAdv2(commands.Cog):
     self.dataCog = bot.get_cog('Data')
 
   async def checkcheck(interaction):
-    featureName = "specAdv2"
+    featureName = "SpecAdv2"
     features = interaction.client.get_cog(sv.SETTINGS_COG).Features
     feature = next((x for x in features if x.name == featureName), None)
     #feature
@@ -90,5 +90,5 @@ class specAdv2(commands.Cog):
       print('Message could not be deleted')    
 
 def setup(bot: commands.Bot):
-  bot.add_cog(specAdv2(bot))
+  bot.add_cog(SpecAdv2(bot))
   

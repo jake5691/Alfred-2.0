@@ -73,7 +73,6 @@ class Banners(commands.Cog):
   
   #Command to create a new banner
   @slash_command(name="newbanner",
-    description="Create a new banner account",
     guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def addBanner(self, interaction: Interaction,
@@ -97,7 +96,7 @@ class Banners(commands.Cog):
     if owner == None:
       owner = interaction.user
     if name in self.dataCog.getBannerNames():
-      await interaction.response.send_message(f"There already exists a banner account with the name **{name}**, please provide a unique name for each banner account.", ephemeral=True)
+      await interaction.send(f"There already exists a banner account with the name **{name}**, please provide a unique name for each banner account.", ephemeral=True)
       return
     banner = MemberClass(m=owner,banner=True,bannerName=name)
     if isflag:
@@ -109,7 +108,7 @@ class Banners(commands.Cog):
     banner.save()
     self.dataCog.members.append(banner)
     
-    await interaction.response.send_message(f"**{name}** was created as Banner account and registered {flag}. You can now add loyalty and skill points in <#{sv.channel.loyalty_And_skill_lvl}> by writing the exact banner name in front of the value.", ephemeral=True)
+    await interaction.send(f"**{name}** was created as Banner account and registered {flag}. You can now add loyalty and skill points in <#{sv.channel.loyalty_And_skill_lvl}> by writing the exact banner name in front of the value.", ephemeral=True)
   	#Update Banner list
     embeds = bf.listBanners(self.dataCog.members)
     failed = False
@@ -130,18 +129,16 @@ class Banners(commands.Cog):
   
   #Delete Banner
   @slash_command(name="deletebanner",
-    description="Delete a banner account",
     guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def deletebanner(self,interaction:Interaction):
-    """Delete a banner"""
+    """Delete a banner account"""
     #Function
     view = BannerDeleteView(self.dataCog)
     await interaction.response.send_message(content="Select the Banner you want to delete.", view=view, ephemeral=True)
   
   #Edit Banner
   @slash_command(name="editbanner",
-    description="Edit a banner account",
     guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def editbanner(self,interaction:Interaction,
@@ -165,10 +162,10 @@ class Banners(commands.Cog):
         description="Change the owner of this banner account",
         required=False
       )):
-    """Edit a banner"""
+    """Edit a banner account"""
     #Function
     if not(name in self.dataCog.getBannerNames()):
-      await interaction.response.send_message(f"There exists no banner account with the name **{name}**, to edit a banner use the correct spelling.", ephemeral=True)
+      await interaction.send(f"There exists no banner account with the name **{name}**, to edit a banner use the correct spelling.", ephemeral=True)
       return
     banner = None
     for m in self.dataCog.members:
@@ -176,7 +173,7 @@ class Banners(commands.Cog):
         banner = m
         break
     if banner == None:
-      await interaction.response.send_message("Something went wrong, try again or ask for support", ephemeral = True)
+      await interaction.send("Something went wrong, try again or ask for support", ephemeral = True)
       return
 
     replyStr = f"You changed *{name}*"
@@ -199,7 +196,7 @@ class Banners(commands.Cog):
     del db[sv.db.memberPrefix + name]
     banner.save()
     
-    await interaction.response.send_message(content=replyStr, ephemeral = True)
+    await interaction.send(content=replyStr, ephemeral = True)
     #Update Banner list
     embeds = bf.listBanners(self.dataCog.members)
     failed = False

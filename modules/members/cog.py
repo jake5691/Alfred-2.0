@@ -1,13 +1,13 @@
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption, User
-from classes.Member import MemberClass
-from functions import staticValues as sv
-from functions import memberFunc as mf
-#from nextcord.utils import get
 import re
 from replit import db
 from nextcord.utils import get
 from datetime import datetime, timedelta, timezone
+
+from classes.Member import MemberClass
+from functions import staticValues as sv
+from functions import memberFunc as mf
 
 
 class Members(commands.Cog):
@@ -17,6 +17,33 @@ class Members(commands.Cog):
     self.client = client
     self.dataCog = client.get_cog('Data')
 
+  async def checkcheck(interaction):
+    featureName = "Members"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
+    
   @commands.Cog.listener('on_member_update')
   async def add_delete_MemberInstance(self,old,new):
     """Add/Remove a MemberClass instance to dataCog.members when roles are assigned.
@@ -45,10 +72,12 @@ class Members(commands.Cog):
           self.dataCog.deleteMemberByID(m.id)
           return
       print("No Member instance found")
+
   
   @slash_command(name="updateloyskill",
                       description="Update Loyalty and/or skill lvl of any member",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def updateloyskill(self,
       interaction: Interaction,
       member:User = SlashOption(
@@ -65,15 +94,6 @@ class Members(commands.Cog):
       )
   ):
     """Change Loyalty/Skill of any member"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.loyalty_And_skill_lvl == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     if loyalty == None and skill == None:
       await interaction.response.send_message(f"Please provide at least one update for {member.display_name}", ephemeral = True)
@@ -435,13 +455,6 @@ class Members(commands.Cog):
       
       helpMes = await message.channel.send(content=sendText)
       db[sv.db.skLoHelp] = helpMes.id
-  
-  
-
-
-    
-    
-
       
 
 

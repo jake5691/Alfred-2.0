@@ -15,7 +15,7 @@ class Evaluation(commands.Cog):
     self.dataCog = client.get_cog('Data')
 
   async def checkcheck(interaction):
-    featureName = "Settings"
+    featureName = "Evaluation"
     features = interaction.client.get_cog(sv.SETTINGS_COG).Features
     feature = next((x for x in features if x.name == featureName), None)
     #feature
@@ -80,15 +80,15 @@ class Evaluation(commands.Cog):
       await interaction.followup.send(res[i])
   
   @slash_command(name="exportrole",
-                      description="Export members to a csv-file",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def exportrole(self, interaction: Interaction,
       role: Role = SlashOption(
           name="role",
           description="Role to export members of",
           required=True)):
-    """Exports a list of all Members with the selected role"""
-    await interaction.response.send_message("*please be patient while I'm creating your csv-file*",ephemeral=True)
+    """Exports a list of all Members as csv-file with the selected role"""
+    await interaction.send("*please be patient while I'm creating your csv-file*",ephemeral=True)
     memberData = []
     for m in role.members:
       tpm = [m.display_name]

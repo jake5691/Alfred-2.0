@@ -1,13 +1,11 @@
-from nextcord.ext import commands
-from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
+from nextcord.ext import commands, application_checks
+from nextcord import Interaction, slash_command
+
 from functions import staticValues as sv
 from classes.SpecView import SpecView
 
 
-
-
-
-class specAdv2(commands.Cog):
+class SpecAdv2(commands.Cog):
   """Handle spec advice"""
 
   def __init__(self, bot: commands.Bot):
@@ -15,9 +13,37 @@ class specAdv2(commands.Cog):
     self.flags = sv.flags
     self.dataCog = bot.get_cog('Data')
 
+  async def checkcheck(interaction):
+    featureName = "SpecAdv2"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
+
   @slash_command(name="specadvice",
                       description="Press for spec advice.",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def specadvice(self,
       interaction: Interaction):
     """Provides advice on where to place your specialisation points"""
@@ -64,5 +90,5 @@ class specAdv2(commands.Cog):
       print('Message could not be deleted')    
 
 def setup(bot: commands.Bot):
-  bot.add_cog(specAdv2(bot))
+  bot.add_cog(SpecAdv2(bot))
   

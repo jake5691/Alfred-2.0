@@ -6,7 +6,6 @@ from functions import staticValues as sv
 from classes.Season import Season
 from functions import seasonFunc as sfu
 
-gIDS = [895003315883085865]
 
 class Seasons(commands.Cog):
   """Create and manage Seasons"""
@@ -43,8 +42,7 @@ class Seasons(commands.Cog):
     return True
 
   @slash_command(name="createseason",
-                      description="Create a RoC/Eden season for bundling loyalty Data",
-                      guild_ids=gIDS)
+                      guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def createSeason(self,interaction:Interaction,
       name:str =SlashOption(
@@ -100,7 +98,7 @@ class Seasons(commands.Cog):
   
   @slash_command(name="endseason",
                       description="close a season -> save all Loyalty to the database and reset all to 0",
-                      guild_ids=gIDS)
+                      guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def endSeason(self,interaction:Interaction,
       season:str=SlashOption(
@@ -130,7 +128,7 @@ class Seasons(commands.Cog):
   
   @slash_command(name="seasoncsv",
                       description="Get a csv with everyones Loyalty history of the season.",
-                      guild_ids=gIDS)
+                      guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def seasoncsv(self,interaction:Interaction,
       season:str=SlashOption(

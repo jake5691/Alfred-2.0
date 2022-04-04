@@ -16,7 +16,7 @@ class Availability(commands.Cog):
     self.bot = bot
 
   async def checkcheck(interaction):
-    featureName = "Settings"
+    featureName = "Availability"
     features = interaction.client.get_cog(sv.SETTINGS_COG).Features
     feature = next((x for x in features if x.name == featureName), None)
     #feature
@@ -43,7 +43,6 @@ class Availability(commands.Cog):
     return True
     
   @slash_command(name="startavailabilitysurvey",
-                      description="Start a survey to see every players available times.",
                       guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def startavailabilitysurvey(self, interaction: Interaction,
@@ -82,7 +81,6 @@ class Availability(commands.Cog):
     db[sv.db.availabilitySurveyDict] = surveyDict
   
   @slash_command(name="evalavailability",
-                      description="Evaluate the availability survey",
                       guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def evalavailability(self, interaction: Interaction):

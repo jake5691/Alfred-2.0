@@ -276,6 +276,7 @@ async def most_use(priorities_list_full, userSpecPoints):
 
 async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   #print(view.specinfo.banner)
+  startingSpec = userSpecPoints
   if view.specinfo.banner == "YES":
     print("banner start")
     if userSpecPoints >= 47:
@@ -327,7 +328,8 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
         priorities_list = view.specinfo.list2
     else:
       finished = True
-  
+
+  unusedSpec = userSpecPoints
   print(view.specinfo.list1, view.specinfo.list2)
   print(view.author.display_name)
   await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", view.author.display_name)
@@ -335,6 +337,8 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   await draw(groups_gr,gr,gr_l, view.greenfile, firstSpecs_gr, "green", view.author.display_name)
   
   await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", view.author.display_name)
+
+  summary = f"You started with {startingSpec} and have {unusedSpec} points that have not been allocated"
   
 
   #set all nodes back to zero
@@ -355,5 +359,5 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       s.usefulScore = 0
   print("all reset")
 
-  return
+  return summary
         

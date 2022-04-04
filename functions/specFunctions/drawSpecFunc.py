@@ -252,11 +252,25 @@ async def draw(groups, col1, col2, filename, firstSpecs, colour, author):
         precondition = True
       else:
         precondition = False
+  print("here")
+  pointsUsed = 0
+  for group in groups:
+    for s in group:
+      pointsUsed += s.currentLvl
+  
+  print("pointused", pointsUsed)
+  pointsText = (f"points used: {pointsUsed}")
+  print(pointsText)
       #add watermark
-      draw.text((20, 20), "RbC - 232", 
+  print("wm")
+  draw.text((20, 20), "RbC - 232", 
           (0, 0, 0), font=font_wm)
-      draw.text((20,80), author, 
+  draw.text((20,80), author, 
           (0, 0, 0), font=font_wm)
+  
+  draw.text((20,140), pointsText, 
+          (0, 0, 0), font=font_wm)
+  print("end draw")
       
   im.save(filename)
 

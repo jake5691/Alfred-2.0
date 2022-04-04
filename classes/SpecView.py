@@ -1,5 +1,5 @@
-from nextcord import SelectOption, Interaction, File
-from nextcord.ui import Select, View
+from nextcord import SelectOption, Interaction, File, ButtonStyle
+from nextcord.ui import Select, View, Button
 from classes.Spec import specInfo
 from deep_translator import (GoogleTranslator)
 from functions.specFunctions.assignSpecFunc import specAdvice
@@ -107,22 +107,24 @@ class SelectNext3(Select):
     await interaction.response.edit_message(content=self.view.content, view = self.view)
   
 
-class SelectOutput(Select):
+class SelectOutput(Button):
   """Dropdown to calculate and produce the drawings"""
   def __init__(self, content):
-    super().__init__(placeholder = ".",row=0,min_values=1, max_values=1)
+    super().__init__(label="OK", style=ButtonStyle.secondary)
     options = []
     options.append(SelectOption(label="OK", default=False))
     self.placeholder = content
-    self.options = options
+   
+    #self.options = options
 
   async def callback(self, interaction:Interaction):
+    self.disabled = True
     self.view.specinput()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
     spec = self.view.specinfo.spec
     helpText = 'Type "/specadvice" to get advice on where to use your specialisation points'
     try:
-      await specAdvice(self.view, spec, groups_bl, groups_gr)
+      summary = await specAdvice(self.view, spec, groups_bl, groups_gr)
       blueFile = self.view.bluefile
       greenFile = self.view.greenfile
       redFile = self.view.redfile
@@ -139,6 +141,7 @@ class SelectOutput(Select):
       await self.view.channel.send(file=File(blueFile))
       await self.view.channel.send(file=File(greenFile))
       await self.view.channel.send(file=File(redFile))
+      await self.view.channel.send(content=summary)
       await self.view.channel.send(content=helpText)
     except:
       await self.view.channel.send(content = f"{self.view.author.mention},Oops, something went wrong")
@@ -163,8 +166,8 @@ class SpecView(View):
     self.redfile = redFile
     self.member = member
     self.pathway = None
-    self.priorityoptions = ['Loyalty', 'Extra tiles', 'One extra queue', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles', 'Two extra queues', 'Three extra queues']
-    self.prioritygroups = ['Loyalty', 'ExtraTile', 'OneExtQ', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat', 'TwoExtQ', 'MaxQs']
+    self.priorityoptions = ['Loyalty', 'Extra tiles', 'One extra queue', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles', 'Land development', 'Two extra queues', 'Three extra queues']
+    self.prioritygroups = ['Loyalty', 'ExtraTile', 'OneExtQ', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat', 'Land','TwoExtQ', 'MaxQs']
     self.ready = False
     self.output = False
     self.specinfo.spec = self.member.currentSkillLvl

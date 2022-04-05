@@ -22,7 +22,7 @@ class Spec():
 class specInfo():
   def __init__(self):
     self.language = None
-    self.banner = None
+    self.specialCastle = None
     self.preset = None
     self.spec = 0
     self.list1 = []

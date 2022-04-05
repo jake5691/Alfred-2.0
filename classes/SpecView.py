@@ -67,7 +67,7 @@ class SelectBanner(Select):
     self.options = options
     self.placeholder = content
   async def callback(self, interaction:Interaction):
-    self.view.specinfo.banner = self.values[0]
+    self.view.specinfo.specialCastle = self.values[0]
     self.view.whatNext()
     await interaction.response.edit_message(content=self.view.content, view = self.view)
 
@@ -141,7 +141,7 @@ class SelectOutput(Button):
       await self.view.channel.send(file=File(blueFile))
       await self.view.channel.send(file=File(greenFile))
       await self.view.channel.send(file=File(redFile))
-      await self.view.channel.send(content=summary)
+      #await self.view.channel.send(content=summary)
       await self.view.channel.send(content=helpText)
     except:
       await self.view.channel.send(content = f"{self.view.author.mention},Oops, something went wrong")
@@ -192,14 +192,14 @@ class SpecView(View):
         return
       self.specinfo.language = 'english'
 
-    if self.specinfo.banner == None:
+    if self.specinfo.specialCastle == None:
       opt = []
-      YN = ('YES', 'NO')
-      for o in YN:
+      specialCastleOpt = ('Banner', 'Tile fighting', 'War Cavalry','None')
+      for o in specialCastleOpt:
         trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=o)
         item =(o, trans)
         opt.append(item)
-      text = 'Are you a banner castle?\n\n'
+      text = 'Does your castle have a special function?\n\n'
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
       if self.specinfo.language != 'english':
         content = text + trans

@@ -213,10 +213,15 @@ ArchSiegeDefResLeGroup, ArchSiegeDefMightLeGroup, CavSiegeDefResisLeGroup, CavSi
 #additiona groups for assigning spec points
 Banner = [CavReignMightUp1, CavReignMightUp2, CavReignMightUp3, ChaosExpertise, CavReignMightUp4, CavReignMightUp5, CavReignMightUp6, ChaosMaster, CavReignMightUp7, CavReignMightUp8, CavReignMightUp9, PioneerBanner, RaiderBanner]
 
+WarGroups = [CavSiegeMightRi, CavSiegeResisRi, CavSiegeDefResisLeGroup, CavSiegeDefMightLeGroup]
+WarCav = [n for g in WarGroups for n in g]
+
+    
+
 
 redSpec_gr = {
   "Banner":(Banner, 47),
-  "Something":(Banner, 47)
+  "War Cavalry":(WarCav, 0)
   
 }
 

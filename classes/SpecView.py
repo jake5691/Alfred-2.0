@@ -219,7 +219,7 @@ class SpecView(View):
 
     if self.specinfo.specialCastle == None:
       opt = []
-      specialCastleOpt = ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers','None')
+      specialCastleOpt = ('Banner', 'Tile fighting','None')
       for o in specialCastleOpt:
         trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=o)
         item =(o, trans)
@@ -254,8 +254,8 @@ class SpecView(View):
       trans =[]
       #preset = ('Start', 'Week1', 'Week2', 'Loyalty', 'FillIW', 'FW', 'Tile Honour')
       #p_text =('Place buildings at start of season', 'Week 1 loyalty', 'Week 2 loyalty and tilespeed', 'Increasing loyalty', 'Keep loyalty while filling on iron/wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour')
-      preset = ('Loyalty', 'Iron/Wood', 'Upgrade buildings', 'Tile Honour')
-      p_text =('Increasing loyalty', 'Keep loyalty high while taking iron and wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour')
+      preset = ('Loyalty', 'Iron/Wood', 'Upgrade buildings', 'Tile Honour', 'War Cavalry', 'War Archers')
+      p_text =('Increasing loyalty', 'Keep loyalty high while taking iron and wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour', 'Fun with my horses', 'Fun with my shooters')
       for p in p_text:
         p_trans =  GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
         trans.append(p_trans)
@@ -352,6 +352,8 @@ class SpecView(View):
       self.specinfo.notes = "Your focus is on maximising honour from tiles. You will sometimes switch to green left and extra queues to upgrade Assault and Guardian Fortresses.\n\nIn the last week, you may need to put extra points on processing queues to ensure that you process all of your materials.  Depending on resets you may also prioritise having 49 points on green left (building honour).  Land development and extra tiles might not be necessary.\n.\n"
       self.specinfo.list1 = ('TileHonour', 'FWMat', 'ExtraTile')
       self.specinfo.list2 = ('UpgradeBuild', 'TwoExtQs', 'Land')
+    else:
+      self.specinfo.specialCastle = self.specinfo.preset 
 
 
 

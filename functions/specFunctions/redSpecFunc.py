@@ -212,16 +212,19 @@ ArchSiegeDefResLeGroup, ArchSiegeDefMightLeGroup, CavSiegeDefResisLeGroup, CavSi
 
 #additiona groups for assigning spec points
 Banner = [CavReignMightUp1, CavReignMightUp2, CavReignMightUp3, ChaosExpertise, CavReignMightUp4, CavReignMightUp5, CavReignMightUp6, ChaosMaster, CavReignMightUp7, CavReignMightUp8, CavReignMightUp9, PioneerBanner, RaiderBanner]
+TileWar = [CavReignMightUp1, CavReignMightUp2, CavReignMightUp3, ChaosExpertise, CavReignMightUp4, CavReignMightUp5, CavReignMightUp6, ChaosMaster, CavReignMightUp7, CavReignMightUp8, CavReignMightUp9]
 
-WarGroups = [CavSiegeMightRi, CavSiegeResisRi, CavSiegeDefResisLeGroup, CavSiegeDefMightLeGroup]
-WarCav = [n for g in WarGroups for n in g]
+WarCav = [CavSiegeMightRi1, CavSiegeMightRi2, CavSiegeMightRi3, SiegeExpertise, CavSiegeMightRi4, CavSiegeMightRi5, CavSiegeMightRi6, IronWarriors, CavSiegeMightRi7, CavSiegeMightRi8, CavSiegeMightRi9, CavSiegeResisRi1, CavSiegeResisRi2, CavSiegeResisRi3, Invisibility, Taunt,  CavSiegeDefResisLe1, CavSiegeDefMightLe1, CavSiegeDefResisLe3, TotalDefence, CavSiegeDefResisLe4, CavSiegeDefMightLe2, CavSiegeDefResisLe6, ImperialFists, CavSiegeDefResisLe7, CavSiegeDefMightLe3, CavSiegeDefResisLe9,  CavSiegeDefResisLe2,  CavSiegeDefResisLe5, CavSiegeDefResisLe8,  FightToTheDeath, UnBreachable]
+WarArch = [ArchSiegeMightRi1, ArchSiegeMightRi2, ArchSiegeMightRi3, SiegeExpertise, ArchSiegeMightRi4, ArchSiegeMightRi5, ArchSiegeMightRi6, IronWarriors, ArchSiegeMightRi7, ArchSiegeMightRi8, ArchSiegeMightRi9, ArchSiegeResisRi1, ArchSiegeResisRi2, ArchSiegeResisRi3, Taunt,  ArchSiegeDefResisLe1, ArchSiegeDefMightLe1, ArchSiegeDefResisLe3, TotalDefence, ArchSiegeDefResisLe4, ArchSiegeDefMightLe2, ArchSiegeDefResisLe6, ImperialFists, ArchSiegeDefResisLe7, ArchSiegeDefMightLe3, ArchSiegeDefResisLe9,  ArchSiegeDefResisLe2,  ArchSiegeDefResisLe5, ArchSiegeDefResisLe8,  UnBreachable]
 
     
 
 
 redSpec_gr = {
   "Banner":(Banner, 47),
-  "War Cavalry":(WarCav, 0)
+  "War Cavalry":(WarCav, 97),
+  "War Archers":(WarArch,97),
+  "Tile fighting":(TileWar,37)
   
 }
 

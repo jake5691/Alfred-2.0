@@ -69,17 +69,19 @@ def getNodes(priorities_list_full):
   node_priority =[]
   print("getnodes")
   print(priorities_list_full)
-  if priorities_list_full in ('Banner', 'Tile fighting', 'War Cavalry'):
-    l = redSpec_gr[priorities_list_full][0]
+  if priorities_list_full in ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers'):
+    p = priorities_list_full
+    print(p)
+    l = redSpec_gr[p][0]
+    print(l)
     for node in l:
       nodes_list.append(node)
-      node_priority.append('Banner')
+      node_priority.append(p)
+    print("red complete")
   else:
     for p in priorities_list_full:
       if p in blueSpec_gr:
-        #print("blue gr = ", blueSpec_gr)
         l = blueSpec_gr[p][0]
-        #print("l=", l)
       elif p in greenSpec_gr:
         l= greenSpec_gr[p][0]
 
@@ -94,9 +96,10 @@ def getNodes(priorities_list_full):
   score = [node.usefulScore for node in nodes_list]
   title = [node.title for node in nodes_list]
   maxLevel = [node.maxLvl for node in nodes_list]
-
+  
   data = {'Node':nodes_list, 'Score':score, 'Title':title,'maxLvl':maxLevel, 'Priority':node_priority}
   df = pd.DataFrame(data)
+ 
   #print(df)
   return(nodes_list, df)
 
@@ -290,20 +293,24 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       summary = "You don't have enough spec points to be a banner castle (47 points required)\n\n"
   elif view.specinfo.specialCastle == 'Tile fighting':
     if userSpecPoints >= 37:
-      list0 = ('Banner')
+      list0 = ('Tile fighting')
       df = getNodes(list0)[1]
       Nodes = set(df['Node'])
       assignPoints(Nodes, 37)
       userSpecPoints -= 37
     else:
       summary = "You don't have enough spec points for full tile fighting (42 points required)\n\n"
-  elif view.specinfo.specialCastle == 'War Cavalry':
-    list0 = ('War Cavalry')
+  elif view.specinfo.specialCastle in ('War Cavalry', 'War Archers'):
+    print("here")
+    list0 = view.specinfo.specialCastle
     df = getNodes(list0)[1]
     Nodes = set(df['Node'])
     assignPoints(Nodes, userSpecPoints)
     print(userSpecPoints)
-    userSpecPoints -= sum(Nodes.currentLvl) 
+    pointsList = [n.maxLvl for n in Nodes]
+    pointsUsed = sum(pointsList)
+    print(pointsUsed)
+    userSpecPoints -= pointsUsed
     print(userSpecPoints)
   else:
     summary = ""
@@ -362,7 +369,7 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   
   await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", view.author.display_name)
 
-  summary =  summary  + f"You started with {startingSpec} and have {unusedSpec} points that have not been allocated.\n\n"
+  summary = f"You started with {startingSpec} and have {unusedSpec} points that have not been allocated.\n\n"
   print(summary)
   
 

@@ -194,7 +194,7 @@ class SpecView(View):
 
     if self.specinfo.specialCastle == None:
       opt = []
-      specialCastleOpt = ('Banner', 'Tile fighting', 'War Cavalry','None')
+      specialCastleOpt = ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers','None')
       for o in specialCastleOpt:
         trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=o)
         item =(o, trans)

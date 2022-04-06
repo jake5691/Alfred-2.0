@@ -69,7 +69,7 @@ radiusDict_red = {
 # Load font from URI
 #truetype_url = 'https://github.com/googlefonts/roboto/blob/main/src/hinted/Roboto-Black.ttf?raw=true'
 
-truetype_url = 'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSans/NotoSans-Black.ttf?raw=true'
+truetype_url = 'https://github.com/texttechnologylab/DHd2019BoA/blob/master/fonts/Arial%20Unicode%20MS.TTF?raw=true'
 r = requests.get(truetype_url, allow_redirects=True)
 font = ImageFont.truetype(io.BytesIO(r.content), size=24)
 

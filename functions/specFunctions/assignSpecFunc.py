@@ -70,13 +70,24 @@ def getNodes(priorities_list_full):
   node_priority =[]
   print("getnodes")
   print(priorities_list_full)
-  if priorities_list_full in ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers','TileSpeed'):
+  if priorities_list_full in ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers','TileSpeed', 'PlaceBuild'):
     p = priorities_list_full
     print(p)
-    try:
-      l = redSpec_gr[p][0]
-    except:
-      l = greenSpec_gr[p][0]
+    if p == 'PlaceBuild':
+      l = []
+      for i in blueSpec_gr['PlaceBuild'][0]:
+        l.append(i)
+      for i in greenSpec_gr['UpgradeBuild'][0]:
+        l.append(i)
+      print(l)
+    else:
+      try:
+        l = redSpec_gr[p][0]
+      except:
+        try:
+          l = greenSpec_gr[p][0]
+        except:
+          l = blueSpec_gr[p][0]
     for node in l:
       nodes_list.append(node)
       node_priority.append(p)
@@ -286,7 +297,7 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   #print(view.specinfo.banner)
   leaderSpec = db['leaderspec']
   startingSpec = userSpecPoints
-  if view.specinfo.specialCastle == 'Banner':
+  if view.specinfo.specialCastle == 'Banner' and leaderSpec != 'PlaceBuild':
     print("banner start")
     if userSpecPoints >= 47:
       list0 = ("Banner")

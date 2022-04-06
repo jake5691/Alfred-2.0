@@ -46,8 +46,8 @@ class LeaderSpecView(View):
   def __init__(self, channel):
     super().__init__()
     self.leaderspec = db['leaderspec']
-    self.leaderoptions = ['Tile Speed', 'None']
-    self.leadergroups = ['TileSpeed', 'None']
+    self.leaderoptions = ['Season Start (place buildings)','Tile Speed', 'None']
+    self.leadergroups = ['PlaceBuild','TileSpeed', 'None']
     self.content ="."
     self.add_item(SelectLeaderSpec(self.leaderoptions, self.leadergroups, self.leaderspec))
     self.add_item(DoneButton())

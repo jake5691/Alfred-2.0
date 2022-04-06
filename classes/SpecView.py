@@ -8,6 +8,31 @@ from functions.specFunctions.greenSpecFunc import groups_gr
 from functions.generalFunc import target_lang
 import os
 
+class SelectLeaderSpec(Select):
+  """Dropdown to select which preset option"""
+  def __init__(self):
+    super().__init__(placeholder = "Please select a priority",row=0,min_values=1, max_values=1)
+    options =[]
+    for p in self.leaderoptions:
+      options.append(p)
+        #priorityOptTrans.append(trans)
+    lookup = dict(zip(self.leaderoptions, self.leadergroups))
+    #self.placeholder = content
+    self.options = options
+    
+  async def callback(self, interaction:Interaction):
+    self.view.leaderspec = self.values[0]
+    await interaction.response.edit_message(content = self.view.leaderspec)
+    await interaction.response.edit_message(content=self.view.content, view = self.view)
+
+class LeaderSpecView():
+  """The view to hold the Dropdown and Buttons for the leader spec setting"""
+  def __init__(self, channel):
+    super().__init__()
+    self.leaderspec = None
+    self.leaderoptions = SpecView.priorityoptions 
+    self.leadergroups = SpecView.prioritygroups
+    self.add_item(SelectLeaderSpec())
 
 
 class SelectLanguage(Select):

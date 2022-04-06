@@ -84,10 +84,14 @@ class Fun(commands.Cog):
       return
     if not self.checkRandomReply(message):
       return
+    #get command
+    features = self.bot.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == self.qualified_name), None)
+    command = next((x for x in feature.commands if x.name == "randomReply"), None)
     res = None
-    if any(x in message.content.lower() for x in sv.keywords):
+    if any(x in message.content.lower() for x in command.keywords[message.guild.id]):
       if random() > 0.5:
-        res = choice(sv.reply)
+        res = choice(command.replies[message.guild.id])
     if res != None:
       await message.channel.send(res)
     return

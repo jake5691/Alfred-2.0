@@ -11,13 +11,15 @@ class CommandBackButton(Button):
       
   async def callback(self, interaction:Interaction):
     self.view.group = 0
+    self.view.variable = None
     removeChannels = []
     for ch in self.view.children:
       if ch.row >=2:
         removeChannels.append(ch)
     for ch in removeChannels:
       self.view.remove_item(ch)
-    
+    if self.view.command.variables != []:
+      self.view.add_item(SelectCommandVariable(self.view.command, self.view.variable))
     self.view.add_item(ExcludedChannelsButton())
     self.view.add_item(AllowedChannelsButton())
     self.view.add_item(ExcludedRolesButton())
@@ -80,7 +82,7 @@ class ExcludedChannelsButton(Button):
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 3:
+      if children.row >= 2:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -175,7 +177,7 @@ class ExcludedRolesButton(Button):
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 3:
+      if children.row >= 2:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -268,7 +270,7 @@ class AllowedRolesButton(Button):
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 3:
+      if children.row >= 2:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -362,7 +364,7 @@ class AllowedChannelsButton(Button):
   async def callback(self, interaction:Interaction):
     toRemove = []
     for children in self.view.children:
-      if children.row == 3:
+      if children.row >= 2:
         toRemove.append(children)
     for c in toRemove:
       self.view.remove_item(c)
@@ -432,13 +434,50 @@ class ActivateButton(Button):
 class AddValueCommandVariableButton(Button):
   """Button add values to command variable"""
   def __init__(self, variable, list):
-    super().__init__(label="Add", style= ButtonStyle.green, row=3)
+    super().__init__(label="Add", style= ButtonStyle.green, row=4)
     self.variable = variable
     self.list = list
 
   async def callback(self, interaction:Interaction):
     await interaction.response.send_modal(ModalCommandVariable(self.view, interaction, self.variable[0], self.list))
     
+################
+class RemoveValueCommandVariableSelect(Select):
+  """Dropdown to remove values from the variable"""
+  def __init__(self, command, var, guildID):
+    super().__init__(placeholder="Select the values you want to remove", row=3, min_values=0, max_values=len(getattr(command,var[0])[guildID]))
+    self.var = var
+    options = []
+    for val in getattr(command, self.var[0])[guildID]:
+      options.append(SelectOption(label=val[:99]))
+    self.options = options
+    
+  async def callback(self, interaction:Interaction):
+    for v in self.values:
+      getattr(self.view.command,self.var[0])[self.view.guildID].remove(v)
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+    
+################
+class RemoveValueCommandVariableButton(Button):
+  """Button remove values to command variable"""
+  def __init__(self, command, variable, guildID):
+    super().__init__(label="Remove", style= ButtonStyle.red, row=4)
+    self.enabled = False
+    self.var = variable
+    if guildID in getattr(command,self.var[0]):
+      if len(getattr(command,self.var[0])[guildID]) > 0:
+        self.enabled = True
+
+  async def callback(self, interaction:Interaction):
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row >= 3:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(RemoveValueCommandVariableSelect(self.view.command, self.var, self.view.guildID))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+  
 ################
 class ModalCommandVariable(Modal):
   """Modal for text input for command variables"""
@@ -454,11 +493,9 @@ class ModalCommandVariable(Modal):
       
   async def callback(self, interaction: Interaction):
     var = self.view.command.variables[self.view.variable]
-    
     for c in self.children:
       if c.value == "":
         continue
-      print(getattr(self.view.command,var[0]))
       if self.view.guildID in getattr(self.view.command,var[0]):
         getattr(self.view.command,var[0])[self.view.guildID].append(c.value)
       else:
@@ -482,8 +519,8 @@ class SelectCommandVariable(Select):
   
   async def callback(self, interaction:Interaction):
     variable = self.view.command.variables[int(self.values[0])]
-    print(self.view.command.variables[int(self.values[0])])
     self.view.variable = int(self.values[0])
+    self.view.group = 0
     removeChannels = []
     for ch in self.view.children:
       if ch.row >= 2:
@@ -495,14 +532,13 @@ class SelectCommandVariable(Select):
     if "[" in variable[1]:
       list = True
     if "str" in variable[1]:
-      print("string")
       if list:
-        pass
-    #await interaction.response.send_modal(ModalCommandVariable(self.view, interaction, variable[0], list))
-    #add
-    self.view.add_item(AddValueCommandVariableButton(variable, list))
-    #remove 
-    #edit
+        #back
+        self.view.add_item(CommandBackButton())
+        #add
+        self.view.add_item(AddValueCommandVariableButton(variable, list))
+        #remove
+        self.view.add_item(RemoveValueCommandVariableButton(self.view.command, variable, self.view.guildID))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
     
 ################
@@ -614,7 +650,6 @@ class SettingsView(View):
       res += f"\n**Variables:**\n"
       for var, type_ in self.command.variables:
         res += f"**{var}**: `{type_}` = "
-        print(self.command.variables)
         if self.guildID in getattr(self.command, var):
           value = f"{getattr(self.command, var)[self.guildID]}"
           if self.variable != None:

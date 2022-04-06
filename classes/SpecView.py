@@ -7,38 +7,50 @@ from functions.specFunctions.blueSpecFunc import groups_bl
 from functions.specFunctions.greenSpecFunc import groups_gr
 from functions.generalFunc import target_lang
 import os
+from replit import db
 
+class DoneButton(Button):
+  """Button to exit the editing"""
+  def __init__(self):
+    super().__init__(label="Exit",style=ButtonStyle.red, row=4)
+    
+  
+  async def callback(self,interaction:Interaction):
+    
+    self.view.content = f"leaderspec changed to {self.view.leaderspec}"
+    self.view.clear_items()
+    await interaction.response.edit_message(content=self.view.content,view=None)
+    
 class SelectLeaderSpec(Select):
   """Dropdown to select which preset option"""
-  def __init__(self, leaderoptions, leadergroups):
+  def __init__(self, leaderoptions, leadergroups, leaderspec):
     super().__init__(placeholder = "Please select a priority",row=0,min_values=1, max_values=1)
 
-        #priorityOptTrans.append(trans)
+    self.placeholder = f"leaderspec is current {leaderspec}.  Please select a new option."
     lookup = list(zip(leaderoptions, leadergroups))
-    print(lookup)
     options =[]
-    for i in lookup:
-      print(i)
     for o in lookup:
-      print(o[0], o[1])
       options.append(SelectOption(label=o[0], value=o[1], default=False))
     #self.placeholder = content
     self.options = options
     
   async def callback(self, interaction:Interaction):
     self.view.leaderspec = self.values[0]
-    await interaction.response.edit_message(content = self.view.leaderspec)
+    db['leaderspec'] = self.view.leaderspec
+    content = f"leader priority changed to {self.view.leaderspec}"
+    await interaction.response.edit_message(content = content)
     
 
 class LeaderSpecView(View):
   """The view to hold the Dropdown and Buttons for the leader spec setting"""
   def __init__(self, channel):
     super().__init__()
-    self.leaderspec = None
+    self.leaderspec = db['leaderspec']
     self.leaderoptions = ['Tile Speed', 'None']
     self.leadergroups = ['TileSpeed', 'None']
     self.content ="."
-    self.add_item(SelectLeaderSpec(self.leaderoptions, self.leadergroups))
+    self.add_item(SelectLeaderSpec(self.leaderoptions, self.leadergroups, self.leaderspec))
+    self.add_item(DoneButton())
     
 
 

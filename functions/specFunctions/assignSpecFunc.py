@@ -2,12 +2,13 @@
 #allocate usefulness points to specific nodes based on user priorities
 
 from functions.specFunctions.blueSpecFunc import groups_bl,bl,bl_l, firstSpecs_bl, blueSpec_gr
-from functions.specFunctions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr
+from functions.specFunctions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr, TileSpeed
 from functions.specFunctions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
 from functions.specFunctions.drawSpecFunc import draw
 import pandas as pd
 import itertools
 import datetime 
+from replit import db
 
 
 
@@ -69,15 +70,17 @@ def getNodes(priorities_list_full):
   node_priority =[]
   print("getnodes")
   print(priorities_list_full)
-  if priorities_list_full in ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers'):
+  if priorities_list_full in ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers','TileSpeed'):
     p = priorities_list_full
     print(p)
-    l = redSpec_gr[p][0]
-    print(l)
+    try:
+      l = redSpec_gr[p][0]
+    except:
+      l = greenSpec_gr[p][0]
     for node in l:
       nodes_list.append(node)
       node_priority.append(p)
-    print("red complete")
+
   else:
     for p in priorities_list_full:
       if p in blueSpec_gr:
@@ -98,6 +101,7 @@ def getNodes(priorities_list_full):
   maxLevel = [node.maxLvl for node in nodes_list]
   
   data = {'Node':nodes_list, 'Score':score, 'Title':title,'maxLvl':maxLevel, 'Priority':node_priority}
+  
   df = pd.DataFrame(data)
  
   #print(df)
@@ -280,6 +284,7 @@ async def most_use(priorities_list_full, userSpecPoints):
 
 async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   #print(view.specinfo.banner)
+  leaderSpec = db['leaderspec']
   startingSpec = userSpecPoints
   if view.specinfo.specialCastle == 'Banner':
     print("banner start")
@@ -314,9 +319,20 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
     print(userSpecPoints)
   else:
     summary = ""
+
+  if leaderSpec != 'None':
+    print("leaderspec")
+    df = getNodes(leaderSpec)[1]
+    Nodes = set(df['Node'])
+    assignPoints(Nodes, userSpecPoints)
+    pointsList = [n.maxLvl for n in Nodes]
+    pointsUsed = sum(pointsList)
+    print(pointsUsed)
+    userSpecPoints -= pointsUsed
+    print(userSpecPoints)
     
     
-  if userSpecPoints == 0:
+  if userSpecPoints <= 4:
     finished = True
   else:
     priorities_list = view.specinfo.list1
@@ -361,7 +377,8 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       finished = True
 
   unusedSpec = userSpecPoints
-  print(view.specinfo.list1, view.specinfo.list2)
+  print("unused")
+  #print( view.specinfo.list0, view.specinfo.list1, view.specinfo.list2)
   print(view.author.display_name)
   await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", view.author.display_name)
   

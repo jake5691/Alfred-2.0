@@ -2,6 +2,7 @@ from nextcord.ext import commands
 from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
 from functions import staticValues as sv
 from classes.SpecView import SpecView, LeaderSpecView
+from replit import db
 
 
 
@@ -34,7 +35,7 @@ class specAdv2(commands.Cog):
     view  = LeaderSpecView(channel)
     
 
-    await interaction.response.send_message(content="select a language:",view=view,ephemeral = True)
+    await interaction.response.send_message(content="select a leader priority:",view=view,ephemeral = True)
 
         
   @slash_command(name="specadvice",
@@ -74,16 +75,26 @@ class specAdv2(commands.Cog):
     
   @commands.Cog.listener('on_message')
   async def delete_messages(self,message):
-    """delete Messages after 5s"""
+    """delete Messages after 10s"""
     if message.author.bot:
       return
     #Loyalty and Skill lvl channel
     if message.channel.id != sv.channel.skill_point_advice:
       return
     try:
-      await message.delete(delay=5)
+      await message.delete(delay=10)
     except:
-      print('Message could not be deleted')    
+      print('Message could not be deleted') 
+
+  @commands.Cog.listener('on_ready')
+  async def load_leaderspec(self):
+    view = LeaderSpecView(None)
+    if view.leaderspec == None:
+      return
+    view.leaderspec = db['leaderspec']
+    print(view.leaderspec)
+    
+    
 
 def setup(bot: commands.Bot):
   bot.add_cog(specAdv2(bot))

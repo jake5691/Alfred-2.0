@@ -53,10 +53,10 @@ class Fun(commands.Cog):
       url = "https://coffee.alexflipnote.dev/random"
       async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
-            if resp.status != 200:
-                print('Could not download file...')
-            data = BytesIO(await resp.read())
-            await message.channel.send(file=File(data, 'coffee_image.png'))
+          if resp.status != 200:
+              print('Could not download file...')
+          data = BytesIO(await resp.read())
+          await message.channel.send(file=File(data, 'coffee_image.png'))
 
   def checkRandomReply(self, message) -> bool:
     """Check if the Feature is allowed to be used by this user and in this channel"""
@@ -93,6 +93,7 @@ class Fun(commands.Cog):
       if random() > 0.5:
         res = choice(command.replies[message.guild.id])
     if res != None:
+      await message.guild.me.edit(nick="Alfred-dev-2")
       await message.channel.send(res)
     return
 

@@ -2,6 +2,7 @@ from nextcord.ui import Select, View, Button, Modal, TextInput
 from nextcord import SelectOption, Interaction, ButtonStyle
 from replit import db
 import jsons
+import emoji
 
 ################
 class CommandBackButton(Button):
@@ -431,6 +432,28 @@ class ActivateButton(Button):
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
 
 ################
+class CommandVariableBackButton(Button):
+  """Button to navigate back"""
+  def __init__(self):
+    super().__init__(style=ButtonStyle.blurple, emoji="🔙", row=4)
+      
+  async def callback(self, interaction:Interaction):
+    self.view.group = 0
+    self.view.variable = None
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row >=2:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    if self.view.command.variables != []:
+      self.view.add_item(SelectCommandVariable(self.view.command, self.view.variable))
+    self.view.add_item(ExcludedChannelsButton())
+    self.view.add_item(AllowedChannelsButton())
+    self.view.add_item(ExcludedRolesButton())
+    self.view.add_item(AllowedRolesButton())
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+################
 class AddValueCommandVariableButton(Button):
   """Button add values to command variable"""
   def __init__(self, variable, list):
@@ -444,22 +467,80 @@ class AddValueCommandVariableButton(Button):
 ################
 class RemoveValueCommandVariableSelect(Select):
   """Dropdown to remove values from the variable"""
-  def __init__(self, command, var, guildID):
-    super().__init__(placeholder="Select the values you want to remove", row=3, min_values=0, max_values=len(getattr(command,var[0])[guildID]))
-    self.var = var
+  def __init__(self, view):
+    super().__init__(placeholder="Select the values you want to remove", row=3, min_values=0)
+    self.var = view.command.variables[view.variable]
+    values = [getattr(view.command, self.var[0])[view.guildID][x:x+25] for x in range(0, len(getattr(view.command, self.var[0])[view.guildID]), 25)]
+    values[view.group] = list(dict.fromkeys(values[view.group]))
+    self.max_values = len(values[view.group])
     options = []
-    for val in getattr(command, self.var[0])[guildID]:
+    for val in values[view.group]:
+      val = emoji.emojize(val)
       options.append(SelectOption(label=val[:99]))
     self.options = options
     
   async def callback(self, interaction:Interaction):
     for v in self.values:
       getattr(self.view.command,self.var[0])[self.view.guildID].remove(v)
+    #TODO: Handle remove last Value
+    self.view.group = 0
+    self.view.remove_item(self)
+    self.view.add_item(RemoveValueCommandVariableSelect(self.view))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+
+################
+class CommandVariableRightButton(Button):
+  """Right Button to navigate between removing values"""
+  def __init__(self, view):
+    super().__init__(style=ButtonStyle.secondary, emoji="➡️", row=4)
+    self.var = view.command.variables[view.variable]
+    max = len([getattr(view.command, self.var[0])[view.guildID][x:x+25] for x in range(0, len(getattr(view.command, self.var[0])[view.guildID]), 25)])
+    if view.group == max-1:
+      self.disabled = True
+    else:
+      self.disabled = False
+      
+  async def callback(self, interaction:Interaction):
+    self.view.group += 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row >= 3:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(RemoveValueCommandVariableSelect(self.view))
+    self.view.add_item(CommandVariableBackButton())
+    self.view.add_item(CommandVariableLeftButton(self.view.group))
+    self.view.add_item(CommandVariableRightButton(self.view))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
     
 ################
+class CommandVariableLeftButton(Button):
+  """Right Button to navigate between removing values"""
+  def __init__(self, current):
+    super().__init__(style=ButtonStyle.secondary, emoji="⬅️", row=4)
+    if current == 0:
+      self.disabled = True
+    else:
+      self.disabled = False
+    
+  async def callback(self, interaction:Interaction):
+    self.view.group -= 1
+    removeChannels = []
+    for ch in self.view.children:
+      if ch.row >= 3:
+        removeChannels.append(ch)
+    for ch in removeChannels:
+      self.view.remove_item(ch)
+    self.view.add_item(RemoveValueCommandVariableSelect(self.view))
+    self.view.add_item(CommandVariableBackButton())
+    self.view.add_item(CommandVariableLeftButton(self.view.group))
+    self.view.add_item(CommandVariableRightButton(self.view))
+    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+
+################
 class RemoveValueCommandVariableButton(Button):
-  """Button remove values to command variable"""
+  """Button remove values from command variable"""
   def __init__(self, command, variable, guildID):
     super().__init__(label="Remove", style= ButtonStyle.red, row=4)
     self.enabled = False
@@ -469,13 +550,16 @@ class RemoveValueCommandVariableButton(Button):
         self.enabled = True
 
   async def callback(self, interaction:Interaction):
-    removeChannels = []
+    removeItems = []
     for ch in self.view.children:
       if ch.row >= 3:
-        removeChannels.append(ch)
-    for ch in removeChannels:
+        removeItems.append(ch)
+    for ch in removeItems:
       self.view.remove_item(ch)
-    self.view.add_item(RemoveValueCommandVariableSelect(self.view.command, self.var, self.view.guildID))
+    self.view.add_item(RemoveValueCommandVariableSelect(self.view))
+    self.view.add_item(CommandVariableBackButton())
+    self.view.add_item(CommandVariableLeftButton(self.view.group))
+    self.view.add_item(CommandVariableRightButton(self.view))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
   
 ################
@@ -496,10 +580,17 @@ class ModalCommandVariable(Modal):
     for c in self.children:
       if c.value == "":
         continue
+      v = emoji.demojize(c.value)
+      if "\\" in str(v):
+        print(v)
+        continue
+      if v in getattr(self.view.command,var[0])[self.view.guildID]:
+        print("Duplicate element")
+        continue
       if self.view.guildID in getattr(self.view.command,var[0]):
-        getattr(self.view.command,var[0])[self.view.guildID].append(c.value)
+        getattr(self.view.command,var[0])[self.view.guildID].append(v)
       else:
-        getattr(self.view.command,var[0])[self.view.guildID] = [c.value]
+        getattr(self.view.command,var[0])[self.view.guildID] = [v]
     await self.interaction_.edit_original_message(content=self.view.content(), view = self.view)
     
 ################
@@ -651,12 +742,12 @@ class SettingsView(View):
       for var, type_ in self.command.variables:
         res += f"**{var}**: `{type_}` = "
         if self.guildID in getattr(self.command, var):
-          value = f"{getattr(self.command, var)[self.guildID]}"
+          value = emoji.emojize(f"{getattr(self.command, var)[self.guildID]}")
           if self.variable != None:
             res += value + "\n"
             continue
-          if len(value) > 30:
-            value = value[:27] + "..."
+          if len(value) > 40:
+            value = value[:37] + "..."
           elif len(value) == 0:
             value = "-"
           res += value

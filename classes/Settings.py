@@ -52,6 +52,7 @@ class Feature():
     #commands
     commands_ = []
     for c in self.commands:
+      c = str(c).replace("\\","") #make sure that string can be converted to json (new emojis are converted so some \UNICODE format which is can't be part of a valid json string)
       command = jsons.loads(str(c).replace("'",'"'), Command)
       command.convertAfterLoad()
       commands_.append(command)

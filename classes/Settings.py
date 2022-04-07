@@ -1,4 +1,4 @@
-
+import jsons
 
 class Feature():
   """Class to store features and their commands, also their availability per guild"""
@@ -8,12 +8,55 @@ class Feature():
     self.enabled:{int:bool} = {}
     self.commands:[Command] = []
     self.dbKey:str = dbKey
+    self.variables:[(str,str)] = []
 
   def isEnabled(self, guild) -> bool:
     """Checks if the Feature is enabled for this guild"""
     if guild in self.enabled:
       return self.enabled[guild]
     return False
+
+  def convertAfterLoad(self):
+    """Convert loaded data from Database to correct format"""
+    #enabled
+    newenabled = {}
+    for g in self.enabled:
+      newenabled[int(g)] = self.enabled[g]
+    self.enabled = newenabled
+    #variables
+    for variable, type_ in self.variables:
+      v = getattr(self, variable)
+      nv = {}
+      for g in v:
+        #convert value to correct type
+        nvv = ""
+        list = False
+        if "[" in type_:
+          nvv = []
+          list = True
+        if "str" in type_:
+          if list:
+            for i in v[g]:
+              nvv.append(str(i))
+          else:
+            nvv = str(v[g])
+        if "int" in type_:
+          if list:
+            for i in v[g]:
+              nvv.append(int(i))
+          else:
+            nvv = int(v[g])
+        #convert guildID to int
+        nv[int(g)] = nvv
+      setattr(self, variable, nv)
+    #commands
+    commands_ = []
+    for c in self.commands:
+      c = str(c).replace("\\","") #make sure that string can be converted to json (new emojis are converted so some \UNICODE format which is can't be part of a valid json string)
+      command = jsons.loads(str(c).replace("'",'"'), Command)
+      command.convertAfterLoad()
+      commands_.append(command)
+    self.commands = commands_
 
 class Command():
   """Class to store commands and their properties, especially guild specific attributes"""
@@ -26,6 +69,56 @@ class Command():
     self.allowedRoles:{int:[int]} = {}
     self.excludedChannels:{int:[int]} = {}
     self.excludedRoles:{int:[int]} = {}
+    self.variables:[(str,str)] = []
+
+  def convertAfterLoad(self):
+    """Convert loaded data from Database to correct format"""
+    #allowed Roles
+    aR = {}
+    for g in self.allowedRoles:
+      aR[int(g)] = self.allowedRoles[g]
+    self.allowedRoles = aR
+    #allowed Channels
+    aC = {}
+    for g in self.allowedChannels:
+      aC[int(g)] = self.allowedChannels[g]
+    self.allowedChannels = aC
+    #excluded Roles
+    eR = {}
+    for g in self.excludedRoles:
+      eR[int(g)] = self.excludedRoles[g]
+    self.excludedRoles = eR
+    #excluded Channels
+    eC = {}
+    for g in self.excludedChannels:
+      eC[int(g)] = self.excludedChannels[g]
+    self.excludedChannels = eC
+    #variables
+    for variable, type_ in self.variables:
+      v = getattr(self, variable)
+      nv = {}
+      for g in v:
+        #convert value to correct type
+        nvv = ""
+        list = False
+        if "[" in type_:
+          nvv = []
+          list = True
+        if "str" in type_:
+          if list:
+            for i in v[g]:
+              nvv.append(str(i))
+          else:
+            nvv = str(v[g])
+        if "int" in type_:
+          if list:
+            for i in v[g]:
+              nvv.append(int(i))
+          else:
+            nvv = int(v[g])
+        #convert guildID to int
+        nv[int(g)] = nvv
+      setattr(self, variable, nv)
 
   def isAllowedInChannel(self, guild, channel) -> bool:
     """Checks if the command is allowed in the given channel"""

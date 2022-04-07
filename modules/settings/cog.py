@@ -50,7 +50,7 @@ class Settings(commands.Cog):
         del db[f.dbKey]
         toDelete.append(idx)
     for idx in toDelete:
-      del self.Features[idx]
+      del self.Feature[idx]
         
     #Make sure default values for all guilds are set 
     for guild in self.bot.guilds:

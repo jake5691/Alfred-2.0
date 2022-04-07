@@ -485,7 +485,8 @@ class RemoveValueCommandVariableSelect(Select):
     #TODO: Handle remove last Value
     self.view.group = 0
     self.view.remove_item(self)
-    self.view.add_item(RemoveValueCommandVariableSelect(self.view))
+    if len(getattr(self.view.command,self.var[0])[self.view.guildID]) > 0:
+      self.view.add_item(RemoveValueCommandVariableSelect(self.view))
     await interaction.response.edit_message(content=self.view.content(), view = self.view)
 
 ################
@@ -543,11 +544,11 @@ class RemoveValueCommandVariableButton(Button):
   """Button remove values from command variable"""
   def __init__(self, command, variable, guildID):
     super().__init__(label="Remove", style= ButtonStyle.red, row=4)
-    self.enabled = False
+    self.disabled = True
     self.var = variable
     if guildID in getattr(command,self.var[0]):
       if len(getattr(command,self.var[0])[guildID]) > 0:
-        self.enabled = True
+        self.disabled = False
 
   async def callback(self, interaction:Interaction):
     removeItems = []

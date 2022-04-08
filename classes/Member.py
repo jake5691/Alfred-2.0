@@ -45,6 +45,11 @@ class MemberClass:
       self.skillData = ""
     else:
       self.skillData = self.skillData.to_csv(index=False)
+
+    for attr in self.__dict__:
+      if "wonder" in attr:
+        print(attr)
+        setattr(self, attr, getattr(self, attr).to_csv(index=False))
     
     res = jsons.dumps(self)
     self.txt2mem()
@@ -85,7 +90,14 @@ class MemberClass:
         print("Failed")
         print(f"{self.name}: {self.lastSkillUpdate}")
       #self.lastSkillUpdate = datetime.fromisoformat(self.lastSkillUpdate.split('.')[0] + ".000000+00:00")
-
+    for attr in self.__dict__:
+      if "wonder" in attr:
+        print(attr)
+        print(getattr(self, attr))
+        setattr(self, attr, pd.read_csv(StringIO(getattr(self, attr)),sep=','))
+        for i in getattr(self, attr).index:
+          pass
+          getattr(self, attr).at[i,'date'] = datetime.fromisoformat(getattr(self, attr)['date'][i].split('.')[0].split('+')[0] + ".000000+00:00")
   
   def updateSkill(self,newSkill:int=0):
     """update the skill/spec lvl"""
@@ -107,6 +119,33 @@ class MemberClass:
     elif newSkill - oldSkill < 1 and oldSkill > 0:
       reply += "I see you tried to cheat yourself to the top, glad you realized telling the truth is the better option."
     return True, reply
+
+  def updateWonder(self, wonderName=str, increment:int=None, lvl:int=None):
+    """update the specific Wonder lvl"""
+    wonderName = "wonder" + wonderName.replace(" ", "")
+    #check if wonder attribute already exists for that Member if not create it 
+    wonderDF = getattr(self, wonderName, pd.DataFrame(columns=["lvl","date"]))
+    #get the lvl needed to be added
+    print(wonderName)
+    if increment is not None:
+      if wonderDF.empty:
+        lvl = increment
+      else:
+        lvl = wonderDF["lvl"].iat[-1] + increment
+    print(lvl)
+    #Get current Time
+    currentTime = datetime.now() + timedelta(hours = -2)
+    currentTime = pytz.utc.localize(currentTime)
+    #Add data to Dataframe
+    addedData = pd.DataFrame(columns=["lvl","date"])
+    addedData.loc[0] = [lvl, currentTime]
+    if wonderDF.empty:
+      setattr(self, wonderName, addedData)
+      return lvl
+    wonderDF = pd.concat(objs= [wonderDF, addedData])
+    wonderDF.reset_index(drop=True, inplace=True)
+    setattr(self, wonderName, wonderDF)
+    return lvl
   
   def updateLoyalty(self,newLoyalty:int=0):
     """update the loyalty"""

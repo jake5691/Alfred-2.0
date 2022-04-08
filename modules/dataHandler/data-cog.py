@@ -1,4 +1,8 @@
 from nextcord.ext import commands
+from replit import db
+from operator import attrgetter
+from datetime import datetime, time
+
 from classes.Structure import Structure
 from classes.Member import MemberClass
 from classes.Season import Season
@@ -7,10 +11,6 @@ from functions import setupFunc as sf
 from functions import staticValues as sv
 from functions import seasonFunc as sfu
 from functions import targetFunctions as tf
-from replit import db
-from operator import attrgetter
-import nextcord
-from datetime import datetime, time, tzinfo
 
 
 class Data(commands.Cog):

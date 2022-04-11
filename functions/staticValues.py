@@ -38,6 +38,7 @@ class emoji:
   check = '✅'
   false = '❌'
   exp_rabbit = "<:exp_rabbit:909858709298110464>"
+  Mayan="<:MayanPyramid:961994011562893322>"
 
 #db Strings
 class db:

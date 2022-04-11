@@ -48,7 +48,7 @@ class MemberClass:
 
     for attr in self.__dict__:
       if "wonder" in attr:
-        print(attr)
+        #print(attr)
         setattr(self, attr, getattr(self, attr).to_csv(index=False))
     
     res = jsons.dumps(self)
@@ -92,8 +92,8 @@ class MemberClass:
       #self.lastSkillUpdate = datetime.fromisoformat(self.lastSkillUpdate.split('.')[0] + ".000000+00:00")
     for attr in self.__dict__:
       if "wonder" in attr:
-        print(attr)
-        print(getattr(self, attr))
+        #print(attr)
+        #print(getattr(self, attr))
         setattr(self, attr, pd.read_csv(StringIO(getattr(self, attr)),sep=','))
         for i in getattr(self, attr).index:
           pass

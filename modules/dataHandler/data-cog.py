@@ -29,19 +29,6 @@ class Data(commands.Cog):
     targets:[Target] = tf.loadTargets(self.getFlags())
     self.targets = sorted(targets, key=attrgetter('hour', 'minute'))
 
-    
-
-  
-  @commands.Cog.listener('on_ready')
-  async def listCommands(self):
-    """List all Commands"""
-    #game = nextcord.Game(name="Rise of Empire")
-    #await self.bot.change_presence(status=nextcord.Status.online, activity=game)
-    #print("Do it")
-    #coms = self.bot.get_application_commands()
-    #print(coms)
-    #print(g)
-    #print(g.description)
 
 
   @commands.Cog.listener('on_ready')

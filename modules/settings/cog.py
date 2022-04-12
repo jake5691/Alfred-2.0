@@ -1,14 +1,115 @@
-from nextcord.ext import commands
+from replit import db
+from nextcord.ext import commands, application_checks
+from nextcord import Interaction, slash_command
+import jsons
+
+from classes.SettingsView import SettingsView
+from classes.Settings import Feature, Command
 from functions import staticValues as sv
+from functions import setupFunc as sf
 
 class Settings(commands.Cog):
   """Settings"""
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
-    self.catName = "Alfred"
-    self.chanName = "Overview"
+    self.Features = sf.allFeatures()
 
+  @commands.Cog.listener('on_ready')
+  async def on_ready(self):
+    """load/set default settings for all servers where Alfred is present"""
+    commands_ = self.bot.get_all_application_commands()
+    commands_grouped = {}
+    for c in commands_:
+      group = c.self_argument.qualified_name
+      if group in commands_grouped:
+        commands_grouped[group].append(c)
+      else:
+        commands_grouped[group] = [c]
+        
+    #Get all Features and commands that are in the bot
+    for g in commands_grouped:
+      f = next((x for x in self.Features if x.name == g), None)
+      if f == None:
+        f = Feature(g, self.bot.cogs[g].description, f"feature{g}")
+        self.Features.append(f)
+      else:
+        f.description = self.bot.cogs[g].description
+      for c in commands_grouped[g]:
+        co = next((x for x in f.commands if x.name == c.name), None)
+        if co == None:
+          co = Command(c.name, c.description, "Slash Command")
+          f.commands.append(co)
+        else:
+          co.description = c.description
+          
+    #Check for db entries that no longer are a feature
+    toDelete = []
+    for idx, f in enumerate(self.Features):
+      if f.name not in commands_grouped and f.name != "Fun":
+        del db[f.dbKey]
+        toDelete.append(idx)
+    for idx in toDelete:
+      del self.Feature[idx]
+        
+    #Make sure default values for all guilds are set 
+    for guild in self.bot.guilds:
+      for f in self.Features:
+        if guild.id not in f.enabled:
+          f.enabled[guild.id] = False #set feature per default to False
+          db[f.dbKey] = jsons.dumps(f)
+          #print(f"{guild.name} has {f.name} values NOT stored")
+        for c in f.commands:
+          if guild.id not in c.allowedChannels:
+            c.allowedChannels[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
+          if guild.id not in c.excludedChannels:
+            c.excludedChannels[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
+          if guild.id not in c.allowedRoles:
+            c.allowedRoles[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
+          if guild.id not in c.excludedRoles:
+            c.excludedRoles[guild.id] = []
+            db[f.dbKey] = jsons.dumps(f)
+
+  async def checkcheck(interaction):
+    featureName = "Settings"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    #if not feature.isEnabled(interaction.guild.id):
+    #  await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+    #  return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
+
+
+  @slash_command(name="settings",
+                      guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
+  async def settingsSlashCommand(self, interaction: Interaction):
+    """
+    View and change the settings for Alfred and all his features and commands.
+    """
+    await interaction.send("**Settings**\nSelect the feature you want to view.", view=SettingsView(self.Features, interaction.guild), ephemeral=True)
+    
   def isDev(ctx):
     userRoles = [i.id for i in ctx.author.roles]
     if not(sv.roles.Developers in userRoles):
@@ -18,8 +119,15 @@ class Settings(commands.Cog):
   
   @commands.command()
   @commands.check(isDev)
-  async def settings(self, ctx):
+  async def setting(self, ctx):
     """Displaying of all Alfred variables"""
+    commands_ = self.bot.get_all_application_commands()
+    for cog in self.bot.cogs:
+      print(cog)
+      cog = self.bot.cogs[cog]
+      for command in cog.get_commands():
+        print(f" {command}")
+    return
     #Random Reply
     aChannels = [sv.channel.migration_to_232, sv.channel.guests, sv.channel.eden_english, sv.channel.general]
     channels = ""

@@ -1,4 +1,4 @@
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption
 from functions import staticValues as sv
 from replit import db
@@ -14,25 +14,43 @@ class Availability(commands.Cog):
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
-  
+
+  async def checkcheck(interaction):
+    featureName = "Availability"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
+    
   @slash_command(name="startavailabilitysurvey",
-                      description="Start a survey to see every players available times.",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def startavailabilitysurvey(self, interaction: Interaction,
       interval: int = SlashOption(
           name="interval",
           description="What interval should each option have? e.g. 2 -> 0-2, 2-4....",
           required=True)):
     """Sending a Survey to see when Players can be online."""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.availability == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     options = []
     curTime = 0
@@ -63,19 +81,10 @@ class Availability(commands.Cog):
     db[sv.db.availabilitySurveyDict] = surveyDict
   
   @slash_command(name="evalavailability",
-                      description="Evaluate the availability survey",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def evalavailability(self, interaction: Interaction):
     """Evaluate the availability survey to see when Players can be online."""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.channel.availability == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     #Function
     alwaysOption = ""
     sd = db[sv.db.availabilitySurveyDict]

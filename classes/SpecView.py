@@ -177,7 +177,7 @@ class SelectOutput(Button):
       await self.view.channel.send(content =f"{self.view.author.mention}: {notes}")
       if self.view.specinfo.language != 'english':
         try:
-          notes_trans = GoogleTranslator(source='auto', target=self.view.specinfo.language).translate(text=notes)
+          notes_trans = GoogleTranslator(source='english', target=self.view.specinfo.language).translate(text=notes)
         except:
           notes_trans = ""
         summary = summary +   GoogleTranslator(source='auto', target=self.view.specinfo.language).translate(text=summary)
@@ -185,7 +185,7 @@ class SelectOutput(Button):
       await self.view.channel.send(file=File(blueFile))
       await self.view.channel.send(file=File(greenFile))
       await self.view.channel.send(file=File(redFile))
-      #await self.view.channel.send(content=summary)
+      await self.view.channel.send(content=summary)
       await self.view.channel.send(content=helpText)
     except:
       await self.view.channel.send(content = f"{self.view.author.mention},Oops, something went wrong")

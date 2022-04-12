@@ -212,6 +212,7 @@ class SpecView(View):
     self.pathway = None
     self.priorityoptions = ['Loyalty', 'Extra tiles', 'One extra queue', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles', 'Land development', 'Two extra queues', 'Three extra queues']
     self.prioritygroups = ['Loyalty', 'ExtraTile', 'OneExtQ', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat', 'Land','TwoExtQ', 'MaxQs']
+    self.selectrans = []
     self.ready = False
     self.output = False
     self.specinfo.spec = self.member.currentSkillLvl
@@ -312,12 +313,33 @@ class SpecView(View):
 
     if self.pathway == "Select" and self.specinfo.list1 == []:
       
-      opt = []
+      #opt = []
 
-      for p in self.priorityoptions:
-        trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
-        item =(p, trans)
-        opt.append(item)
+      #for p in self.priorityoptions:
+      if self.specinfo.language == 'spanish':
+        self.selecttrans = ['Lealtad', 'Azulejos adicionales', 'Una cola extra', 'Mejorar edificios', 'honor del azulejo', 'Ingresos por alimentos/baldosas de mármol', 'Renta de tejas de madera/hierro', 'Desarrollo de la tierra', 'Dos colas extra', 'Tres colas extra']
+      elif self.specinfo.language == 'english':
+        self.selecttrans = self.priorityoptions
+      elif self.specinfo.language == 'russian':
+        self.selecttrans = ['Верность', 'Дополнительные плитки', 'Одна дополнительная очередь', 'Улучшайте здания', 'Плитка честь', 'Доход от еды/мраморных плиток', 'Доход от деревянных/железных плиток', 'Землеустройство', 'Две дополнительные очереди', 'Три дополнительные очереди']
+      elif self.specinfo.language == 'korean':
+        self.selecttrans = ['충의', '추가 타일', '하나의 추가 대기열', '건물 업그레이드', '타일 \u200b\u200b명예', '음식/대리석 타일 수입', '목재/철 타일 수입', '토지 개발', '두 개의 추가 대기열', '3개의 추가 대기열']
+      elif self.specinfo.language == 'german':
+        self.selecttrans = ['Loyalität', 'Zusätzliche Kacheln', 'Eine zusätzliche Warteschlange', 'Werte Gebäude auf', 'Fliese Ehre', 'Einkommen aus Nahrung/Marmorfliesen', 'Einkommen aus Holz-/Eisenfliesen', 'Landesentwicklung', 'Zwei zusätzliche Warteschlangen', 'Drei zusätzliche Warteschlangen']
+      elif self.specinfo.language == 'chinese':
+        self.selecttrans = ['忠诚', '额外的瓷砖', '一个额外的队列', '升级建筑', '瓷砖荣誉', '食品/大理石瓷砖收入', '木/铁瓦收入', '土地开发', '两个额外的队列', '三个额外的队列']
+      elif self.specinfo.language == 'dutch':
+        self.selecttrans = ['Loyaliteit', 'Extra tegels', 'Een extra wachtrij', 'Gebouwen upgraden', 'Tegel eer', 'Inkomsten uit eten/marmeren tegels', 'Inkomsten uit hout/ijzeren tegels', 'Land ontwikkeling', 'Twee extra wachtrijen', 'Drie extra wachtrijen']
+      elif self.specinfo.language == 'romanian':
+        self.selecttrans = ['Loialitate', 'Placi suplimentare', 'O coadă în plus', 'Actualizați clădiri', 'Onoare de țiglă', 'Venituri din alimente/placi de marmură', 'Venituri din faianta din lemn/fier', 'Dezvoltarea terenului', 'Două cozi în plus', 'Trei cozi în plus']
+      elif self.specinfo.language == 'french':
+        self.selecttrans = ['Loyauté', 'Tuiles supplémentaires', "Une file d'attente supplémentaire", 'Améliorez les bâtiments', 'Honneur de la tuile', 'Revenu de la nourriture/tuiles de marbre', 'Revenu des tuiles en bois/fer', 'Développement agraire', "Deux files d'attente supplémentaires", "Trois files d'attente supplémentaires"]
+      else:
+        trans = GoogleTranslator(source='english', target=self.specinfo.language).translate_batch(batch=self.priorityoptions)
+        print(trans)
+        #item =(p, trans)
+        #opt.append(item)
+      opt = list(zip(self.priorityoptions, self.selecttrans))
         #priorityOptTrans.append(trans)
       lookup = dict(zip(self.priorityoptions, self.prioritygroups))
       #text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
@@ -332,11 +354,8 @@ class SpecView(View):
       return
 
     if self.pathway == 'Select' and self.specinfo.list2 == []:
-      opt =[]
-      for p in self.priorityoptions:
-        trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
-        item =(p, trans)
-        opt.append(item)
+      
+      opt = list(zip(self.priorityoptions, self.selecttrans))
         #priorityOptTrans.append(trans)
       lookup = dict(zip(self.priorityoptions, self.prioritygroups))
       #text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"

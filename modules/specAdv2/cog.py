@@ -1,7 +1,9 @@
 from nextcord.ext import commands
 from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
 from functions import staticValues as sv
-from classes.SpecView import SpecView
+from classes.SpecView import SpecView, LeaderSpecView
+from replit import db
+
 
 
 
@@ -15,6 +17,55 @@ class specAdv2(commands.Cog):
     self.flags = sv.flags
     self.dataCog = bot.get_cog('Data')
 
+  async def checkcheck(interaction):
+    featureName = "SpecAdv2"
+    features = interaction.client.get_cog(sv.SETTINGS_COG).Features
+    feature = next((x for x in features if x.name == featureName), None)
+    #feature
+    if feature == None:
+      await interaction.send(f"**ERROR:** couldn't find the feature *{featureName}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #enabled
+    if not feature.isEnabled(interaction.guild.id):
+      await interaction.send(f"This feature is not enabled on your server, please reach out to your Leaders for clarification.", ephemeral=True)
+      return False
+    #command
+    command = next((x for x in feature.commands if x.name == interaction.application_command.qualified_name), None)
+    if command == None:
+      await interaction.send(f"**ERROR:** couldn't find the command *{interaction.application_command.qualified_name}*, please reach out to the developers.", ephemeral=True)
+      return False
+    #roles
+    if not command.isAllowedByMember(interaction.guild.id, interaction.user):
+      await interaction.send(f"You are not allowed to use this command *{command.name}*.", ephemeral=True)
+      return False
+    #channels
+    if not command.isAllowedInChannel(interaction.guild.id, interaction.channel.id):
+      await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
+      return False
+    return True
+  
+  @slash_command(name="leaderspec", description="Press to specify a spec priority for all players", guild_ids=sv.gIDS)
+  async def leaderspec(self,
+      interaction: Interaction):
+    """Leaders can specify a priority for specialisation points for all players"""
+    #Check if user has Permission
+    userRoles = [i.id for i in interaction.user.roles]
+    if not(sv.roles.Leadership in userRoles) and not(sv.roles.GuildLeader in userRoles):
+      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
+      return
+    #check if command is send in correct channel
+    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
+      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
+      return
+    channel = interaction.channel     
+        
+    view  = LeaderSpecView(channel)
+    
+
+    await interaction.response.send_message(content="select a leader priority:",view=view,ephemeral = True)
+
+  
+        
   @slash_command(name="specadvice",
                       description="Press for spec advice.",
                       guild_ids=sv.gIDS)
@@ -52,16 +103,26 @@ class specAdv2(commands.Cog):
     
   @commands.Cog.listener('on_message')
   async def delete_messages(self,message):
-    """delete Messages after 5s"""
+    """delete Messages after 10s"""
     if message.author.bot:
       return
     #Loyalty and Skill lvl channel
     if message.channel.id != sv.channel.skill_point_advice:
       return
     try:
-      await message.delete(delay=5)
+      await message.delete(delay=10)
     except:
-      print('Message could not be deleted')    
+      print('Message could not be deleted') 
+
+  @commands.Cog.listener('on_ready')
+  async def load_leaderspec(self):
+    view = LeaderSpecView(None)
+    if view.leaderspec == None:
+      return
+    view.leaderspec = db['leaderspec']
+    print(view.leaderspec)
+    
+    
 
 def setup(bot: commands.Bot):
   bot.add_cog(specAdv2(bot))

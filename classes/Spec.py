@@ -1,5 +1,6 @@
 # node object for spec advice
 
+
 class Spec():
   def __init__(self,title:str,center:(int,int),maxLvl:int,bigCircle:bool=False):
     self.title = title
@@ -22,10 +23,10 @@ class Spec():
 class specInfo():
   def __init__(self):
     self.language = None
-    self.banner = None
+    self.specialCastle = None
     self.preset = None
     self.spec = 0
     self.list1 = []
     self.list2 = []
     self.notes = None
-    
+

@@ -1,5 +1,7 @@
 #Guild ID to make commands visible instantly
-gIDS = [953750698552619038]#895003315883085865]
+gIDS = [953750698552619038, 895003315883085865]
+
+SETTINGS_COG = "Settings"
 
 #Discord limits
 class limits:
@@ -16,26 +18,20 @@ class roles:
   RemindMe = 953750698569392206#901333187429531659
   GuildLeader = 953750698581970991#910980797211746336
   Developers = 953750698598739970#898655389397168140
-  
-  Host = 953750698581970986#898175287525773353
   TeamFoxtrot = 953750698581970988#903945709429067816
   TeamTango = 953750698581970989#903731599290548274
   TeamWhiskey = 953750698581970990#903731302216384532
-  Recruiter = 953750698581970992#910284465652236338
-  Moderators = 953750698598739969#931200542741516358
+  
  
 #Reaction roles (reminder and translation)
 reac = ['⏰','🇪🇸','🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
 
 #flags for used in translation (includes English)
-flags =['🇬🇧','🇪🇸','🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇹🇷','🇫🇷','🇨🇳','🇷🇺'] 
+flags =['🇬🇧','🇪🇸','🇰🇷','🇮🇩','🇷🇴','🇩🇪','🇳🇱','🇫🇷','🇨🇳','🇷🇺'] 
 
 #Name of emojis that are used for the Availabilty 
 emojiAlph = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰','🇱','🇲','🇳']
 
-#random Reply
-keywords = ['🖕','pad','cris','👅','✌️','pickle','bel','flag','😜','😅','jj']
-reply = ["🖕","👅","🤌","✌️","🖕","👅","🥰","🥒","🐰","Hail Pickle!","Please keep your banner account info up to date on this server.","Hey you! I know you got some ideas for improvements of this server, enter it in the feedback channel!","Wait for flag!","Read your f*cking mail!","Are you sure you read all your latest mail? No? Go fix that feeling!","We got this!","I needed that tile for my pad, please release!!","<:exp_rabbit:909858709298110464>"]
 
 #emojis
 class emoji:
@@ -90,16 +86,11 @@ class channel:
 
   leadership_chat = 953750699144020005#902613750664802364
   announcements = 953750699349532695#902876102983307284
-  roe_announcements = 953750698930085977#899672991770751047
   tango = 953750699819286586#905735497970749460
   skill_point_advice = 953750699617943588#898515536160374784
-  bot_development = 953750699617943591#898655301954322463
-  server_overview = 953750698598739974#911291255458238504
   schedule_reminder = 953750699819286579#904787674701918238
   foxtrot = 953750699819286587#905735246530629652
   reminders = 953750699617943589#898850413619601468
   whiskey = 953750699819286585#905735184752734250
-  knowledgebase = 953750699144019998#906942430010572840
   diplo = 953750699349532692#912623354966589481
   feedback_And_wishlist = 953750699819286578#897945484356902912
-  admin_moderators = 953750699819286582#931200390677024818

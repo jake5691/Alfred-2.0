@@ -1,10 +1,12 @@
-from classes.Target import Target
-from classes.Member import MemberClass
-from functions import staticValues as sv
 from replit import db
 import jsons
 from nextcord import Embed, Color
 from math import ceil
+
+from classes.Target import Target
+from classes.Member import MemberClass
+from functions import staticValues as sv
+
 
 #Add Target to db
 def addTargetToDB(target:Target, flags:[MemberClass]) -> [Target]:
@@ -41,7 +43,6 @@ def loadTargets(flags:[MemberClass]) -> [Target]:
   for t in dbTargets:
     target = jsons.loads(t,Target)
     target.flagFromID(flags)
-    print(target)
     targets.append(target)
   return targets
 

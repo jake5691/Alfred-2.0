@@ -73,6 +73,8 @@ class Maintainance(commands.Cog):
   @commands.Cog.listener('on_member_update')
   async def change_name(self,old,new):
     """Recognize Players name changes and update them"""
+    if old.bot:
+      return
     if old.display_name == new.display_name:
       return
     member = self.dataCog.getMemberByID(old.id)
@@ -85,6 +87,8 @@ class Maintainance(commands.Cog):
     """Add/Remove a MemberClass instance to dataCog.members when roles are assigned.
     
     Currently relevant roles are: RBC, Guild Member, Newbie"""
+    if old.bot:
+      return
     if old.roles == new.roles:
       return
     oldRoles = [r.id for r in old.roles]

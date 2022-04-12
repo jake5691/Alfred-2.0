@@ -2,12 +2,13 @@
 #allocate usefulness points to specific nodes based on user priorities
 
 from functions.specFunctions.blueSpecFunc import groups_bl,bl,bl_l, firstSpecs_bl, blueSpec_gr
-from functions.specFunctions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr
+from functions.specFunctions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr, TileSpeed
 from functions.specFunctions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
 from functions.specFunctions.drawSpecFunc import draw
 import pandas as pd
 import itertools
 import datetime 
+from replit import db
 
 
 
@@ -69,17 +70,32 @@ def getNodes(priorities_list_full):
   node_priority =[]
   print("getnodes")
   print(priorities_list_full)
-  if priorities_list_full == 'Banner':
-    l = redSpec_gr['Banner'][0]
+  if priorities_list_full in ('Banner', 'Tile fighting', 'War Cavalry', 'War Archers','TileSpeed', 'PlaceBuild'):
+    p = priorities_list_full
+    print(p)
+    if p == 'PlaceBuild':
+      l = []
+      for i in blueSpec_gr['PlaceBuild'][0]:
+        l.append(i)
+      for i in greenSpec_gr['UpgradeBuild'][0]:
+        l.append(i)
+      print(l)
+    else:
+      try:
+        l = redSpec_gr[p][0]
+      except:
+        try:
+          l = greenSpec_gr[p][0]
+        except:
+          l = blueSpec_gr[p][0]
     for node in l:
       nodes_list.append(node)
-      node_priority.append('Banner')
+      node_priority.append(p)
+
   else:
     for p in priorities_list_full:
       if p in blueSpec_gr:
-        #print("blue gr = ", blueSpec_gr)
         l = blueSpec_gr[p][0]
-        #print("l=", l)
       elif p in greenSpec_gr:
         l= greenSpec_gr[p][0]
 
@@ -94,9 +110,11 @@ def getNodes(priorities_list_full):
   score = [node.usefulScore for node in nodes_list]
   title = [node.title for node in nodes_list]
   maxLevel = [node.maxLvl for node in nodes_list]
-
+  
   data = {'Node':nodes_list, 'Score':score, 'Title':title,'maxLvl':maxLevel, 'Priority':node_priority}
+  
   df = pd.DataFrame(data)
+ 
   #print(df)
   return(nodes_list, df)
 
@@ -255,6 +273,7 @@ def assignPoints(nodeset,userSpecPoints):
 async def most_use(priorities_list_full, userSpecPoints):
   print("start", datetime.datetime.now())
   df = getNodes(priorities_list_full)[1]
+  #get unique nodes
   Nodes = set(df['Node'])
   
   nodePoints = sumPoints(Nodes)
@@ -277,16 +296,55 @@ async def most_use(priorities_list_full, userSpecPoints):
 
 async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   #print(view.specinfo.banner)
+  leaderSpec = db['leaderspec']
   startingSpec = userSpecPoints
-  if view.specinfo.banner == "YES":
+  if view.specinfo.specialCastle == 'Banner' and leaderSpec != 'PlaceBuild':
     print("banner start")
     if userSpecPoints >= 47:
       list0 = ("Banner")
       df = getNodes(list0)[1]
-      Nodes = list(df['Node'])
+      Nodes = set(df['Node'])
       assignPoints(Nodes, userSpecPoints)
       userSpecPoints -= 47
-  if userSpecPoints == 0:
+    else:
+      summary = "You don't have enough spec points to be a banner castle (47 points required)\n\n"
+  elif view.specinfo.specialCastle == 'Tile fighting':
+    if userSpecPoints >= 37:
+      list0 = ('Tile fighting')
+      df = getNodes(list0)[1]
+      Nodes = set(df['Node'])
+      assignPoints(Nodes, 37)
+      userSpecPoints -= 37
+    else:
+      summary = "You don't have enough spec points for full tile fighting (42 points required)\n\n"
+  elif view.specinfo.specialCastle in ('War Cavalry', 'War Archers'):
+    print("here")
+    list0 = view.specinfo.specialCastle
+    df = getNodes(list0)[1]
+    Nodes = set(df['Node'])
+    assignPoints(Nodes, userSpecPoints)
+    print(userSpecPoints)
+    pointsList = [n.maxLvl for n in Nodes]
+    pointsUsed = sum(pointsList)
+    print(pointsUsed)
+    userSpecPoints -= pointsUsed
+    print(userSpecPoints)
+  else:
+    summary = ""
+
+  if leaderSpec != 'None':
+    print("leaderspec")
+    df = getNodes(leaderSpec)[1]
+    Nodes = set(df['Node'])
+    assignPoints(Nodes, userSpecPoints)
+    pointsList = [n.maxLvl for n in Nodes]
+    pointsUsed = sum(pointsList)
+    print(pointsUsed)
+    userSpecPoints -= pointsUsed
+    print(userSpecPoints)
+    
+    
+  if userSpecPoints <= 4:
     finished = True
   else:
     priorities_list = view.specinfo.list1
@@ -332,7 +390,8 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
       finished = True
 
   unusedSpec = userSpecPoints
-  print(view.specinfo.list1, view.specinfo.list2)
+  print("unused")
+  #print( view.specinfo.list0, view.specinfo.list1, view.specinfo.list2)
   print(view.author.display_name)
   await draw(groups_bl,bl,bl_l, view.bluefile, firstSpecs_bl, "blue", view.author.display_name)
   
@@ -341,6 +400,7 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
   await draw(groups_red,red,red_l,view.redfile, firstSpecs_red, "red", view.author.display_name)
 
   summary = f"You started with {startingSpec} and have {unusedSpec} points that have not been allocated.\n\n"
+  print(summary)
   
 
   #set all nodes back to zero

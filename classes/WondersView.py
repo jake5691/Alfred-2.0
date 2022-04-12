@@ -1,8 +1,10 @@
 from nextcord.ui import View, Button
 from nextcord import Interaction, ButtonStyle, PartialEmoji
+from replit import db
 
 from classes.Member import MemberClass
 from functions import staticValues as sv 
+from functions import wondersFunc as wf
 
 class WonderLvlButton(Button):
   """Button to de/increase lvl of a Wonder"""
@@ -16,13 +18,26 @@ class WonderLvlButton(Button):
       self.label = str(step)
     if row == 0 or row == 2:
       self.style = ButtonStyle.blurple
-    
 
   async def callback(self, interaction:Interaction):
     #Increase the lvl of that Wonder for the Member that pressed the button
-    newLvl = self.view.member.updateWonder(self.name, increment=self.step)
-    self.view.member.save()
+    member = self.view.dataCog.getMemberByID(interaction.user.id)
+    newLvl = member.updateWonder(self.name, increment=self.step)
+    member.save()
     await interaction.send(content=f"Updated the lvl of **{self.name}** for {interaction.user.display_name} to {newLvl}", ephemeral=True)
+    #Update Ranking
+    embeds=wf.getWonderRankingEmbeds(self.view.dataCog.members, self.name)
+    wonderDBKey = sv.db.WONDER_RANKING + self.name.replace(" ", "")
+    try:
+      oldMes = await interaction.channel.fetch_message(db[wonderDBKey][str(interaction.guild.id)])
+      await oldMes.edit(embeds=embeds)
+      return
+    except:
+      print("couldn't get old message")
+      wonderMes = await interaction.channel.send(embeds=embeds)
+      if db.prefix(wonderDBKey) == ():
+        db[wonderDBKey] = {}
+      db[wonderDBKey][str(interaction.guild.id)] = wonderMes.id
     
 class WonderButton(Button):
   """Button to put in specific lvl of a Wonder"""
@@ -37,14 +52,15 @@ class WonderButton(Button):
 
   async def callback(self, interaction:Interaction):
     """Show the numpad to enter the lvl of the wonder"""
-    await interaction.send(content=f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", view=WonderLvlSelectView(self.view.member, self.name, self.emoji), ephemeral=True)
+    member = self.view.dataCog.getMemberByID(interaction.user.id)
+    await interaction.send(content=f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", view=WonderLvlSelectView(member, self.name, self.emoji), ephemeral=True)
 
 
 class WondersView(View):
   """The view to hold the Wonders Buttons"""
-  def __init__(self, member:MemberClass):
+  def __init__(self, dataCog):
     super().__init__(timeout=None)
-    self.member = member
+    self.dataCog = dataCog
     self._wonders = [
       "Mayan Pyramid", 
       "Moai Statue", 

@@ -2,6 +2,7 @@ from nextcord.ext import commands
 from replit import db
 from operator import attrgetter
 from datetime import datetime, time
+import asyncio
 
 from classes.Structure import Structure
 from classes.Member import MemberClass
@@ -28,14 +29,18 @@ class Data(commands.Cog):
     self.seasons:[Season] = sfu.loadSeasons()
     targets:[Target] = tf.loadTargets(self.getFlags())
     self.targets = sorted(targets, key=attrgetter('hour', 'minute'))
+    self.maintain_MemberInstances()
 
 
 
   @commands.Cog.listener('on_ready')
   async def create_MemberInstances(self):
     """Create Member Instance for every Member having a relevant role, delete Member Instance if no relevant role exists"""
+    self.maintain_MemberInstances()
+    
+  def maintain_MemberInstances(self):
     for g in self.bot.guilds:
-      if g.id == sv.gIDS[0]: #Only do this for the RBC server
+      if g.id in sv.gIDS:
         relevantRoles = [sv.roles.RBC, sv.roles.GuildMember, sv.roles.Newbie]
         #Delete
         cutoffDate = None
@@ -66,6 +71,8 @@ class Data(commands.Cog):
             roles = [r.id for r in mem.roles]
             if not(any(r in roles for r in relevantRoles)):
               self.deleteMemberByID(mem.id)
+          elif mi.banner == False:
+              self.deleteMemberByID(mi.id)
         #Create
         for m in g.members:
           roles = [r.id for r in m.roles]

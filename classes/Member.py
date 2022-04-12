@@ -48,7 +48,6 @@ class MemberClass:
 
     for attr in self.__dict__:
       if "wonder" in attr:
-        #print(attr)
         setattr(self, attr, getattr(self, attr).to_csv(index=False))
     
     res = jsons.dumps(self)
@@ -73,8 +72,6 @@ class MemberClass:
       self.loyaltyData = pd.DataFrame(columns=['loyalty','date'])
     #Convert the current date to datetime
     if isinstance(self.lastLoyaltyUpdate,str):
-      #print(f"{self.name}: {self.lastLoyaltyUpdate}")
-      #dt = self.lastLoyaltyUpdate.split('.')[0].split('+')[0]
       try: 
         self.lastLoyaltyUpdate = datetime.fromisoformat(self.lastLoyaltyUpdate.split('.')[0].split('+')[0].replace("Z",""))
         self.lastLoyaltyUpdate = pytz.utc.localize(self.lastLoyaltyUpdate)
@@ -92,8 +89,6 @@ class MemberClass:
       #self.lastSkillUpdate = datetime.fromisoformat(self.lastSkillUpdate.split('.')[0] + ".000000+00:00")
     for attr in self.__dict__:
       if "wonder" in attr:
-        #print(attr)
-        #print(getattr(self, attr))
         setattr(self, attr, pd.read_csv(StringIO(getattr(self, attr)),sep=','))
         for i in getattr(self, attr).index:
           pass
@@ -126,13 +121,11 @@ class MemberClass:
     #check if wonder attribute already exists for that Member if not create it 
     wonderDF = getattr(self, wonderName, pd.DataFrame(columns=["lvl","date"]))
     #get the lvl needed to be added
-    print(wonderName)
     if increment is not None:
       if wonderDF.empty:
         lvl = increment
       else:
         lvl = wonderDF["lvl"].iat[-1] + increment
-    print(lvl)
     #Get current Time
     currentTime = datetime.now() + timedelta(hours = -2)
     currentTime = pytz.utc.localize(currentTime)
@@ -146,6 +139,17 @@ class MemberClass:
     wonderDF.reset_index(drop=True, inplace=True)
     setattr(self, wonderName, wonderDF)
     return lvl
+    
+  def getWonderLvl(self, wonderName=str):
+    """get the current lvl of the wonder"""
+    wonderName = "wonder" + wonderName.replace(" ", "")
+    wonderDF = getattr(self, wonderName, pd.DataFrame(columns=["lvl","date"]))
+    lvl = None
+    date_ = None
+    if not wonderDF.empty:
+      lvl = wonderDF["lvl"].iat[-1]
+      date_ = wonderDF["date"].iat[-1]
+    return lvl, date_
   
   def updateLoyalty(self,newLoyalty:int=0):
     """update the loyalty"""

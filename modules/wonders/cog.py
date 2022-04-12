@@ -57,7 +57,7 @@ class Wonders(commands.Cog):
     await interaction.send(
       content = "Press the button next to the wonder to increase it's lvl accordingly, you can also put in the lvl directly by pressing a wonder (a numberpad will be shown).",
       view = WondersView(
-        member=self.dataCog.getMemberByID(interaction.user.id)
+        dataCog=self.dataCog
       ))
     buttonMsg = await interaction.original_message()
     try:

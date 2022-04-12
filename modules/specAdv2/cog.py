@@ -1,4 +1,4 @@
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
 from functions import staticValues as sv
 from classes.SpecView import SpecView, LeaderSpecView
@@ -18,7 +18,7 @@ class specAdv2(commands.Cog):
     self.dataCog = bot.get_cog('Data')
 
   async def checkcheck(interaction):
-    featureName = "SpecAdv2"
+    featureName = "specAdv2"
     features = interaction.client.get_cog(sv.SETTINGS_COG).Features
     feature = next((x for x in features if x.name == featureName), None)
     #feature
@@ -45,18 +45,10 @@ class specAdv2(commands.Cog):
     return True
   
   @slash_command(name="leaderspec", description="Press to specify a spec priority for all players", guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def leaderspec(self,
       interaction: Interaction):
     """Leaders can specify a priority for specialisation points for all players"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles) and not(sv.roles.GuildLeader in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
     channel = interaction.channel     
         
     view  = LeaderSpecView(channel)
@@ -69,14 +61,10 @@ class specAdv2(commands.Cog):
   @slash_command(name="specadvice",
                       description="Press for spec advice.",
                       guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
   async def specadvice(self,
       interaction: Interaction):
-    """Provides advice on where to place your specialisation points"""
-    #Check if advice is asked for in the right channel
-    if not(sv.channel.skill_point_advice == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
-    
+    """Provides advice on where to place your specialisation points"""   
     channel = interaction.channel
     user = interaction.user
     try:
@@ -119,7 +107,11 @@ class specAdv2(commands.Cog):
     view = LeaderSpecView(None)
     if view.leaderspec == None:
       return
-    view.leaderspec = db['leaderspec']
+    try:
+      view.leaderspec = db['leaderspec']
+    except:
+      view.leaderspec = None
+  
     print(view.leaderspec)
     
     

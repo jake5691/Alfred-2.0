@@ -160,6 +160,8 @@ def generate_table(ranking,compare=False):
   rank = 0
   cRank = 0
   cLvl = 0
+  if ranking == []:
+    rMess += "No data to show."
   for r in ranking:
     #generate rank no.
     rank += 1

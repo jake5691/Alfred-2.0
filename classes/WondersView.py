@@ -53,7 +53,7 @@ class WonderButton(Button):
   async def callback(self, interaction:Interaction):
     """Show the numpad to enter the lvl of the wonder"""
     member = self.view.dataCog.getMemberByID(interaction.user.id)
-    await interaction.send(content=f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", view=WonderLvlSelectView(member, self.name, self.emoji), ephemeral=True)
+    await interaction.send(content=f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", view=WonderLvlSelectView(member, self.name, self.emoji, self.view.dataCog), ephemeral=True)
 
 
 class WondersView(View):
@@ -99,11 +99,25 @@ class SaveButton(Button):
     newLvl = self.view.member.updateWonder(self.view.wonder, lvl=int(self.view.lvl))
     self.view.member.save()
     await interaction.response.edit_message(content=f"You put in **lvl {newLvl}** {self.view.wonder} for *{self.view.member.name}*", view=None)
+    #Update Ranking
+    embeds=wf.getWonderRankingEmbeds(self.view.dataCog.members, self.view.wonder)
+    wonderDBKey = sv.db.WONDER_RANKING + self.view.wonder.replace(" ", "")
+    try:
+      oldMes = await interaction.channel.fetch_message(db[wonderDBKey][str(interaction.guild.id)])
+      await oldMes.edit(embeds=embeds)
+      return
+    except:
+      print("couldn't get old message")
+      wonderMes = await interaction.channel.send(embeds=embeds)
+      if db.prefix(wonderDBKey) == ():
+        db[wonderDBKey] = {}
+      db[wonderDBKey][str(interaction.guild.id)] = wonderMes.id
     
 class WonderLvlSelectView(View):
   """The view to hold the numberpad to put in a wonder lvl"""
-  def __init__(self, member:MemberClass, wonder:str, emoji):
+  def __init__(self, member:MemberClass, wonder:str, emoji, dataCog):
     super().__init__(timeout=None)
+    self.dataCog = dataCog
     self.member = member
     self.wonder = wonder
     self.lvl = ""

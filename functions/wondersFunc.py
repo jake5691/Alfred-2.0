@@ -9,7 +9,7 @@ def getWonderRankingEmbeds(memberList, wonderName, above=1, progressSince=None):
   color = nextcord.Color.blue()
   for m in memberList:
     lvl, date_ = m.getWonderLvl(wonderName)
-    if lvl == None:
+    if lvl == None or lvl == 0:
       continue
     r = [m.rName(), lvl, date_]
     ranking.append(r)

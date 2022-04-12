@@ -1,8 +1,8 @@
 from nextcord.ui import View, Button
-from nextcord import Interaction, ButtonStyle
+from nextcord import Interaction, ButtonStyle, PartialEmoji
 
 from classes.Member import MemberClass
-
+from functions import staticValues as sv 
 
 class WonderLvlButton(Button):
   """Button to de/increase lvl of a Wonder"""
@@ -27,16 +27,17 @@ class WonderLvlButton(Button):
 class WonderButton(Button):
   """Button to put in specific lvl of a Wonder"""
   def __init__(self, name:str, emoji:str=None, row:int=0):
-    super().__init__(label=name, emoji=emoji, style=ButtonStyle.grey, row=row)
+    super().__init__(label=name, style=ButtonStyle.grey, row=row)
+    if emoji != None:
+      em = PartialEmoji.from_str(emoji)
+      self.emoji = em
     self.name = name
     if row == 0 or row == 2:
       self.style = ButtonStyle.blurple
 
   async def callback(self, interaction:Interaction):
-    #Increase the lvl of that Wonder for the Member that pressed the button
-    #newLvl = self.view.member.updateWonder(self.name, increment=1)
-    #self.view.member.save()
-    await interaction.send(content=f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", view=WonderLvlSelectView(self.view.member, self.name), ephemeral=True)
+    """Show the numpad to enter the lvl of the wonder"""
+    await interaction.send(content=f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", view=WonderLvlSelectView(self.view.member, self.name, self.emoji), ephemeral=True)
 
 
 class WondersView(View):
@@ -44,12 +45,18 @@ class WondersView(View):
   def __init__(self, member:MemberClass):
     super().__init__(timeout=None)
     self.member = member
-    self._wonders = ["Mayan Pyramid", "Moai Statue", "Statue of Victory", "Statue of General"]
+    self._wonders = [
+      "Mayan Pyramid", 
+      "Moai Statue", 
+      "Statue of Victory", 
+      "Statue of General"
+    ]
+    self._wonderEmoji = [sv.emoji.MayanPyramid, sv.emoji.MoaiStatue, sv.emoji.StatueOfVictory, sv.emoji.StatueOfGeneral]
     for idx, wonder in enumerate(self._wonders):
+      self.add_item(WonderButton(wonder, emoji=self._wonderEmoji[idx], row=idx))
       self.add_item(WonderLvlButton(wonder, 1, idx))
       self.add_item(WonderLvlButton(wonder, 5, idx))
-      self.add_item(WonderLvlButton(wonder, -1, idx))
-      self.add_item(WonderButton(wonder, row=idx))
+      #self.add_item(WonderLvlButton(wonder, -1, idx))
 
 #########################NUMBERPAD#########################
 class WonderName(Button):
@@ -65,7 +72,7 @@ class NumberButton(Button):
 
   async def callback(self, interaction:Interaction):
     self.view.lvl += str(self.label)
-    await interaction.response.edit_message(content=f"**{self.view.member.name}**: lvl {self.view.lvl} for *{self.view.wonder}*, press **SAVE** when finished.")
+    await interaction.response.edit_message(content=f"*{self.view.member.name}*: lvl **{self.view.lvl}** for *{self.view.wonder}*, press **SAVE** when finished.")
 
 class SaveButton(Button):
   """Button to set the put in number as the wonders lvl"""
@@ -79,13 +86,13 @@ class SaveButton(Button):
     
 class WonderLvlSelectView(View):
   """The view to hold the numberpad to put in a wonder lvl"""
-  def __init__(self, member:MemberClass, wonder:str):
+  def __init__(self, member:MemberClass, wonder:str, emoji):
     super().__init__(timeout=None)
     self.member = member
     self.wonder = wonder
     self.lvl = ""
     
-    self.add_item(WonderName(wonder))
+    self.add_item(WonderName(self.wonder, emoji))
     self.add_item(NumberButton(7,1))
     self.add_item(NumberButton(8,1))
     self.add_item(NumberButton(9,1))

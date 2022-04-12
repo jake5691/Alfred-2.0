@@ -1,6 +1,6 @@
 from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption
-#from replit import db
+from replit import db
 #from nextcord.utils import get
 
 #from classes.Member import MemberClass
@@ -45,14 +45,28 @@ class Wonders(commands.Cog):
   @slash_command(name="wonders",
                       guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
-  async def updateloyskill(self, 
-      interaction: Interaction,
-      enable:bool = SlashOption(
-        description="",
-        required = True
-      )):
-    """Show the Wonder Buttons to increase the lvl of each"""
-    await interaction.send(view=WondersView(member=self.dataCog.getMemberByID(interaction.user.id)))
+  async def updateloyskill(self, interaction: Interaction):
+    """Show the Wonder Buttons to manage their lvl"""
+    try:
+      print(db[sv.db.WONDER_BUTTON][str(interaction.guild.id)])
+      buttonMsg = await interaction.channel.fetch_message(db[sv.db.WONDER_BUTTON][str(interaction.guild.id)])
+      await buttonMsg.delete()
+    except:
+      print("couldn't get old message")
+    
+    await interaction.send(
+      content = "Press the button next to the wonder to increase it's lvl accordingly, you can also put in the lvl directly by pressing a wonder (a numberpad will be shown).",
+      view = WondersView(
+        member=self.dataCog.getMemberByID(interaction.user.id)
+      ))
+    buttonMsg = await interaction.original_message()
+    try:
+      _ = db[sv.db.WONDER_BUTTON]
+    except:
+      db[sv.db.WONDER_BUTTON] = {}
+    print(db[sv.db.WONDER_BUTTON])
+    db[sv.db.WONDER_BUTTON][buttonMsg.guild.id] = buttonMsg.id
+        
 
 def setup(bot: commands.Bot):
   bot.add_cog(Wonders(bot))

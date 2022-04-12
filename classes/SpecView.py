@@ -359,7 +359,7 @@ class SpecView(View):
         #priorityOptTrans.append(trans)
       lookup = dict(zip(self.priorityoptions, self.prioritygroups))
       #text = "Sorry, this is still a work in progress.  Send jj coffee so that she can finish this more quickly.\n\n"
-      text = "Please select your next priorities (minimum of 1 selection, maximum of three.\n\n"
+      text = "Please select your next priorities \n(min 1, max 3.\n\n"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)
       if self.specinfo.language != 'english':
         content = text + trans

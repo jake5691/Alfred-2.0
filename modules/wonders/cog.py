@@ -48,7 +48,6 @@ class Wonders(commands.Cog):
   async def updateloyskill(self, interaction: Interaction):
     """Show the Wonder Buttons to manage their lvl"""
     try:
-      print(db[sv.db.WONDER_BUTTON][str(interaction.guild.id)])
       buttonMsg = await interaction.channel.fetch_message(db[sv.db.WONDER_BUTTON][str(interaction.guild.id)])
       await buttonMsg.delete()
     except:
@@ -64,7 +63,6 @@ class Wonders(commands.Cog):
       _ = db[sv.db.WONDER_BUTTON]
     except:
       db[sv.db.WONDER_BUTTON] = {}
-    print(db[sv.db.WONDER_BUTTON])
     db[sv.db.WONDER_BUTTON][buttonMsg.guild.id] = buttonMsg.id
         
 

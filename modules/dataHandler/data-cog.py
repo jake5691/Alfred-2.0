@@ -2,7 +2,6 @@ from nextcord.ext import commands
 from replit import db
 from operator import attrgetter
 from datetime import datetime, time
-import asyncio
 
 from classes.Structure import Structure
 from classes.Member import MemberClass

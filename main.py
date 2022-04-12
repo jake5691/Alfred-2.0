@@ -39,7 +39,7 @@ sf.loadCogs(client)
 
 #@client.listen('on_message')
 #async def on_message(message):
-#  pass
+#  print(message.content)
 
 @client.event
 async def on_application_command_error(interaction, exception):

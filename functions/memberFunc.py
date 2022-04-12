@@ -1,6 +1,7 @@
 import nextcord
+from operator import itemgetter
+
 from functions.generalFunc import Ranking2Embeds
-from operator import attrgetter, itemgetter
 
 #List members first to reach X loyalty
 def getFirstAbove(membersList, val=int, typ=str):
@@ -91,7 +92,7 @@ def getRankingEmbeds(memberList,typ,above=1,progressSince=None):
     #Skill
     if typ == 'skill' and m.currentSkillLvl >= above:
       #Get all skill data greater/equal to given value
-      r = [m.rName(), int(m.currentSkillLvl),m.lastSkillUpdate]
+      r = [m.rName(), int(m.currentSkillLvl), m.lastSkillUpdate]
       if progressSince != None:
         #Add historic skill value if historic compare date is given
         success, skill, dat = m.historicSkill(progressSince)

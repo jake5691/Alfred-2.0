@@ -38,6 +38,10 @@ class emoji:
   check = '✅'
   false = '❌'
   exp_rabbit = "<:exp_rabbit:909858709298110464>"
+  MayanPyramid = "<:MayanPyramid:961994011562893322>"
+  MoaiStatue = "<:MoaiStatue:961993978159444078>"
+  StatueOfVictory = "<:StatueOfVictory:961994041573130330>"    
+  StatueOfGeneral = "<:StatueOfGeneral:961994072736817172>"
 
 #db Strings
 class db:
@@ -54,6 +58,8 @@ class db:
   seasonInfo = "seasonInfo"
   specHelp = "specHelp"
   specHelpTrans = "specHelpTrans"
+  WONDER_BUTTON = "wonderButtonMsg"
+  WONDER_RANKING = "wonderRankingMsg"
 
 #Skill/Loyalty limits
 skillCap = 170

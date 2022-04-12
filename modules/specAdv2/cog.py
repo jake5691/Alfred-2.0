@@ -1,11 +1,15 @@
 from nextcord.ext import commands, application_checks
-from nextcord import Interaction, slash_command
-
+from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
 from functions import staticValues as sv
-from classes.SpecView import SpecView
+from classes.SpecView import SpecView, LeaderSpecView
+from replit import db
 
 
-class SpecAdv2(commands.Cog):
+
+
+
+
+class specAdv2(commands.Cog):
   """Handle spec advice"""
 
   def __init__(self, bot: commands.Bot):
@@ -14,7 +18,7 @@ class SpecAdv2(commands.Cog):
     self.dataCog = bot.get_cog('Data')
 
   async def checkcheck(interaction):
-    featureName = "SpecAdv2"
+    featureName = "specAdv2"
     features = interaction.client.get_cog(sv.SETTINGS_COG).Features
     feature = next((x for x in features if x.name == featureName), None)
     #feature
@@ -39,19 +43,28 @@ class SpecAdv2(commands.Cog):
       await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
       return False
     return True
+  
+  @slash_command(name="leaderspec", description="Press to specify a spec priority for all players", guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
+  async def leaderspec(self,
+      interaction: Interaction):
+    """Leaders can specify a priority for specialisation points for all players"""
+    channel = interaction.channel     
+        
+    view  = LeaderSpecView(channel)
+    
 
+    await interaction.response.send_message(content="select a leader priority:",view=view,ephemeral = True)
+
+  
+        
   @slash_command(name="specadvice",
                       description="Press for spec advice.",
                       guild_ids=sv.gIDS)
   @application_checks.check(checkcheck)
   async def specadvice(self,
       interaction: Interaction):
-    """Provides advice on where to place your specialisation points"""
-    #Check if advice is asked for in the right channel
-    if not(sv.channel.skill_point_advice == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
-    
+    """Provides advice on where to place your specialisation points"""   
     channel = interaction.channel
     user = interaction.user
     try:
@@ -78,17 +91,31 @@ class SpecAdv2(commands.Cog):
     
   @commands.Cog.listener('on_message')
   async def delete_messages(self,message):
-    """delete Messages after 5s"""
+    """delete Messages after 10s"""
     if message.author.bot:
       return
     #Loyalty and Skill lvl channel
     if message.channel.id != sv.channel.skill_point_advice:
       return
     try:
-      await message.delete(delay=5)
+      await message.delete(delay=10)
     except:
-      print('Message could not be deleted')    
+      print('Message could not be deleted') 
+
+  @commands.Cog.listener('on_ready')
+  async def load_leaderspec(self):
+    view = LeaderSpecView(None)
+    if view.leaderspec == None:
+      return
+    try:
+      view.leaderspec = db['leaderspec']
+    except:
+      view.leaderspec = None
+  
+    print(view.leaderspec)
+    
+    
 
 def setup(bot: commands.Bot):
-  bot.add_cog(SpecAdv2(bot))
+  bot.add_cog(specAdv2(bot))
   

@@ -1,4 +1,5 @@
 import jsons
+from nextcord import User
 
 class Feature():
   """Class to store features and their commands, also their availability per guild"""
@@ -132,6 +133,9 @@ class Command():
 
   def isAllowedByMember(self, guild, member) -> bool:
     """Checks if the command is allowed to be used by this member"""
+    if isinstance(member, User):
+      print(member.name)
+      return False
     roles = [x.id for x in member.roles]
     if self.allowedRoles[guild] == [] and not any(x in roles for x in self.excludedRoles[guild]):
       #All roles are allowed and none of members roles are explicitly excluded

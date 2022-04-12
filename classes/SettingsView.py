@@ -585,10 +585,10 @@ class ModalCommandVariable(Modal):
       if "\\" in str(v):
         print(v)
         continue
-      if v in getattr(self.view.command,var[0])[self.view.guildID]:
-        print("Duplicate element")
-        continue
       if self.view.guildID in getattr(self.view.command,var[0]):
+        if v in getattr(self.view.command,var[0])[self.view.guildID]:
+          print("Duplicate element")
+          continue
         getattr(self.view.command,var[0])[self.view.guildID].append(v)
       else:
         getattr(self.view.command,var[0])[self.view.guildID] = [v]

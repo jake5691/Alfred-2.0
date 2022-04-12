@@ -174,12 +174,14 @@ BuildingSpeedGroup, BuildingDurGroup
 OneExtQ = [Process1, Process2, Process3, ExtraQ1]
 TwoExtQs = [Process1, Process2, Process3, ExtraQ1, Process4, Process5, ExtraQ2]
 MaxQs = [Process1, Process2, Process3, ExtraQ1, Process4, Process5, ExtraQ2, Process6, Process7, ExtraQ3]
+PlaceBuild = [BuildDur1, BuildSp1, BuildSp2, Fortress1, BuildSp3, BuildSp4, Fortress2, BuildSp5, BuildSp6, Fortress3]
 
 blueSpec_gr = {
   "OneExtQ":(OneExtQ, 10), 
   "TwoExtQs":(TwoExtQs, 17),
   "MaxQs":(MaxQs, 31), 
-  "Loyalty":(LoyaltySpeedGroup, 47)
+  "Loyalty":(LoyaltySpeedGroup, 47),
+  "PlaceBuild":(PlaceBuild, 24)
   }
 
 #First Spec from Center

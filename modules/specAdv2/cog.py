@@ -17,26 +17,6 @@ class specAdv2(commands.Cog):
     self.flags = sv.flags
     self.dataCog = bot.get_cog('Data')
 
-  @slash_command(name="leaderspec", description="Press to specify a spec priority for all players", guild_ids=sv.gIDS)
-  async def leaderspec(self,
-      interaction: Interaction):
-    """Leaders can specify a priority for specialisation points for all players"""
-    #Check if user has Permission
-    userRoles = [i.id for i in interaction.user.roles]
-    if not(sv.roles.Leadership in userRoles) and not(sv.roles.GuildLeader in userRoles):
-      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
-      return
-    #check if command is send in correct channel
-    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
-      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
-      return
-    channel = interaction.channel     
-        
-    view  = LeaderSpecView(channel)
-    
-
-    await interaction.response.send_message(content="select a leader priority:",view=view,ephemeral = True)
-
   async def checkcheck(interaction):
     featureName = "SpecAdv2"
     features = interaction.client.get_cog(sv.SETTINGS_COG).Features
@@ -63,6 +43,28 @@ class specAdv2(commands.Cog):
       await interaction.send(f"The command *{command.name}* is not allowed in this channel.", ephemeral=True)
       return False
     return True
+  
+  @slash_command(name="leaderspec", description="Press to specify a spec priority for all players", guild_ids=sv.gIDS)
+  async def leaderspec(self,
+      interaction: Interaction):
+    """Leaders can specify a priority for specialisation points for all players"""
+    #Check if user has Permission
+    userRoles = [i.id for i in interaction.user.roles]
+    if not(sv.roles.Leadership in userRoles) and not(sv.roles.GuildLeader in userRoles):
+      await interaction.response.send_message("Sorry you are not allowed to use that command.", ephemeral = True)
+      return
+    #check if command is send in correct channel
+    if not(sv.category.Leadership == interaction.channel.category.id) and not(sv.channel.test_channel == interaction.channel.id):
+      await interaction.response.send_message("Sorry this command can only be used in a specific channel", ephemeral = True)
+      return
+    channel = interaction.channel     
+        
+    view  = LeaderSpecView(channel)
+    
+
+    await interaction.response.send_message(content="select a leader priority:",view=view,ephemeral = True)
+
+  
         
   @slash_command(name="specadvice",
                       description="Press for spec advice.",

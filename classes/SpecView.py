@@ -45,6 +45,8 @@ class LeaderSpecView(View):
   """The view to hold the Dropdown and Buttons for the leader spec setting"""
   def __init__(self, channel):
     super().__init__()
+    if db.prefix('leaderspec') == ():
+      db['leaderspec'] = ""
     self.leaderspec = db['leaderspec']
     self.leaderoptions = ['Season Start (place buildings)','Tile Speed', 'None']
     self.leadergroups = ['PlaceBuild','TileSpeed', 'None']

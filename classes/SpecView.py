@@ -275,9 +275,29 @@ class SpecView(View):
       #p_text =('Place buildings at start of season', 'Week 1 loyalty', 'Week 2 loyalty and tilespeed', 'Increasing loyalty', 'Keep loyalty while filling on iron/wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour')
       preset = ('Loyalty', 'Iron/Wood', 'Upgrade buildings', 'Tile Honour', 'War Cavalry', 'War Archers')
       p_text =('Increasing loyalty', 'Keep loyalty high while taking iron and wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour', 'Fun with my horses', 'Fun with my shooters')
-      for p in p_text:
-        p_trans =  GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=p)
-        trans.append(p_trans)
+      if self.specinfo.language == 'english':
+        trans = ['Increasing loyalty', 'Keep loyalty high while taking iron and wood tiles', 'Upgrading Frontline Workshops or Fortresses', 'Maximum points from tile honour', 'Fun with my horses', 'Fun with my shooters']
+      elif self.specinfo.language == 'spanish':
+        trans = ['Aumento de la lealtad', 'Mantenga alta la lealtad mientras toma fichas de hierro y madera.', 'Mejora de talleres o fortalezas de primera línea', 'Puntos máximos de honor de ficha', 'Divertirme con mis caballos', 'Diversión con mis tiradores']
+      elif self.specinfo.language == 'russian':
+        trans = ['Повышение лояльности', 'Поддерживайте высокую лояльность, беря железные и деревянные плитки.', 'Улучшение передовых мастерских или крепостей', 'Максимальное количество очков за плитку чести', 'Веселье с моими лошадьми', 'Веселье с моими стрелками']
+      elif self.specinfo.language == 'indonesian':
+        trans =['Meningkatkan loyalitas', 'Jaga loyalitas tinggi saat mengambil ubin besi dan kayu', 'Meningkatkan Lokakarya atau Benteng Garis Depan', 'Poin maksimum dari kehormatan ubin', 'Bersenang-senang dengan kuda saya', 'Bersenang-senang dengan penembak saya']
+      elif self.specinfo.language == 'german':
+        trans = ['Loyalität steigern', 'Halten Sie die Loyalität hoch, während Sie Eisen- und Holzfliesen nehmen', 'Upgrade von Frontwerkstätten oder Festungen', 'Maximale Punktzahl von Kachelehre', 'Spaß mit meinen Pferden', 'Spaß mit meinen Schützen']
+      elif self.specinfo.language == 'korean':
+        trans = ['충성도 증가', '철 및 나무 타일을 사용하면서 충성도를 높게 유지하십시오.', '최전방 작업장 또는 요새 업그레이드', '타일 \u200b\u200b명예의 최대 포인트', '내 말과 함께하는 재미', '내 저격수와 함께 재미']
+      elif self.specinfo.language == 'french':
+        trans = ['Accroître la fidélité', 'Gardez une loyauté élevée tout en prenant des tuiles en fer et en bois', 'Améliorer les ateliers ou les forteresses de première ligne', "Points maximum de l'honneur des tuiles", "S'amuser avec mes chevaux", 'Amusez-vous avec mes tireurs']
+      elif self.specinfo.language == 'dutch':
+        trans = ['Loyaliteit vergroten', 'Houd de loyaliteit hoog terwijl je ijzeren en houten tegels neemt', 'Eerstelijnsworkshops of forten upgraden', 'Maximum aantal punten van tegel eer', 'Plezier met mijn paarden', 'Plezier met mijn shooters']
+      elif self.specinfo.language == 'chinese':
+        trans = ['提高忠诚度', '在拿铁和木瓦时保持高忠诚度', '升级前线工坊或堡垒', '瓷砖荣誉的最高分', '和我的马一起玩', '和我的射手一起玩']
+      elif self.specinfo.language == 'romanian':
+        trans = ['Creșterea loialității', 'Păstrați loialitatea ridicată în timp ce luați plăci de fier și lemn', 'Modernizarea atelierelor sau fortărețelor din prima linie', 'Puncte maxime din onoarea țiglă', 'Distracție cu caii mei', 'Distracție cu trăgătorii mei']
+      else:
+        trans = GoogleTranslator(source='english', target=self.specinfo.language).translate_batch(batch=p_text)
+        print(trans)
       opt = list(zip(preset, trans))
       text = "Select Preset option?"
       trans = GoogleTranslator(source='auto', target=self.specinfo.language).translate(text=text)

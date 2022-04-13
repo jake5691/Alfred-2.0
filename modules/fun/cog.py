@@ -93,7 +93,6 @@ class Fun(commands.Cog):
       if random() > 0.5:
         res = choice(command.replies[message.guild.id])
     if res != None:
-      await message.guild.me.edit(nick="Alfred-dev-2")
       await message.channel.send(res)
     return
 

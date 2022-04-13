@@ -3,12 +3,13 @@ from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Mess
 from operator import attrgetter
 from nextcord.utils import get
 
-from functions import staticValues as sv
-from functions import targetFunctions as tf
 from classes.TargetEdit import TargetEditView
 from classes.TargetDelete import TargetDeleteView
 from classes.TargetAdd import TargetAddView
 from classes.TargetComment import TargetCommentView
+
+from functions import staticValues as sv
+from functions import targetFunctions as tf
 
 
 class Targets(commands.Cog):

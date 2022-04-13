@@ -1,8 +1,10 @@
 from nextcord import SelectOption, Interaction
 from nextcord.ui import Select, View
+
 from classes.Target import Target
 from classes.Structure import Structure
 from classes.Member import MemberClass
+
 from functions import targetFunctions as tf
 
 

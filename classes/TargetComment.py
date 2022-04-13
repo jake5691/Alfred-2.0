@@ -1,7 +1,9 @@
 from nextcord.ui import Select, View, Button
+from nextcord import ButtonStyle, Interaction, SelectOption
+
 from classes.Target import Target
 from classes.Member import MemberClass
-from nextcord import ButtonStyle, Interaction, SelectOption
+
 from functions import targetFunctions as tf
 
 

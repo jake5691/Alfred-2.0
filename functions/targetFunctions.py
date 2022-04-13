@@ -5,6 +5,7 @@ from math import ceil
 
 from classes.Target import Target
 from classes.Member import MemberClass
+
 from functions import staticValues as sv
 
 

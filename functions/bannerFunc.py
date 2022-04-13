@@ -1,7 +1,9 @@
 import nextcord
 from operator import attrgetter
-from functions import staticValues as sv
+
 from classes.Member import MemberClass
+
+from functions import staticValues as sv
 from functions.generalFunc import Ranking2Embeds
 
 #List of all banner accounts

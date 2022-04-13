@@ -1,10 +1,9 @@
 from nextcord.ext import commands, application_checks
-from nextcord import Interaction, slash_command, SlashOption
+from nextcord import Interaction, slash_command
 from replit import db
-#from nextcord.utils import get
 
-#from classes.Member import MemberClass
 from classes.WondersView import WondersView
+
 from functions import staticValues as sv
 
 

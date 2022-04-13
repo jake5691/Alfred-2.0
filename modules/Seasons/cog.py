@@ -2,8 +2,9 @@ from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption, File
 from datetime import date
 
-from functions import staticValues as sv
 from classes.Season import Season
+
+from functions import staticValues as sv
 from functions import seasonFunc as sfu
 
 

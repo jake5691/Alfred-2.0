@@ -7,6 +7,7 @@ from classes.Structure import Structure
 from classes.Member import MemberClass
 from classes.Season import Season
 from classes.Target import Target
+
 from functions import setupFunc as sf
 from functions import staticValues as sv
 from functions import seasonFunc as sfu

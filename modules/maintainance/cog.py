@@ -1,8 +1,9 @@
 from nextcord.ext import commands
-from classes.Member import MemberClass
-from functions import staticValues as sv
 from nextcord.utils import get
 
+from classes.Member import MemberClass
+
+from functions import staticValues as sv
 
 
 class Maintainance(commands.Cog):

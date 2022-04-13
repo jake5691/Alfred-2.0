@@ -1,4 +1,4 @@
-import nextcord
+from nextcord import Embed
 
 def Ranking2Embeds(ranking,fTitle,description,header,color):
   res = []
@@ -7,7 +7,7 @@ def Ranking2Embeds(ranking,fTitle,description,header,color):
   fieldsCur = 0
   totalCur = len(header)
   fname = header
-  rEmbed = nextcord.Embed(
+  rEmbed = Embed(
     title = fTitle,
     description = description,
     color = color
@@ -16,7 +16,7 @@ def Ranking2Embeds(ranking,fTitle,description,header,color):
   for mes in ranking:
     if fieldsCur+1 >= fieldsLimit or totalCur + len(mes) + 256 >= totalLimit:
       res.append(rEmbed)
-      rEmbed = nextcord.Embed(
+      rEmbed = Embed(
         description = description,
         color = color
       )

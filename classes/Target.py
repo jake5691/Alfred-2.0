@@ -1,8 +1,8 @@
+import jsons
+from datetime import datetime, time, timedelta
+
 from classes.Structure import Structure
 from classes.Member import MemberClass
-from nextcord import Embed
-from datetime import datetime, time, timedelta
-import jsons
 
 class Target(Structure):
   def __init__(self,sector:str=None,typ:str=None,lvl:int=None,coordinates:str=None,hour:int=None,minute:int=None,comment:str=None,flag=None):

@@ -5,6 +5,7 @@ import jsons
 
 from classes.SettingsView import SettingsView
 from classes.Settings import Feature, Command
+
 from functions import staticValues as sv
 from functions import setupFunc as sf
 

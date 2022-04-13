@@ -1,11 +1,12 @@
-from functions import staticValues as sv
-from replit import db
-from datetime import date
-from classes.Season import Season
-from classes.Member import MemberClass
 import jsons
 import pandas as pd
 from io import StringIO
+from replit import db
+
+from classes.Season import Season
+from classes.Member import MemberClass
+
+from functions import staticValues as sv
 
 def loadSeasons() ->[Season]:
   #db[sv.db.seasonInfo] = []

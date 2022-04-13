@@ -8,6 +8,7 @@ from operator import attrgetter
 from classes.Structure import Structure
 from classes.Member import MemberClass
 from classes.Settings import Feature, Command
+
 from functions import staticValues as sv
 
 def loadCogs(client: commands.Bot):

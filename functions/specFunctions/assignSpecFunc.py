@@ -1,14 +1,15 @@
 #maximise usefulness score given the contraint of user spec points
 #allocate usefulness points to specific nodes based on user priorities
 
-from functions.specFunctions.blueSpecFunc import groups_bl,bl,bl_l, firstSpecs_bl, blueSpec_gr
-from functions.specFunctions.greenSpecFunc import groups_gr,gr,gr_l, firstSpecs_gr, greenSpec_gr, TileSpeed
-from functions.specFunctions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
-from functions.specFunctions.drawSpecFunc import draw
 import pandas as pd
 import itertools
 import datetime 
 from replit import db
+
+from functions.specFunctions.blueSpecFunc import bl,bl_l, firstSpecs_bl, blueSpec_gr
+from functions.specFunctions.greenSpecFunc import gr,gr_l, firstSpecs_gr, greenSpec_gr
+from functions.specFunctions.redSpecFunc import groups_red,red,red_l, firstSpecs_red, redSpec_gr
+from functions.specFunctions.drawSpecFunc import draw
 
 
 

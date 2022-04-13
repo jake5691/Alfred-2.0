@@ -13,8 +13,8 @@ import os
 import nextcord
 from nextcord.ext import commands
 import logging
+
 from functions import setupFunc as sf
-from replit import db
 
 
 logging.basicConfig(level=logging.WARNING)

@@ -1,8 +1,9 @@
 from nextcord import SelectOption, Interaction, ButtonStyle
 from nextcord.ui import Select, View, Button
+from replit import db
+
 from functions import staticValues as sv
 from functions import bannerFunc as bf
-from replit import db
 
 class DeleteButton(Button):
   """Button to delete a banner"""

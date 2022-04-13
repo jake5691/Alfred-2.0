@@ -1,12 +1,11 @@
-import nextcord
+from nextcord import Color
 
 from functions.generalFunc import Ranking2Embeds
 from functions.memberFunc import generate_table
 
 
-def getWonderRankingEmbeds(memberList, wonderName, above=1, progressSince=None):
+def getWonderRankingEmbeds(memberList, wonderName, color:Color, above=1, progressSince=None):
   ranking = []
-  color = nextcord.Color.blue()
   for m in memberList:
     lvl, date_ = m.getWonderLvl(wonderName)
     if lvl == None or lvl == 0:

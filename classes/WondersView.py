@@ -1,5 +1,5 @@
 from nextcord.ui import View, Button
-from nextcord import Interaction, ButtonStyle, PartialEmoji
+from nextcord import Interaction, ButtonStyle, PartialEmoji, Color
 from replit import db
 
 from classes.Member import MemberClass
@@ -26,7 +26,7 @@ class WonderLvlButton(Button):
     member.save()
     await interaction.send(content=f"Updated the lvl of **{self.name}** for {interaction.user.display_name} to {newLvl}", ephemeral=True)
     #Update Ranking
-    embeds=wf.getWonderRankingEmbeds(self.view.dataCog.members, self.name)
+    embeds=wf.getWonderRankingEmbeds(self.view.dataCog.members, self.name, self.view._wonderColor[self.row])
     wonderDBKey = sv.db.WONDER_RANKING + self.name.replace(" ", "")
     try:
       oldMes = await interaction.channel.fetch_message(db[wonderDBKey][str(interaction.guild.id)])
@@ -53,7 +53,11 @@ class WonderButton(Button):
   async def callback(self, interaction:Interaction):
     """Show the numpad to enter the lvl of the wonder"""
     member = self.view.dataCog.getMemberByID(interaction.user.id)
-    await interaction.send(content=f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", view=WonderLvlSelectView(member, self.name, self.emoji, self.view.dataCog), ephemeral=True)
+    await interaction.send(
+      content = f"Enter the lvl of **{self.name}** for {interaction.user.display_name}:\n*(press save when done)*", 
+      view = WonderLvlSelectView(member, self.name, self.view._wonderColor[self.row], self.emoji, self.view.dataCog), 
+      ephemeral = True
+    )
 
 
 class WondersView(View):
@@ -67,7 +71,18 @@ class WondersView(View):
       "Statue of Victory", 
       "Statue of General"
     ]
-    self._wonderEmoji = [sv.emoji.MayanPyramid, sv.emoji.MoaiStatue, sv.emoji.StatueOfVictory, sv.emoji.StatueOfGeneral]
+    self._wonderEmoji = [
+      sv.emoji.MayanPyramid, 
+      sv.emoji.MoaiStatue, 
+      sv.emoji.StatueOfVictory, 
+      sv.emoji.StatueOfGeneral
+    ]
+    self._wonderColor = [
+      Color.blue(), 
+      Color.green(), 
+      Color.yellow(), 
+      Color.red()
+    ]
     for idx, wonder in enumerate(self._wonders):
       self.add_item(WonderButton(wonder, emoji=self._wonderEmoji[idx], row=idx))
       self.add_item(WonderLvlButton(wonder, 1, idx))
@@ -100,7 +115,7 @@ class SaveButton(Button):
     self.view.member.save()
     await interaction.response.edit_message(content=f"You put in **lvl {newLvl}** {self.view.wonder} for *{self.view.member.name}*", view=None)
     #Update Ranking
-    embeds=wf.getWonderRankingEmbeds(self.view.dataCog.members, self.view.wonder)
+    embeds=wf.getWonderRankingEmbeds(self.view.dataCog.members, self.view.wonder, self.view.color)
     wonderDBKey = sv.db.WONDER_RANKING + self.view.wonder.replace(" ", "")
     try:
       oldMes = await interaction.channel.fetch_message(db[wonderDBKey][str(interaction.guild.id)])
@@ -115,11 +130,12 @@ class SaveButton(Button):
     
 class WonderLvlSelectView(View):
   """The view to hold the numberpad to put in a wonder lvl"""
-  def __init__(self, member:MemberClass, wonder:str, emoji, dataCog):
+  def __init__(self, member:MemberClass, wonder:str, color:Color, emoji, dataCog):
     super().__init__(timeout=None)
     self.dataCog = dataCog
     self.member = member
     self.wonder = wonder
+    self.color = color
     self.lvl = ""
     
     self.add_item(WonderName(self.wonder, emoji))

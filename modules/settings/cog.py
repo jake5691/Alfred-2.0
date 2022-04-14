@@ -57,7 +57,7 @@ class Settings(commands.Cog):
           #update
           co.description = c.description
           co.variables = vars
-          print(f"{co.name}: {co.variables}")
+          #print(f"{co.name}: {co.variables}")
           
     #Check for db entries that no longer are a feature
     toDelete = []

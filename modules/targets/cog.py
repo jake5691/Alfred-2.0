@@ -119,7 +119,9 @@ class Targets(commands.Cog):
       await interaction.response.send_message(content="Currently no targets scheduled, please add targets first before publishing the list", ephemeral = True)
     targets = sorted(targets, key=attrgetter('hour', 'minute'))
     if infotext == None:
-      infotext = "our current plan for the next attacks, please keep in mind that we might have to react on events and have short notice changes"
+      feature = next((x for x in interaction.client.get_cog(sv.SETTINGS_COG).Features if x.name == self.qualified_name), None)
+      command = next((x for x in feature.commands if x.name == "publishtargets"), None)
+      infotext = command.defaultInfoText[interaction.guild.id]#"our current plan for the next attacks, please keep in mind that we might have to react on events and have short notice changes"
     infotext += f"\n<@&{sv.roles.RBC}><@&{sv.roles.GuildMember}>"
     rEmbed = Embed(
       title = "**Target list:**",

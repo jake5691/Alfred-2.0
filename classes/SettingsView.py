@@ -1,7 +1,7 @@
 import jsons
 import emoji
 from nextcord.ui import Select, View, Button, Modal, TextInput
-from nextcord import SelectOption, Interaction, ButtonStyle
+from nextcord import SelectOption, Interaction, ButtonStyle, TextInputStyle
 from replit import db
 
 ################
@@ -566,15 +566,17 @@ class RemoveValueCommandVariableButton(Button):
 ################
 class ModalCommandVariable(Modal):
   """Modal for text input for command variables"""
-  def __init__(self, view, interaction_, variable, list):
+  def __init__(self, view, interaction_, variable, list, oldValue:str=""):
     super().__init__(title=f"Add values for {variable}")
     self.view = view
     self.interaction_ = interaction_
-    count = 1
-    if list:
-      count = 5
-    for _ in range(count):
-      self.add_item(TextInput(label="add value", placeholder="add a new value", required=False))
+    self.list = list
+    if self.list:
+      for _ in range(5):
+        self.add_item(TextInput(label="add value", placeholder="add a new value", required=False, style=TextInputStyle.short))
+    else:
+      self.title = f"Edit {variable}"
+      self.add_item(TextInput(label=variable, placeholder="enter your value", required=True, default_value=oldValue, style=TextInputStyle.paragraph))
       
   async def callback(self, interaction: Interaction):
     var = self.view.command.variables[self.view.variable]
@@ -589,9 +591,15 @@ class ModalCommandVariable(Modal):
         if v in getattr(self.view.command,var[0])[self.view.guildID]:
           print("Duplicate element")
           continue
-        getattr(self.view.command,var[0])[self.view.guildID].append(v)
+        if self.list:
+          getattr(self.view.command,var[0])[self.view.guildID].append(v)
+        else:
+          getattr(self.view.command,var[0])[self.view.guildID] = v
       else:
-        getattr(self.view.command,var[0])[self.view.guildID] = [v]
+        if self.list:
+          getattr(self.view.command,var[0])[self.view.guildID] = [v]
+        else:
+          getattr(self.view.command,var[0])[self.view.guildID] = v
     await self.interaction_.edit_original_message(content=self.view.content(), view = self.view)
     
 ################
@@ -631,7 +639,17 @@ class SelectCommandVariable(Select):
         self.view.add_item(AddValueCommandVariableButton(variable, list))
         #remove
         self.view.add_item(RemoveValueCommandVariableButton(self.view.command, variable, self.view.guildID))
-    await interaction.response.edit_message(content=self.view.content(), view = self.view)
+      else:
+        oldValue = ""
+        v = getattr(self.view.command,variable[0],{})
+        if self.view.guildID in v:
+          oldValue =v[self.view.guildID]
+        await interaction.response.send_modal(ModalCommandVariable(self.view, interaction, variable[0], list, oldValue))
+        print(f"{variable[1]} not handled yet")
+    else:
+      print(f"{variable[1]} not handled yet")
+    if not interaction.response.is_done():
+      await interaction.response.edit_message(content=self.view.content(), view = self.view)
     
 ################
 class SelectCommand(Select):
@@ -742,7 +760,7 @@ class SettingsView(View):
       res += f"\n**Variables:**\n"
       for var, type_ in self.command.variables:
         res += f"**{var}**: `{type_}` = "
-        if self.guildID in getattr(self.command, var):
+        if self.guildID in getattr(self.command, var, []):
           value = emoji.emojize(f"{getattr(self.command, var)[self.guildID]}")
           if self.variable != None:
             res += value + "\n"

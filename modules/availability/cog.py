@@ -17,6 +17,8 @@ class Availability(commands.Cog):
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
+    self.command_variables = []
+    self.feature_variables = []
 
   async def checkcheck(interaction):
     featureName = "Availability"

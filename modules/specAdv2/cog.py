@@ -15,6 +15,8 @@ class specAdv2(commands.Cog):
     self.bot = bot
     self.flags = sv.flags
     self.dataCog = bot.get_cog('Data')
+    self.command_variables = []
+    self.feature_variables = []
 
   async def checkcheck(interaction):
     featureName = "specAdv2"

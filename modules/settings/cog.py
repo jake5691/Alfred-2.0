@@ -15,6 +15,8 @@ class Settings(commands.Cog):
   def __init__(self, bot: commands.Bot):
     self.bot = bot
     self.Features = sf.allFeatures()
+    self.command_variables = []
+    self.feature_variables = []
 
   @commands.Cog.listener('on_ready')
   async def on_ready(self):
@@ -32,17 +34,30 @@ class Settings(commands.Cog):
     for g in commands_grouped:
       f = next((x for x in self.Features if x.name == g), None)
       if f == None:
+        #create new
         f = Feature(g, self.bot.cogs[g].description, f"feature{g}")
+        f.variables = self.bot.cogs[g].feature_variables
         self.Features.append(f)
       else:
-        f.description = self.bot.cogs[g].description
+        #update
+        f.description = self.bot.cogs[g].description 
+        f.variables = self.bot.cogs[g].feature_variables
       for c in commands_grouped[g]:
         co = next((x for x in f.commands if x.name == c.name), None)
+        vars = []
+        for v,t in self.bot.cogs[g].command_variables:
+          if c.name in v:
+            vars.append((v.replace(c.name+"_",""),t))
         if co == None:
+          #create new
           co = Command(c.name, c.description, "Slash Command")
+          co.variables = vars
           f.commands.append(co)
         else:
+          #update
           co.description = c.description
+          co.variables = vars
+          print(f"{co.name}: {co.variables}")
           
     #Check for db entries that no longer are a feature
     toDelete = []

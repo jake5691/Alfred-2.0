@@ -21,6 +21,14 @@ class Targets(commands.Cog):
     self.dataCog = bot.get_cog('Data')
     self.structures = self.dataCog.structures
     self.remindTarget.start()
+    self.command_variables = [
+      ("publishtargets_defaultInfoText","str"),
+      ("publishtargets_defaultMentioning","[role]"),
+    ]
+    self.feature_variables = [
+      ("remindTargetsChannel","channel"),
+      ("remindTargetsRole", "[role]"),
+    ]
 
   async def checkcheck(interaction):
     featureName = "Targets"
@@ -236,7 +244,7 @@ class Targets(commands.Cog):
 
     embed = parent.embeds[0]
     #check that the message is not the wordle game
-    if embed.title == "Wordle Clone":
+    if "Attack calculation" not in embed.title:
       return
     try:
       avgdestruction = int(message.content.strip())

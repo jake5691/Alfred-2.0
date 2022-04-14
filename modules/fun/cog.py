@@ -12,6 +12,8 @@ class Fun(commands.Cog):
 
   def __init__(self, bot: commands.Bot):
     self.bot = bot
+    self.command_variables = []
+    self.feature_variables = []
 
   def checkCoffee(self, message) -> bool:
     """Check if the Feature is allowed to be used by this user and in this channel"""

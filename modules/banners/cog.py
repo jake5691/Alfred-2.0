@@ -17,6 +17,8 @@ class Banners(commands.Cog):
     self.client = client
     #Load Members
     self.dataCog = client.get_cog('Data')
+    self.command_variables = []
+    self.feature_variables = []
 
   async def checkcheck(interaction):
     featureName = "Banners"

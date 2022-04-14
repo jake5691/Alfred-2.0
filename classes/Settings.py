@@ -26,7 +26,7 @@ class Feature():
     self.enabled = newenabled
     #variables
     for variable, type_ in self.variables:
-      v = getattr(self, variable)
+      v = getattr(self, variable, [])
       nv = {}
       for g in v:
         #convert value to correct type
@@ -41,7 +41,7 @@ class Feature():
               nvv.append(str(i))
           else:
             nvv = str(v[g])
-        if "int" in type_:
+        if any(x in type_ for x in ["int", "role", "channel"]):
           if list:
             for i in v[g]:
               nvv.append(int(i))
@@ -53,7 +53,11 @@ class Feature():
     #commands
     commands_ = []
     for c in self.commands:
-      c = str(c).replace("\\","") #make sure that string can be converted to json (new emojis are converted so some \UNICODE format which is can't be part of a valid json string)
+      c = str(c).replace("\\","") #make sure that string can be converted to json (new emojis are converted so some \UNICODE format which can't be part of a valid json string)
+      #print(c)
+      #if "let" in c:
+      #  c = {}
+      #print(c)
       command = jsons.loads(str(c).replace("'",'"'), Command)
       command.convertAfterLoad()
       commands_.append(command)
@@ -96,7 +100,7 @@ class Command():
     self.excludedChannels = eC
     #variables
     for variable, type_ in self.variables:
-      v = getattr(self, variable)
+      v = getattr(self, variable, [])
       nv = {}
       for g in v:
         #convert value to correct type

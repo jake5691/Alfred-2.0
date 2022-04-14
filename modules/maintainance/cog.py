@@ -12,6 +12,8 @@ class Maintainance(commands.Cog):
   def __init__(self, bot: commands.Bot):
     self.bot = bot
     self.dataCog = bot.get_cog('Data')
+    self.command_variables = []
+    self.feature_variables = []
   
   @commands.Cog.listener('on_member_join')
   async def welcome_message(self,member):

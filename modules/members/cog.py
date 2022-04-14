@@ -17,6 +17,8 @@ class Members(commands.Cog):
   def __init__(self, client: commands.Bot):
     self.client = client
     self.dataCog = client.get_cog('Data')
+    self.command_variables = []
+    self.feature_variables = []
 
   async def checkcheck(interaction):
     featureName = "Members"

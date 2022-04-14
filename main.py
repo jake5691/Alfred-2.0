@@ -41,9 +41,9 @@ sf.loadCogs(client)
 #async def on_message(message):
 #  print(message.content)
 
-@client.event
-async def on_application_command_error(interaction, exception):
-  print(f"{interaction.user.display_name} tried {interaction.application_command.qualified_name} on {interaction.guild.name} in {interaction.channel.name}:\n{exception}")
+#@client.event
+#async def on_application_command_error(interaction, exception):
+#  print(f"{interaction.user.display_name} tried {interaction.application_command.qualified_name} on {interaction.guild.name} in {interaction.channel.name}:\n{exception}")
 
 
 client.run(os.environ['TOKEN'])

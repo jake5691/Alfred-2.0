@@ -1,6 +1,7 @@
 from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption, User
 import re
+import pandas as pd
 from replit import db
 from nextcord.utils import get
 from datetime import datetime, timedelta, timezone
@@ -456,6 +457,26 @@ class Members(commands.Cog):
       
       helpMes = await message.channel.send(content=sendText)
       db[sv.db.skLoHelp] = helpMes.id
+
+  @slash_command(name="resetseasondata", guild_ids=sv.gIDS)
+  @application_checks.check(checkcheck)
+  async def resetseasondata(self, interaction: Interaction):
+    """Reset all Season spesific data (loayalty, wonder lvls...)"""
+    #Function
+    for m in self.dataCog.members:
+      print(m.name)
+      #reset Loyalty Data
+      m.loyaltyData = pd.DataFrame(columns=['loyalty','date'])
+      m.currentLoyalty = 0
+      m.lastLoyaltyUpdate = None
+      #Reset Wonders Data
+      #wonderDF = getattr(self, wonderName, None)
+      for attr in m.__dict__:
+        if "wonder" in attr:
+          setattr(m, attr, pd.DataFrame(columns=["lvl","date"]))
+      #Save Member instance
+      m.save()
+    await interaction.send("All season data was wiped for all members.", ephemeral = True)
       
 
 

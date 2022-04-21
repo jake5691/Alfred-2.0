@@ -36,7 +36,8 @@ class Target(Structure):
   
   def embedFieldValue(self):
     field = f"**{self.typ} {self.lvl} - X:{self.x} Y:{self.y} @{self.hour:02d}:{self.minute:02d}**"
-    value = ""
+    timestamp = int(self.targetunixTS)
+    value =f"Your local time: <t:{timestamp}>\n"
     if isinstance(self.flag,MemberClass):
       flagID = self.flag.ownerID
       if flagID == 0:

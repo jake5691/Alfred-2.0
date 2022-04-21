@@ -109,6 +109,8 @@ class Targets(commands.Cog):
     targets = self.dataCog.targets
     if targets == []:
       await interaction.response.send_message(content="Currently no targets scheduled, please add targets first before publishing the list", ephemeral = True)
+    targets = tf.unixTS(targets)
+
     targets = sorted(targets, key=attrgetter('hour', 'minute'))
     if infotext == None:
       infotext = "our current plan for the next attacks, please keep in mind that we might have to react on events and have short notice changes"
@@ -120,6 +122,7 @@ class Targets(commands.Cog):
     )
     for t in targets:
       h,v = t.embedFieldValue()
+      print(h, v)
       rEmbed.add_field(name=h,value=v,inline=False)
     
     await interaction.response.send_message(embed=rEmbed)

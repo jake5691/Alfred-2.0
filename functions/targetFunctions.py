@@ -7,7 +7,28 @@ from classes.Target import Target
 from classes.Member import MemberClass
 
 from functions import staticValues as sv
+from datetime import timedelta, time, datetime
 
+def unixTS(targets):
+  utcTime = datetime.utcnow()
+  serverTime = utcTime + timedelta(hours = -2)
+  serverDay = serverTime.weekday()
+  print("serverday", serverDay)
+  if serverDay in [1,3,6]:
+    serverDate = serverTime.date()
+  elif serverDay in [2,7]:
+    serverDate = (serverTime + timedelta(days = 1)).date()
+  else:
+    serverDate = (serverTime + timedelta(days = 2)).date()
+  for t in targets:
+    utcTargetTime = time(t.hour +2, t.minute)
+    unixDTstring = str(serverDate) + " " + str(utcTargetTime)
+    targetunixDT = datetime.strptime(unixDTstring, '%Y-%m-%d %H:%M:%S')
+    t.targetunixTS = datetime.timestamp(targetunixDT)
+
+  return targets
+
+    
 
 #Add Target to db
 def addTargetToDB(target:Target, flags:[MemberClass]) -> [Target]:

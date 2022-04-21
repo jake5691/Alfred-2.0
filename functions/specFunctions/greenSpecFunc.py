@@ -1,7 +1,9 @@
-from functions.specFunctions.drawSpecFunc import  getPoint_gr, x_center, y_center
 from classes.Spec import Spec
-#define different radius
 
+from functions.specFunctions.drawSpecFunc import  getPoint_gr, x_center, y_center
+
+
+#define different radius
 
 #isn't used at the moment
 radiusDict_gr_old = {

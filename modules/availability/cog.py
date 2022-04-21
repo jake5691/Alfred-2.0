@@ -1,11 +1,14 @@
 from nextcord.ext import commands, application_checks
 from nextcord import Interaction, slash_command, SlashOption
-from functions import staticValues as sv
 from replit import db
 from nextcord.utils import get
 from operator import attrgetter
-from functions import availFunc as af
+
 from classes.availEval import AvailEvalView
+
+from functions import staticValues as sv
+from functions import availFunc as af
+
 
 
 

@@ -1,13 +1,15 @@
+import os
+from replit import db
 from nextcord import SelectOption, Interaction, File, ButtonStyle
 from nextcord.ui import Select, View, Button
 from classes.Spec import specInfo
 from deep_translator import (GoogleTranslator)
+
 from functions.specFunctions.assignSpecFunc import specAdvice
 from functions.specFunctions.blueSpecFunc import groups_bl
 from functions.specFunctions.greenSpecFunc import groups_gr
 from functions.generalFunc import target_lang
-import os
-from replit import db
+
 
 class DoneButton(Button):
   """Button to exit the editing"""

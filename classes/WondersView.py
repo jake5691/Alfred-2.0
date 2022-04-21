@@ -3,6 +3,7 @@ from nextcord import Interaction, ButtonStyle, PartialEmoji, Color, SelectOption
 from replit import db
 
 from classes.Member import MemberClass
+
 from functions import staticValues as sv 
 from functions import wondersFunc as wf
 

@@ -1,6 +1,7 @@
 from nextcord import Member, Guild
-from functions import staticValues as sv
 from nextcord.utils import get
+
+from functions import staticValues as sv
 
 #Remove members from list with an assigned team
 def removeTeamAssignees(memberList: [Member], guild: Guild) -> [Member]:

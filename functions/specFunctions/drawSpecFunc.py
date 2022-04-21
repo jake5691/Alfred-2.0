@@ -1,8 +1,7 @@
 import requests
 import io
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont, ImageColor
-import matplotlib.pyplot as plt
+from PIL import Image, ImageDraw, ImageFont
 from langdetect import detect
 
 

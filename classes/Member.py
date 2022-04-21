@@ -1,11 +1,13 @@
-from nextcord import Member
-import pandas as pd
-from datetime import datetime, timedelta
-import pytz
-from io import StringIO
 import jsons
-from functions import staticValues as sv
+import pytz
+import pandas as pd
+from nextcord import Member
+from datetime import datetime, timedelta
+from io import StringIO
 from replit import db
+
+from functions import staticValues as sv
+
 
 class MemberClass:
   def __init__(self,m=Member,banner=False,bannerName=''):

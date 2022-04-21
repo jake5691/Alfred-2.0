@@ -1,9 +1,10 @@
 from nextcord.ext import commands
 from nextcord import File
-from functions import staticValues as sv
 import aiohttp
 from io import BytesIO
 from random import random, choice
+
+from functions import staticValues as sv
 
 
 class Fun(commands.Cog):

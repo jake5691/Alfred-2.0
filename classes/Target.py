@@ -1,8 +1,8 @@
+import jsons
+from datetime import datetime, time, timedelta
+
 from classes.Structure import Structure
 from classes.Member import MemberClass
-from nextcord import Embed
-from datetime import datetime, time, timedelta
-import jsons
 
 class Target(Structure):
   def __init__(self,sector:str=None,typ:str=None,lvl:int=None,coordinates:str=None,hour:int=None,minute:int=None,comment:str=None,flag=None):
@@ -36,7 +36,8 @@ class Target(Structure):
   
   def embedFieldValue(self):
     field = f"**{self.typ} {self.lvl} - X:{self.x} Y:{self.y} @{self.hour:02d}:{self.minute:02d}**"
-    value = ""
+    timestamp = int(self.targetunixTS)
+    value =f"Your local time: <t:{timestamp}>\n"
     if isinstance(self.flag,MemberClass):
       flagID = self.flag.ownerID
       if flagID == 0:

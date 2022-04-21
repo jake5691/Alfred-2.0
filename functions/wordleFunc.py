@@ -2,8 +2,7 @@ import random
 import nextcord
 import os
 import requests
-import json
-from PIL import Image, ImageDraw, ImageFont, ImageColor
+from PIL import Image, ImageDraw, ImageFont
 
 languages = ["en", "de"]
 

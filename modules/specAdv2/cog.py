@@ -1,11 +1,10 @@
 from nextcord.ext import commands, application_checks
-from nextcord import Interaction, slash_command, Embed, Color, SlashOption, Message
-from functions import staticValues as sv
-from classes.SpecView import SpecView, LeaderSpecView
+from nextcord import Interaction, slash_command
 from replit import db
 
+from classes.SpecView import SpecView, LeaderSpecView
 
-
+from functions import staticValues as sv
 
 
 

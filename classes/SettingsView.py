@@ -1,8 +1,8 @@
+import jsons
+import emoji
 from nextcord.ui import Select, View, Button, Modal, TextInput
 from nextcord import SelectOption, Interaction, ButtonStyle
 from replit import db
-import jsons
-import emoji
 
 ################
 class CommandBackButton(Button):

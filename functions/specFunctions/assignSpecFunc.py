@@ -126,9 +126,14 @@ def useful_assign(priorities_list):
   nodes_list2 = getNodes(priorities_list_full)[1]
   #if LoyaltySpeedGroup is in the priorities, it should have a higher weighting than other priorities
   for index, row in nodes_list2.iterrows():
-    if row['Priority'] in ('LoyaltySpeedGroup'):
+    if row['Priority'] in ('LoyaltySpeedGroup', 'TileHonour'):
       if row['Node'].activatable == True:
         nodes_list2.at[index, 'Score'] = 50
+      else:
+        nodes_list2.at[index, 'Score'] = 10
+    elif row['Priority'] in ('ExtraTile'):
+      if row['Node'].activatable == True:
+        nodes_list2.at[index, 'Score'] = 100
       else:
         nodes_list2.at[index, 'Score'] = 10
     else:

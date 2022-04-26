@@ -400,6 +400,7 @@ class SpecView(View):
       self.specinfo.notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n\n"
       self.specinfo.list1 = ('Loyalty', 'CBCMat', 'OneExtQ')
       self.specinfo.list2 = ('ExtraTile', 'TileHonour', 'UpgradeBuild')
+
     
     elif self.specinfo.preset == 'Iron/Wood':
      

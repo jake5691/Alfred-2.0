@@ -21,9 +21,10 @@ def unixTS(targets):
   else:
     serverDate = (serverTime + timedelta(days = 2)).date()
   for t in targets:
-    utcTargetTime = time(t.hour +2, t.minute)
-    unixDTstring = str(serverDate) + " " + str(utcTargetTime)
-    targetunixDT = datetime.strptime(unixDTstring, '%Y-%m-%d %H:%M:%S')
+    TargetTime = time(t.hour, t.minute)
+    DTstring = str(serverDate) + " " + str(TargetTime)
+    targetDT = datetime.strptime(DTstring, '%Y-%m-%d %H:%M:%S')
+    targetunixDT = targetDT + timedelta(hours = 2)
     t.targetunixTS = datetime.timestamp(targetunixDT)
 
   return targets

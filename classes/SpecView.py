@@ -416,7 +416,7 @@ class SpecView(View):
       self.specinfo.list1 = ('TileHonour', 'FWMat', 'ExtraTile')
       self.specinfo.list2 = ('UpgradeBuild', 'TwoExtQs', 'Land')
     else:
-      self.specinfo.specialCastle = self.specinfo.preset 
+      print(self.specinfo.preset)
 
 
 

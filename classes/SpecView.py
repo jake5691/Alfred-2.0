@@ -215,7 +215,7 @@ class SpecView(View):
     self.member = member
     self.pathway = None
     self.priorityoptions = ['Loyalty', 'Extra tiles', 'One extra queue', 'Upgrade buildings', 'Tile honour', 'Income from food/marble tiles', 'Income from wood/iron tiles', 'Land development', 'Two extra queues', 'Three extra queues']
-    self.prioritygroups = ['Loyalty', 'ExtraTile', 'OneExtQ', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat', 'Land','TwoExtQ', 'MaxQs']
+    self.prioritygroups = ['Loyalty', 'ExtraTile', 'OneExtQ', 'UpgradeBuild', 'TileHonour', 'CBCMat', 'FWMat', 'Land','TwoExtQs', 'MaxQs']
     self.selectrans = []
     self.ready = False
     self.output = False

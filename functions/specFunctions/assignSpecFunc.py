@@ -94,6 +94,7 @@ def getNodes(priorities_list_full):
       node_priority.append(p)
 
   else:
+   
     for p in priorities_list_full:
       if p in blueSpec_gr:
         l = blueSpec_gr[p][0]
@@ -141,10 +142,12 @@ def useful_assign(priorities_list):
         nodes_list2.at[index, 'Score'] = 20
       else:
         nodes_list2.at[index, 'Score'] = 5
+  
       
   #assign to actual nodes
   for index, row in nodes_list2.iterrows():
     row['Node'].usefulScore = row['Score']
+
 
     
   
@@ -383,6 +386,7 @@ async def specAdvice(view, userSpecPoints, groups_bl, groups_gr):
     print(priorities)
 
     useful_assign(priorities)
+    
     userSpecPoints  = await most_use(priorities, userSpecPoints)
  
     print("updates sp", userSpecPoints)

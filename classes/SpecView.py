@@ -398,7 +398,7 @@ class SpecView(View):
     if self.specinfo.preset == 'Loyalty':
     
       self.specinfo.notes = "Your focus is upgrading CBCs, so you should have 90% food and marble tiles. Depending on the number of resets you have, you will occasionally switch to green left to upgrade Frontline Workshops.\n\n"
-      self.specinfo.list1 = ('Loyalty', 'CBCMat', 'OneExtQ')
+      self.specinfo.list1 = ('Loyalty', 'CBCMat', 'TwoExtQs')
       self.specinfo.list2 = ('ExtraTile', 'TileHonour', 'UpgradeBuild')
 
     
@@ -409,7 +409,7 @@ class SpecView(View):
       self.specinfo.list2 = ('ExtraTile', 'TileHonour', 'TwoExtQs')
     elif self.specinfo.preset == 'Upgrade buildings':
       self.specinfo.notes = "Your focus is on upgrading your Frontline Workshops and getting the maximum honour bonus from these upgrades.\n\n"
-      self.specinfo.list1 = ('UpgradeBuild', 'FWMat', 'OneExtQ')
+      self.specinfo.list1 = ('UpgradeBuild', 'FWMat', 'TwoExtQs')
       self.specinfo.list2 = ('ExtraTile', 'TileHonour', 'Land')
     elif self.specinfo.preset == 'Tile Honour':
       self.specinfo.notes = "Your focus is on maximising honour from tiles. You will sometimes switch to green left and extra queues to upgrade Assault and Guardian Fortresses.\n\nIn the last week, you may need to put extra points on processing queues to ensure that you process all of your materials.  Depending on resets you may also prioritise having 49 points on green left (building honour).  Land development and extra tiles might not be necessary.\n.\n"
